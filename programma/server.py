@@ -6,21 +6,36 @@ vicino alle foto che le somigliano; poi il lettore (lettore.py) la guarda a fond
 il suo posto definitivo, nato dal senso. Senza lettore resta col posto provvisorio finche' non viene
 letta a mano (scrivendo in dati/analisi.json, poi: python3 programma/genera_dati.py).
 
-Uso (dalla cartella nebulosa-memoria):  python3 programma/server.py   (oppure doppio clic su «Apri la nebulosa.command»)
-Poi apri http://localhost:8766 sul Mac; i telefoni aprono l'indirizzo /carica mostrato nel terminale
+Uso (dalla cartella nebulosa-memoria):  python3 programma/server.py   (oppure doppio clic su «Apri la nebulosa.command»,
+su Windows «Apri la nebulosa.bat»)
+Poi apri http://localhost:8002 sul computer; i telefoni aprono l'indirizzo /carica mostrato nel terminale
 (o inquadrano il QR code nella nebulosa).
+
+Con un tunnel (per esempio cloudflared o ngrok verso la porta 8002) la nebulosa si apre anche da internet, in https.
+Perche' il QR porti i telefoni al tunnel anche quando la nebulosa e' aperta su localhost, dai l'indirizzo pubblico:
+    INDIRIZZO=https://nebulosa.esempio.it python3 programma/server.py
+Quello che arriva dal tunnel non conta mai come «dal computer della nebulosa»: da li' non si possono eliminare foto.
 
 In rete il server mostra solo quello che serve alle pagine (vedi INDIRIZZI): le pagine, le foto ridotte e dati.js.
 Gli originali, i programmi e gli altri dati restano sul computer.
 """
-import base64, glob, io, json, os, queue, re, socket, threading, time, urllib.parse
+import base64, glob, io, json, os, queue, re, socket, sys, threading, time, urllib.parse
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from PIL import Image, ImageOps
 
 import genera_dati, lettore
 
 PROGETTO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # la cartella nebulosa-memoria
-PORTA = int(os.environ.get('PORTA', '8766'))
+PORTA = int(os.environ.get('PORTA', '8002'))
+INDIRIZZO = os.environ.get('INDIRIZZO', '').strip().rstrip('/')   # l'indirizzo pubblico del tunnel, se c'e' (https://...)
+LOCALI = ('127.0.0.1', '::1', '::ffff:127.0.0.1')
+INOLTRO = ('X-Forwarded-For', 'X-Forwarded-Host', 'X-Forwarded-Proto', 'X-Real-IP', 'Forwarded', 'Cf-Connecting-IP', 'Cf-Ray')
+# su Windows il terminale non sempre scrive « » e ✓: meglio un carattere sbagliato che un errore
+for flusso in (sys.stdout, sys.stderr):
+    try:
+        flusso.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
 ARRIVI = os.path.join(PROGETTO, 'dati', 'arrivi.json')
 FULL, THUMB = os.path.join(PROGETTO, 'foto', 'full'), os.path.join(PROGETTO, 'foto', 'thumb')
 ORIGINALI = os.path.join(PROGETTO, 'foto', 'originali')   # i file cosi' come sono arrivati dal telefono, a piena risoluzione
@@ -80,6 +95,10 @@ def ip_locale():
 
 
 class Gestore(SimpleHTTPRequestHandler):
+    # su Windows il tipo dei file viene dal registro e a volte e' sbagliato (.js come testo): lo fissiamo qui
+    extensions_map = dict(SimpleHTTPRequestHandler.extensions_map, **{
+        '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.jpg': 'image/jpeg'})
+
     def __init__(self, *a, **k):
         super().__init__(*a, directory=PROGETTO, **k)
 
@@ -96,8 +115,25 @@ class Gestore(SimpleHTTPRequestHandler):
         self.send_response(code); self.send_header('Content-Type', 'application/json; charset=utf-8')
         self.send_header('Content-Length', str(len(b))); self.end_headers(); self.wfile.write(b)
 
+    def dal_tunnel(self):
+        """Vero se la richiesta arriva da fuori attraverso un tunnel (che si collega al server da questo stesso computer)."""
+        host = (self.headers.get('Host') or '').rsplit(':', 1)[0].strip('[]').lower()
+        return any(self.headers.get(h) for h in INOLTRO) or host not in ('localhost', '127.0.0.1', '::1', ip_locale())
+
     def da_qui(self):
-        return self.client_address[0] in ('127.0.0.1', '::1', '::ffff:127.0.0.1')
+        """Vero solo per chi usa la nebulosa seduto al suo computer: non per i telefoni, ne' per chi arriva dal tunnel."""
+        return self.client_address[0] in LOCALI and not self.dal_tunnel()
+
+    def indirizzo_carica(self):
+        """L'indirizzo del QR: quello del tunnel se c'e', altrimenti quello del computer nella rete Wi-Fi."""
+        if INDIRIZZO:
+            return INDIRIZZO + '/carica'
+        if self.client_address[0] in LOCALI and self.dal_tunnel():
+            host = (self.headers.get('X-Forwarded-Host') or self.headers.get('Host') or '').split(',')[0].strip()
+            proto = (self.headers.get('X-Forwarded-Proto') or 'https').split(',')[0].strip()
+            if re.fullmatch(r'[\w.-]+(:\d+)?', host) and proto in ('http', 'https'):
+                return f'{proto}://{host}/carica'
+        return f'http://{ip_locale()}:{PORTA}/carica'
 
     def mostra(self, p):
         """Mostra un file solo se l'indirizzo e' tra quelli permessi; per tutto il resto: non trovato."""
@@ -115,11 +151,13 @@ class Gestore(SimpleHTTPRequestHandler):
     def do_GET(self):
         p = self.path.split('?')[0]
         if p == '/api/info':
-            return self.json_out({'carica': f'http://{ip_locale()}:{PORTA}/carica', 'arrivi': len(leggi_arrivi())})
+            return self.json_out({'carica': self.indirizzo_carica(), 'arrivi': len(leggi_arrivi())})
         elif p == '/api/arrivi':
             return self.json_out([dict(a, dato=DATI['foto'].get(a['id'])) for a in leggi_arrivi()])
         elif p == '/api/eventi':
-            self.send_response(200); self.send_header('Content-Type', 'text/event-stream'); self.end_headers()
+            self.send_response(200); self.send_header('Content-Type', 'text/event-stream')
+            self.send_header('Cache-Control', 'no-cache'); self.send_header('X-Accel-Buffering', 'no')   # i tunnel non devono trattenere gli eventi
+            self.end_headers()
             q = queue.Queue(); ascoltatori.add(q)
             try:
                 self.wfile.write(b': ciao\n\n'); self.wfile.flush()
@@ -157,7 +195,7 @@ class Gestore(SimpleHTTPRequestHandler):
             return self.carica(corpo)
         if p == '/api/elimina':
             if not self.da_qui():
-                return self.json_out({'errore': 'si può eliminare solo dal Mac della nebulosa'}, 403)
+                return self.json_out({'errore': 'si può eliminare solo dal computer della nebulosa'}, 403)
             return self.elimina(corpo.get('id', ''))
         self.json_out({'errore': 'non trovato'}, 404)
 
@@ -265,8 +303,10 @@ if __name__ == '__main__':
     srv.daemon_threads = True
     ip = ip_locale()
     print('\n  La Nebulosa è accesa.')
-    print(f'  Sul Mac:        http://localhost:{PORTA}')
-    print(f'  Dai telefoni:   http://{ip}:{PORTA}/carica   (stessa rete Wi-Fi)')
+    print(f'  Su questo computer:  http://localhost:{PORTA}')
+    print(f'  Dai telefoni:        http://{ip}:{PORTA}/carica   (stessa rete Wi-Fi)')
+    if INDIRIZZO:
+        print(f'  Dal tunnel:          {INDIRIZZO}   (il QR porta qui)')
     print('  Lettura delle foto nuove: ' + ('automatica (Claude)' if lettore.disponibile() else 'a mano (manca il pacchetto anthropic o la chiave): intanto entrano con un posto provvisorio'))
     print('  Per spegnere: chiudi questa finestra.\n')
     try:

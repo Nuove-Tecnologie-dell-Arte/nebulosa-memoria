@@ -1,0 +1,14 @@
+# Le librerie Python della nebulosa (Python 3.9 o più recente).
+# Per installarle, dalla cartella nebulosa-memoria:
+#   pip3 install -r requirements.txt
+
+# server.py: riduce le foto in arrivo e prepara le miniature
+Pillow>=10.0
+
+# genera_dati.py: calcola i posti delle foto nella nebulosa
+numpy>=1.24
+
+# lettore.py: legge le foto nuove con Claude.
+# È facoltativa: senza, la nebulosa funziona lo stesso e le foto nuove vanno lette a mano.
+# Serve anche la chiave ANTHROPIC_API_KEY (vedi LEGGIMI.html).
+anthropic
