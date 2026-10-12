@@ -14,8 +14,10 @@ if ($Azione -eq 'rimuovi') {
 
 # wsl.exe resta aperto finche' gira il server: e' questo che tiene sveglio WSL
 $comando = "Start-Process -WindowStyle Hidden -Wait wsl.exe -ArgumentList '-d','$Distro','-u','$Utente','--exec','bash','$Script'"
+# l'utente di Windows con il nome che il sistema riconosce (in ssh USERDOMAIN puo' essere sbagliato, per esempio WORKGROUP)
+$utente = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 $cosaFare = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile -WindowStyle Hidden -Command `"$comando`""
-$quando = New-ScheduledTaskTrigger -AtLogOn -User "$env:USERDOMAIN\$env:USERNAME"
+$quando = New-ScheduledTaskTrigger -AtLogOn -User $utente
 $regole = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable `
   -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1)
 Register-ScheduledTask -TaskName $nome -Action $cosaFare -Trigger $quando -Settings $regole -Force `
