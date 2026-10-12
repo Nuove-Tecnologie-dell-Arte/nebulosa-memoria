@@ -82,7 +82,12 @@ a{color:var(--acc)}
     arrivi.json  le foto arrivate dai telefoni: chi, quando, con quale frase
     dati.js      tutto questo pronto per la pagina (si rigenera da solo)
   programma/
-    server.py       il server: pagine, QR, foto in arrivo, cronologia
+    server.py       si accende da qui: avvia il server
+    gestore.py      le richieste: pagine, QR, foto in arrivo, cronologia
+    foto.py         cosa succede a una foto: arriva, viene letta, si elimina
+    indirizzi.py    cosa si può vedere in rete
+    stato.py        dati condivisi e eventi in tempo reale
+    config.py       porta, cartelle, limiti
     genera_dati.py  calcola posti, colori e movimenti dalle letture
     lettore.py      legge le foto nuove con Claude (se c'è la chiave)</pre>
 
