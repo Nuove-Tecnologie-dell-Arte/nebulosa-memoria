@@ -7,6 +7,7 @@ INDIRIZZI = [
     (r'/(index\.html)?', 'pagine/index.html'),
     (r'/carica/?', 'pagine/carica.html'),
     (r'/versioni/([\w-]+?)(\.html)?', 'pagine/versioni/{0}.html'),
+    (r'/(css|js)/([\w-]+\.(?:css|js))', 'pagine/{0}/{1}'),   # il CSS e il JS della pagina principale
     (r'/dati\.js', 'dati/dati.js'),
     (r'/foto/(full|thumb)/([\w-]+\.jpg)', 'foto/{0}/{1}'),
 ]
