@@ -1,219 +1,3 @@
-<!doctype html>
-<html lang="it">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>La Nebulosa · mano</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#06050a;--ink:#ece6e1;--dim:#8c8590;--amber:#d9a566;--trace:#f08a64;--line:rgba(236,230,225,.12)}
-*{box-sizing:border-box;margin:0}
-html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Jost',sans-serif;font-weight:300;overflow:hidden}
-button{font:inherit}
-canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab;transition:filter .6s}
-canvas.drag{cursor:grabbing}
-canvas.blur{filter:blur(6px) brightness(.8)}
-.top,.intro,.hintbar,#home{transition:opacity .4s}
-body.ov .top,body.ov .intro,body.ov .hintbar,body.ov #home{opacity:0!important;pointer-events:none!important}
-header.top{position:fixed;top:0;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);background:linear-gradient(#06050a,rgba(6,5,10,.5));z-index:5}
-.brand small{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
-.brand b{font-weight:400;letter-spacing:.22em;font-size:15px;white-space:nowrap}
-.status{display:flex;align-items:center;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;white-space:nowrap}
-.status > *+*{margin-left:14px;padding-left:14px;border-left:1px solid var(--line)}
-.intro{position:fixed;left:40px;top:92px;width:220px;z-index:4;pointer-events:none;transition:opacity .5s}
-.intro.hide{opacity:0}
-.intro h1{font:300 22px/1.2 'Jost',sans-serif}
-.intro h1 em{font-family:'Playfair Display',serif;color:var(--trace);font-size:24px}
-.intro p{margin-top:14px;font-size:11px;line-height:1.7;color:var(--dim)}
-.hintbar{position:fixed;right:28px;top:84px;z-index:4;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;text-align:right;line-height:1.9;pointer-events:none}
-#qrbtn{background:none;border:0;border-left:1px solid var(--line);color:#aaa1f2;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
-#qrbtn:hover,#palbtn:hover{color:var(--ink)}
-#palbtn{background:none;border:0;border-left:1px solid var(--line);color:var(--amber);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
-#cronbtn{background:none;border:0;border-left:1px solid var(--line);color:#f0c88c;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
-#cronbtn:hover{color:var(--ink)}
-#cronN{font-style:normal;color:var(--ink);margin-left:4px}
-#liveDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#5a5560;margin-right:8px;vertical-align:1px}
-#liveDot.on{background:#7fd38a;box-shadow:0 0 8px #7fd38a}
-#cron{position:fixed;top:76px;right:24px;bottom:110px;z-index:9;width:350px;background:rgba(10,9,13,.97);border:1px solid rgba(240,200,140,.4);display:none;flex-direction:column;box-shadow:0 12px 50px rgba(0,0,0,.6)}
-#cron.open{display:flex}
-#cron .hd{padding:16px 18px 12px;border-bottom:1px solid var(--line);position:relative}
-#cron h3{font:italic 400 20px 'Playfair Display',serif;color:#f0c88c}
-#cron .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:6px;line-height:1.7}
-#cronx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
-#cronL{overflow:auto;padding:4px 10px 14px;flex:1}
-#cronL .vuota{font-size:12px;line-height:1.6;color:#c9c1bb;padding:16px 8px}
-.ci{display:flex;gap:12px;padding:12px 8px;border-bottom:1px solid rgba(236,230,225,.07);cursor:pointer}
-.ci:hover{background:rgba(240,200,140,.06)}
-.ci img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;background:#222}
-.ci .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
-.ci .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
-.ci .w{font-size:11px;line-height:1.45;color:#d6cfc9}
-.ci .att{color:#7fd38a}
-.ci button,#cronAll{margin-top:6px;background:none;border:1px solid rgba(240,138,138,.45);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;cursor:pointer}
-#cronAll{margin-top:10px}
-#cron.open ~ #toasts{right:390px}
-body.ov #cron{opacity:0;pointer-events:none}
-#inarr{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:9;background:rgba(10,9,13,.9);border:1px solid rgba(127,211,138,.5);color:#a9e6b1;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;display:none;pointer-events:none}
-#inarr.on{display:block;animation:pulsa 1.4s ease-in-out infinite}
-@keyframes pulsa{50%{opacity:.55}}
-#qr{position:fixed;top:76px;right:24px;z-index:9;width:280px;padding:18px;background:rgba(10,9,13,.97);border:1px solid rgba(170,161,242,.45);display:none;box-shadow:0 12px 50px rgba(0,0,0,.6)}
-#qr.open{display:block}
-#qr h3{font:italic 400 20px 'Playfair Display',serif;color:#aaa1f2}
-#qr p{font-size:12px;line-height:1.55;color:#c9c1bb;margin-top:8px}
-#qr .code{margin:14px auto 10px;width:200px;height:200px;background:#fff;padding:10px;display:flex;align-items:center;justify-content:center}
-#qr .code img,#qr .code canvas{width:180px!important;height:180px!important}
-#qr .url{font:400 13px 'JetBrains Mono',monospace;color:var(--ink);word-break:break-all;text-align:center;user-select:all}
-#qr .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:10px;line-height:1.7}
-#qrx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
-#toasts{position:fixed;right:24px;top:150px;z-index:7;width:300px;display:grid;gap:10px;pointer-events:none}
-.toast{pointer-events:auto;display:flex;gap:12px;padding:10px 12px;background:rgba(10,9,13,.94);border:1px solid rgba(240,200,140,.45);box-shadow:0 10px 40px rgba(0,0,0,.6);cursor:pointer;animation:tin .5s ease-out;transition:opacity .6s}
-.toast.out{opacity:0}
-@keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
-.toast img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none}
-.toast .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
-.toast .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
-.toast .w{font-size:11px;line-height:1.45;color:#d6cfc9}
-body.ov #toasts,body.ov #qr{opacity:0;pointer-events:none}
-.why{margin:12px auto 0;max-width:560px;padding:10px 14px;border:1px solid rgba(240,200,140,.35);background:rgba(10,9,13,.7);text-align:left;font-size:13px;line-height:1.5;color:#e2dbd5}
-.why b{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#f0c88c;text-transform:uppercase;margin-bottom:3px}
-.why button{margin-top:8px;background:none;border:1px solid rgba(240,138,138,.5);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;cursor:pointer}
-#arrivo{position:fixed;left:50%;z-index:8;width:min(560px,90vw);transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .5s;padding:14px 18px 16px;background:rgba(6,5,10,.86);border:1px solid rgba(240,200,140,.25);box-shadow:0 18px 60px rgba(0,0,0,.6)}
-#arrivo.on{opacity:1}
-#arrivo .k{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#f0c88c;text-transform:uppercase;text-shadow:0 2px 12px #000}
-#arrivo .e{font:300 13px 'Jost',sans-serif;color:#c9c1bb;margin-top:10px;text-shadow:0 2px 12px #000}
-#arrivo .t{font:italic 400 40px/1.1 'Playfair Display',serif;margin-top:2px;text-shadow:0 2px 24px #000}
-#arrivo .w{font:300 14px/1.5 'Jost',sans-serif;color:#e6dfd9;margin:10px auto 0;max-width:480px}
-#arrivo .q{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#8c8590;text-transform:uppercase;margin-top:8px}
-#home{position:fixed;right:28px;bottom:44px;z-index:5;background:rgba(10,9,13,.8);border:1px solid var(--line);color:var(--dim);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:0 14px;height:46px;cursor:pointer}
-#home:hover{color:var(--amber)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:11px;padding:4px 10px;border:1px solid var(--line);cursor:pointer;border-radius:20px;color:var(--ink);background:rgba(10,9,13,.5)}
-.chip:hover,.chip.on{border-color:currentColor}
-.chip small{font:300 9px 'JetBrains Mono',monospace;color:var(--dim);margin-left:6px}
-.chip.theme{font-family:'Playfair Display',serif;font-style:italic;font-size:12px}
-#pv{position:fixed;z-index:8;pointer-events:none;background:rgba(9,8,12,.94);border:1px solid rgba(236,230,225,.18);padding:9px 12px;display:none;box-shadow:0 8px 40px rgba(0,0,0,.6);max-width:300px}
-#pv .t{font:italic 400 15px/1.3 'Playfair Display',serif}
-#pv .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:4px;line-height:1.7}
-#pv q{display:block;font:italic 400 13px/1.4 'Playfair Display',serif;color:var(--amber);margin-top:6px;quotes:none}
-#pv .h{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--amber);text-transform:uppercase;margin-top:7px}
-.fly{position:fixed;z-index:13;border-radius:50%;background:#151219 center/cover no-repeat;pointer-events:none;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 30px 90px rgba(0,0,0,.7);transition:left .65s cubic-bezier(.2,.8,.2,1),top .65s cubic-bezier(.2,.8,.2,1),width .65s cubic-bezier(.2,.8,.2,1),height .65s cubic-bezier(.2,.8,.2,1)}
-/* sfoglia */
-#sf{position:fixed;inset:0;z-index:12;background:radial-gradient(ellipse at center,rgba(6,5,9,.55),rgba(6,5,9,.2) 70%);display:none;flex-direction:column}
-#sf.open{display:flex}
-#sf .ui{transition:opacity .45s .25s;opacity:0}
-#sf.shown .ui{opacity:1}
-.sfh{display:flex;align-items:flex-start;gap:24px;padding:22px 80px 8px 32px;flex:none}
-.sfh .l{flex:1;min-width:0}
-#sfk{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#b3abb4;text-transform:uppercase}
-#sft{font:italic 400 30px/1.15 'Playfair Display',serif;margin-top:6px;text-shadow:0 2px 20px rgba(0,0,0,.8)}
-#sfd{font:italic 400 14px/1.5 'Playfair Display',serif;opacity:.88;margin-top:6px;max-width:760px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
-#sfp{margin-top:10px;max-height:62px;overflow:auto}
-#sfc{font:300 12px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3abb4;white-space:nowrap;padding-top:4px}
-#sfx{position:absolute;top:16px;right:24px;background:none;border:0;color:#b3abb4;font-size:30px;cursor:pointer;z-index:2}
-#sfx:hover{color:var(--ink)}
-#sftrack{--D:min(46vh,58vw);flex:1;min-height:0;display:flex;align-items:center;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;padding-inline:calc(50% - var(--D) / 2 - 40px)}
-#sftrack::-webkit-scrollbar{display:none}
-.slide{flex:0 0 auto;width:calc(var(--D) + 80px);scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;--k:1}
-.disc{width:var(--D);height:var(--D);border-radius:50%;overflow:hidden;background:#151219 center/cover no-repeat;transform:scale(calc(1 - var(--k) * .3));opacity:calc(1 - var(--k) * .5);transition:transform .15s,opacity .15s;cursor:pointer;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 24px 90px rgba(0,0,0,.7)}
-.disc img{width:100%;height:100%;object-fit:cover;display:block}
-.cap{margin-top:16px;width:min(calc(var(--D) + 260px),92vw);text-align:center;opacity:calc(1 - var(--k) * 2.2);transition:opacity .15s;min-height:90px}
-.cap .lettura{display:block;font:italic 400 16px/1.5 'Playfair Display',serif;color:var(--ink);margin-bottom:12px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
-.cap .frase{display:block;font:300 13px/1.5 'Jost',sans-serif;color:var(--amber);margin-bottom:10px}
-.cap .chips{justify-content:center}
-.sfnav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:rgba(10,9,13,.6);border:1px solid var(--line);color:var(--ink);font-size:26px;cursor:pointer;z-index:2}
-.sfnav:hover{border-color:var(--amber);color:var(--amber)}
-.sfnav:disabled{opacity:.2;cursor:default}
-#sfprev{left:24px}#sfnext{right:24px}
-#sfstrip{flex:none;display:flex;gap:8px;overflow-x:auto;padding:12px 32px 22px;scrollbar-width:thin;scrollbar-color:#333 transparent}
-#sfstrip img{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover;opacity:.45;cursor:pointer;transition:opacity .2s,transform .2s;outline:2px solid transparent;outline-offset:2px}
-#sfstrip img:hover{opacity:.85}
-#sfstrip img.on{opacity:1;outline-color:var(--amber);transform:scale(1.08)}
-@media(max-width:900px){.intro,.hintbar{display:none}.status > span{display:none}.status > button{border-left:0}#home{top:76px;bottom:auto;right:12px;height:34px}.sfh{padding:18px 56px 8px 18px}#sft{font-size:22px}#sfd{display:none}#sftrack{--D:min(74vw,40vh)}.sfnav{display:none}}
-#sndbtn{background:none;border:0;border-left:1px solid var(--line);color:var(--amber);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
-#sndbtn:hover{color:var(--ink)}
-/* il volo: la foto scelta e la sua lettura */
-#fuoco{position:fixed;right:28px;top:50%;transform:translate(20px,-50%);z-index:8;width:min(360px,calc(100vw - 32px));padding:20px 22px 18px;background:rgba(8,7,12,.82);border:1px solid var(--c,rgba(240,200,140,.4));border-left-width:3px;box-shadow:0 18px 60px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .7s,transform .7s}
-#fuoco.on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
-#fuoco .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
-#fl{font:italic 400 18px/1.5 'Playfair Display',serif;color:var(--ink);margin-top:10px}
-#fl:empty{display:none}
-#fa{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;line-height:1.5;color:#e2dbd5}
-#fa b{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#f0c88c;text-transform:uppercase;margin-bottom:4px}
-#fa .nota{color:#8c8590;font-size:11px}
-#fa button{margin-top:8px;background:none;border:1px solid rgba(240,138,138,.5);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;cursor:pointer}
-#fuoco .h{margin-top:14px;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;line-height:1.8}
-#fx{margin-top:12px;background:none;border:1px solid var(--c,var(--line));color:var(--ink);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:8px 12px;cursor:pointer}
-#fx:hover{background:rgba(255,255,255,.05)}
-body.infuoco .hintbar,body.infuoco .intro{opacity:0!important}
-/* l'interfaccia si nasconde da sola dopo qualche secondo di quiete */
-.top,.intro,.hintbar,#home{transition:opacity 1.2s}
-body.calma .top,body.calma .intro,body.calma .hintbar,body.calma #home{opacity:0!important;pointer-events:none!important}
-body.calma canvas{cursor:none!important}
-/* il QR sempre visibile, per chi passa davanti allo schermo */
-#qrfisso{position:fixed;left:28px;bottom:28px;z-index:6;display:none;align-items:center;gap:14px;padding:12px 16px 12px 12px;background:rgba(8,7,12,.78);border:1px solid rgba(170,161,242,.4)}
-#qrfisso.on{display:flex}
-#qrfisso .code{width:104px;height:104px;background:#fff;padding:6px;flex:none}
-#qrfisso .code img,#qrfisso .code canvas{width:92px!important;height:92px!important}
-#qrfisso b{display:block;font:italic 400 17px/1.25 'Playfair Display',serif;color:#d8d2f7}
-#qrfisso small{display:block;margin-top:6px;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;line-height:1.7}
-body.calma #fuoco .h,body.calma #fx{display:none}
-#fuoco .nuova{color:#a9e6b1}
-@media(max-width:900px){#qrfisso{display:none!important}#fuoco{right:16px;left:16px;width:auto;top:auto;bottom:16px;transform:translateY(20px)}#fuoco.on{transform:none}}
-/* la mano: il cursore di luce e il riquadro con la webcam */
-#manoCursore{position:fixed;left:0;top:0;width:0;height:0;z-index:9;pointer-events:none;opacity:0;transition:opacity .4s;--p:0%}
-#manoCursore.on{opacity:1}
-#manoCursore::before{content:'';position:absolute;left:-30px;top:-30px;width:60px;height:60px;border-radius:50%;border:2px solid rgba(180,220,255,.7);box-shadow:0 0 22px rgba(150,200,255,.5),inset 0 0 14px rgba(150,200,255,.3);transition:all .25s}
-#manoCursore::after{content:'';position:absolute;left:-46px;top:-46px;width:92px;height:92px;border-radius:50%;background:conic-gradient(rgba(255,225,170,.95) var(--p),transparent 0);-webkit-mask:radial-gradient(circle,transparent 41px,#000 42px,#000 46px,transparent 47px);mask:radial-gradient(circle,transparent 41px,#000 42px,#000 46px,transparent 47px);opacity:0;transition:opacity .2s}
-#manoCursore.aggancio::before{left:-38px;top:-38px;width:76px;height:76px;border-color:rgba(255,225,170,.9);box-shadow:0 0 30px rgba(255,200,140,.6)}
-#manoCursore.aggancio::after{opacity:1}
-#manoCursore.pugno::before{content:'↕';display:flex;align-items:center;justify-content:center;left:-30px;top:-30px;width:60px;height:60px;color:#ffd2b0;font:300 26px/1 -apple-system,Helvetica,sans-serif;border-color:rgba(255,170,120,.9);box-shadow:0 0 26px rgba(255,150,100,.55)}
-#manoAiuto{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);z-index:9;padding:9px 16px;background:rgba(8,7,12,.72);border:1px solid rgba(160,210,255,.3);font:300 12px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#dfe9f5;opacity:0;transition:opacity .5s;pointer-events:none;white-space:nowrap}
-#manoAiuto.on{opacity:1}
-#mano{position:fixed;right:20px;bottom:20px;z-index:10;width:240px;background:rgba(8,7,12,.85);border:1px solid rgba(160,210,255,.35);font:300 10px 'JetBrains Mono',monospace;color:#c8d6e6}
-#mano.nascosta{display:none}
-#manoVideo{display:none}
-#manoCanvas{display:block;width:240px;height:180px;background:#000}
-#manoStato{padding:8px 10px 4px;letter-spacing:.08em;text-transform:uppercase;color:#e6f3ff}
-#manoCamera{margin:4px 10px 8px;width:calc(100% - 20px);background:#14121a;color:#c8d6e6;border:1px solid rgba(255,255,255,.15);font:inherit}
-#mano .legenda{padding:6px 10px 10px;border-top:1px solid rgba(255,255,255,.08);line-height:1.9;color:#9aa6b4}
-</style>
-</head>
-<body>
-<canvas id="c"></canvas>
-<header class="top">
-  <div class="brand"><small>Memoria collettiva</small><b>LA NEBULOSA</b></div>
-  <div class="status"><span id="luogo"></span><span id="st"></span><button id="sndbtn">Suono</button><button id="palbtn">Colori</button><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
-</header>
-<div class="intro" id="intro">
-  <h1>Una memoria<br><em>che esplode.</em></h1>
-  <p id="introp"></p>
-</div>
-<div class="hintbar" id="hintbar">Trascina per girarle intorno · rotella per entrare<br>Passa sopra una sfera: si accendono le sorelle<br>Clicca una sfera per volarci dentro</div>
-<button id="home">↺ Vista iniziale</button>
-<div id="pv"></div>
-<div id="qr"><button id="qrx" aria-label="Chiudi">×</button><h3>Carica dal telefono</h3><p>Inquadra il codice con la fotocamera del telefono, oppure scrivi l'indirizzo nel browser. Il telefono deve essere sulla stessa rete Wi-Fi di questo computer.</p><div class="code" id="qrcode"></div><div class="url" id="qrurl">…</div><div class="meta" id="qrmeta"></div></div>
-<div id="cron"><div class="hd"><button id="cronx" aria-label="Chiudi">×</button><h3>Cronologia</h3><div class="meta" id="cronC"></div></div><div id="cronL"></div></div>
-<div id="toasts"></div>
-<div id="inarr"></div>
-<div id="qrfisso"><div class="code" id="qrfc"></div><div><b>Aggiungi la tua foto<br>alla memoria</b><small>Inquadra il codice<br>con il telefono</small></div></div>
-<aside id="fuoco"><div class="k" id="fk"></div><div id="fl"></div><div id="fa"></div><div class="h">Trascina per girarle intorno · clicca una sorella per passare a lei · Esc o clic nel vuoto per tornare</div><button id="fx">← Torna alla nebulosa</button></aside>
-<div id="manoCursore"></div>
-<div id="mano"><canvas id="manoCanvas" width="240" height="180"></canvas><video id="manoVideo" playsinline muted></video><div id="manoStato">Avvio della mano…</div><select id="manoCamera" aria-label="Telecamera"></select>
-<div class="legenda">✋ muovi la mano: la luce si aggancia alla foto più vicina<br>✋ tienila ferma un secondo e mezzo: entri<br>✊ chiudila a pugno e muovila su/giù: zoom<br>↔ mano verso i bordi: la nebulosa gira<br>⬇ abbassa la mano: torni alla nebulosa<br>tasto V: nascondi questo riquadro</div></div>
-<div id="manoAiuto"></div>
-<div id="arrivo"><div class="k" id="arrK"></div><div class="w" id="arrW"></div><div class="q" id="arrQ"></div></div>
-<div id="sf" role="dialog" aria-label="Sfoglia le foto">
-  <button id="sfx" class="ui" aria-label="Chiudi">×</button>
-  <div class="sfh ui"><div class="l"><div id="sfk"></div><div id="sft"></div><div id="sfd"></div><div class="chips" id="sfp"></div></div><div id="sfc"></div></div>
-  <div id="sftrack"></div>
-  <button class="sfnav ui" id="sfprev" aria-label="Foto precedente">‹</button>
-  <button class="sfnav ui" id="sfnext" aria-label="Foto successiva">›</button>
-  <div id="sfstrip" class="ui"></div>
-</div>
-
-<script src="/dati.js"></script>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-<script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -932,11 +716,14 @@ const MODELLO_MANO = 'https://storage.googleapis.com/mediapipe-models/hand_landm
 const OSSA_MANO = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]];
 const SOSTA_MANO = 1500;      // quanto tenere ferma la mano su una foto per entrarci (ms)
 const VIA_MANO = 2000;        // quanto tempo senza mano per tornare alla nebulosa (ms)
-const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, pugno: false, conta: 0, yPrima: .5 };
+const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, contaDue: 0, d0: 1, r0: 34, dd: 1, pa: null, pb: null };
 let rilevatore = null, ultimoVideo = -1, ultimoPasso = 0;
 const video = $('manoVideo'), anteprima = $('manoCanvas'), ctxAnte = anteprima.getContext('2d');
 
+// senza webcam (assente, negata, pagina non sicura, librerie non raggiunte) la mano sparisce e si naviga con il mouse
+function senzaMano() { rilevatore = null; $('mano').classList.add('assente'); }
 async function avviaMano() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return senzaMano();   // succede su http fuori da localhost
   try {
     const { FilesetResolver, HandLandmarker } = await import(MP + '/vision_bundle.mjs');
     const files = await FilesetResolver.forVisionTasks(MP + '/wasm');
@@ -946,7 +733,7 @@ async function avviaMano() {
     });
     await apriCamera(memo('nebulosa-camera'));
   } catch (e) {
-    $('manoStato').textContent = 'La mano non è disponibile: ' + (e.message || e);
+    senzaMano();
   }
 }
 async function apriCamera(id) {
@@ -954,7 +741,7 @@ async function apriCamera(id) {
   const vincoli = { width: 640, height: 480, ...(id ? { deviceId: { exact: id } } : { facingMode: 'user' }) };
   let flusso;
   try { flusso = await navigator.mediaDevices.getUserMedia({ video: vincoli, audio: false }); }
-  catch (e) { if (id) return apriCamera(null); $('manoStato').textContent = 'Webcam non disponibile o permesso negato.'; return; }
+  catch (e) { if (id) return apriCamera(null); return senzaMano(); }
   video.srcObject = flusso; await video.play();
   // l'elenco delle telecamere (i nomi si vedono solo dopo il permesso): se non ne ho scelta una, preferisco quella del Mac
   const camere = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput');
@@ -972,7 +759,10 @@ function palmo(L) {
   return { x: k.reduce((s, i) => s + L[i].x, 0) / 5, y: k.reduce((s, i) => s + L[i].y, 0) / 5 };
 }
 function leggiMano(now) {
-  if (window.__manoFinta !== undefined) return { L: window.__manoFinta };   // per provare senza webcam: una mano finta messa dalla console (null = nessuna mano)
+  if (window.__manoFinta !== undefined) {   // per provare senza webcam: una mano finta (o due) messa dalla console (null = nessuna mano)
+    const f = window.__manoFinta, mani = !f ? [] : Array.isArray(f[0]) ? f : [f];
+    return { L: mani.slice().sort((a, b) => taglia(b) - taglia(a))[0] || null, mani };
+  }
   if (!rilevatore || video.readyState < 2 || video.currentTime === ultimoVideo) return null;
   ultimoVideo = video.currentTime;
   const r = rilevatore.detectForVideo(video, now);
@@ -980,8 +770,44 @@ function leggiMano(now) {
   let L = null, best = 0;
   (r.landmarks || []).forEach(m => { const s = Math.hypot(m[0].x - m[9].x, m[0].y - m[9].y); if (s > best) { best = s; L = m; } });
   disegnaAnteprima(r.landmarks || [], L);
-  return { L };
+  return { L, mani: r.landmarks || [] };
 }
+const taglia = m => Math.hypot(m[0].x - m[9].x, m[0].y - m[9].y);   // quanto e' grande una mano nell'inquadratura
+
+// ---------------- lo zoom con due mani: allargarle avvicina, stringerle allontana ----------------
+// conta solo la distanza tra i due palmi: nessuna forma delle dita
+function dueMani(mani) { return mani.slice().sort((a, b) => taglia(b) - taglia(a)).slice(0, 2).map(palmo); }
+function aggiornaDueMani(mani) {
+  // due palmi quasi sovrapposti sono la stessa mano vista due volte: non contano come due mani
+  let due = mani.length >= 2;
+  if (due) { const [a, b] = dueMani(mani); if (Math.hypot(a.x - b.x, a.y - b.y) < .07) due = false; }
+  // con un po' di pazienza: la webcam a volte perde una mano per un attimo
+  mano.contaDue = due === mano.due ? 0 : mano.contaDue + 1;
+  if (mano.contaDue >= (due ? 3 : 6)) {
+    mano.due = due; mano.contaDue = 0;
+    if (due) {
+      const [a, b] = dueMani(mani);
+      mano.d0 = Math.hypot(a.x - b.x, a.y - b.y); mano.r0 = camera.position.distanceTo(controls.target);
+      mano.bersaglio = null; mano.carica = 0; setHover(null);
+    }
+  }
+  if (mano.due && due) {
+    const [a, b] = dueMani(mani), d = Math.hypot(a.x - b.x, a.y - b.y);
+    // un salto improvviso della distanza (una mano persa o scambiata per un attimo) non e' un gesto vero: lo ignoro
+    if (!mano.pa || Math.abs(d - mano.dd) < Math.max(.06, mano.dd * .3)) { mano.pa = a; mano.pb = b; mano.dd = d; }
+  }
+}
+function zoomDueMani() {
+  if (fuoco && (!fuoco.arrivato || fuoco.uscita)) return;   // durante un volo la camera e' gia' in movimento
+  // da quando le mani si sono alzate insieme: il doppio della distanza tra i palmi = circa due volte e mezzo piu' vicino
+  // limiti dello zoom con le mani: non si entra nel nucleo luminoso al centro, e non ci si allontana oltre un po' piu' della vista iniziale
+  const vicino = fuoco ? 2.2 : 6, lontano = fuoco ? 14 : 48;
+  const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.dd, .02), 1.2), vicino, lontano);
+  scarto.copy(camera.position).sub(controls.target); sferica.setFromVector3(scarto);
+  sferica.radius += (voluto - sferica.radius) * .2;
+  scarto.setFromSpherical(sferica); camera.position.copy(controls.target).add(scarto);
+}
+const sulloSchermo = q => ({ x: clamp((1 - q.x - .18) / .64, 0, 1) * innerWidth, y: clamp((q.y - .15) / .6, 0, 1) * innerHeight });
 
 // la calamita: la foto (visibile) piu' vicina al punto della mano, sullo schermo
 const proiezione = new THREE.Vector3();
@@ -1020,21 +846,19 @@ function passoMano(now) {
       const pt = palmo(r.L);
       // la webcam e' a specchio; la zona centrale dell'inquadratura copre tutto lo schermo
       const tx = clamp((1 - pt.x - .18) / .64, 0, 1), ty = clamp((pt.y - .15) / .6, 0, 1);
-      if (!mano.vista) { mano.x = tx; mano.y = ty; mano.yPrima = ty; }
+      if (!mano.vista) { mano.x = tx; mano.y = ty; }
       mano.x += (tx - mano.x) * .3; mano.y += (ty - mano.y) * .3;
-      const chiusa = manoChiusa(r.L);
-      mano.conta = chiusa === mano.pugno ? 0 : mano.conta + 1;
-      if (mano.conta >= 4) { mano.pugno = chiusa; mano.conta = 0; mano.yPrima = mano.y; if (chiusa) { mano.bersaglio = null; mano.carica = 0; setHover(null); } }
       mano.vista = true; mano.ultima = now; ultimoTocco = now;
       controls.autoRotate = false; clearTimeout(fermo);
     } else if (mano.vista && now - mano.ultima > 350) {
-      mano.vista = false; mano.pugno = false; mano.conta = 0; mano.bersaglio = null; mano.carica = 0; setHover(null); riprendiGiro();
+      mano.vista = false; mano.due = false; mano.contaDue = 0; mano.bersaglio = null; mano.carica = 0; setHover(null); riprendiGiro();
     }
   }
   // senza mano per un po': si torna alla nebulosa (solo se ci si era entrati con la mano)
   // vale anche per la foto appena arrivata dal QR, se mentre si e' dentro una mano e' stata vista (se nessuno c'e', la foto nuova resta i suoi 20 secondi)
   if (!mano.vista && fuoco && !fuoco.uscita && fuoco.arrivato && mano.ultima >= fuoco.t0 - 500 && now - mano.ultima > VIA_MANO) { torna(); }
-  if (mano.vista && !arrivo && mano.pugno) zoomColPugno();
+  if (r && r.L) aggiornaDueMani(r.mani || []);
+  if (mano.vista && !arrivo && mano.due) zoomDueMani();
   else if (mano.vista && !arrivo) {
     giraVersoLaMano(dt);
     const hx = mano.x * innerWidth, hy = mano.y * innerHeight;
@@ -1050,37 +874,28 @@ function passoMano(now) {
   }
   aggiornaCursore(now);
 }
-// la mano chiusa a pugno: muovendola in su ci si avvicina, in giu' ci si allontana
-function manoChiusa(L) {
-  const d = i => Math.hypot(L[i].x - L[0].x, L[i].y - L[0].y);
-  // un dito e' piegato se la sua punta e' piu' vicina al polso della sua nocca di mezzo
-  return [[8, 6], [12, 10], [16, 14], [20, 18]].filter(([punta, nocca]) => d(punta) < d(nocca) * 1.05).length >= 3;
-}
-function zoomColPugno() {
-  const dy = mano.y - mano.yPrima; mano.yPrima = mano.y;
-  if (fuoco && (!fuoco.arrivato || fuoco.uscita)) return;   // durante un volo la camera e' gia' in movimento
-  scarto.copy(camera.position).sub(controls.target); sferica.setFromVector3(scarto);
-  // tutta l'altezza della zona = circa cinque volte piu' vicino (o lontano)
-  sferica.radius = clamp(sferica.radius * Math.exp(dy * 1.6), controls.minDistance, controls.maxDistance);
-  scarto.setFromSpherical(sferica); camera.position.copy(controls.target).add(scarto);
-}
 function aggiornaCursore(now) {
   const c = $('manoCursore');
-  c.classList.toggle('on', mano.vista && !arrivo);
+  c.classList.toggle('on', mano.vista && !arrivo && !mano.due);
+  // con due mani: una luce per palmo e un filo tra loro
+  const dm = $('manoDue'); dm.classList.toggle('on', !!(mano.vista && !arrivo && mano.due && mano.pa));
+  if (mano.due && mano.pa) {
+    const a = sulloSchermo(mano.pa), b = sulloSchermo(mano.pb), [ia, ib] = dm.querySelectorAll('i'), l = dm.querySelector('b');
+    ia.style.transform = `translate(${a.x}px,${a.y}px)`; ib.style.transform = `translate(${b.x}px,${b.y}px)`;
+    l.style.width = Math.hypot(b.x - a.x, b.y - a.y) + 'px'; l.style.transform = `translate(${a.x}px,${a.y}px) rotate(${Math.atan2(b.y - a.y, b.x - a.x)}rad)`;
+  }
   c.classList.toggle('aggancio', !!mano.bersaglio);
-  c.classList.toggle('pugno', !!mano.pugno);
   // la luce va verso la foto agganciata (si vede che la calamita l'ha presa)
   let x = mano.x * innerWidth, y = mano.y * innerHeight;
   if (mano.bersaglio) { const s = schermoDi(mano.bersaglio); x += (s.x - x) * .85; y += (s.y - y) * .85; }
   c.style.transform = `translate(${x}px, ${y}px)`;
   c.style.setProperty('--p', (mano.carica * 100).toFixed(1) + '%');
   // la frase di aiuto: cambia secondo quello che si puo' fare adesso
-  const aiuto = !mano.vista || arrivo ? '' : mano.pugno ? 'Mano chiusa: in su ti avvicini, in giù ti allontani · aprila per tornare alla luce'
-    : fuoco && !fuoco.uscita ? (mano.bersaglio ? 'Tieni ferma la mano per passare a questa foto' : 'Porta la mano su una sorella · chiudila a pugno per lo zoom · abbassala per tornare')
-    : mano.bersaglio ? 'Tieni ferma la mano: stai entrando in questa foto' : 'Muovi la mano: la luce si aggancia alle foto · chiudila a pugno per lo zoom';
+  const aiuto = !mano.vista || arrivo ? '' : mano.due ? 'Due mani: allargale per avvicinarti, stringile per allontanarti' : fuoco && !fuoco.uscita ? (mano.bersaglio ? 'Tieni ferma la mano per passare a questa foto' : 'Porta la mano su una sorella · abbassala per tornare')
+    : mano.bersaglio ? 'Tieni ferma la mano: stai entrando in questa foto' : 'Muovi la mano: la luce si aggancia alle foto · verso i bordi la nebulosa gira';
   if ($('manoAiuto').textContent !== aiuto) $('manoAiuto').textContent = aiuto;
   $('manoAiuto').classList.toggle('on', !!aiuto);
-  $('manoStato').textContent = !rilevatore ? $('manoStato').textContent : mano.vista ? (mano.pugno ? 'mano chiusa: zoom' : mano.bersaglio ? 'mano agganciata a una foto' : 'mano vista') : 'nessuna mano';
+  $('manoStato').textContent = !rilevatore ? $('manoStato').textContent : mano.vista ? (mano.due ? 'due mani: zoom' : mano.bersaglio ? 'mano agganciata a una foto' : 'mano vista') : 'nessuna mano';
 }
 function disegnaAnteprima(mani, principale) {
   const W2 = anteprima.width, H2 = anteprima.height;
@@ -1100,6 +915,3 @@ avviaMano();
 
 window.__mano = { mano, piuVicina, palmo, passoMano };   // per provare dalla console
 window.__nebulosa = { photos, photoById, camera, controls, setHover, vola, torna, regia, get fuoco() { return fuoco; } };   // per provare dalla console
-</script>
-</body>
-</html>

@@ -3,14 +3,12 @@
 # Per Linux, WSL (Windows) e Mac, anche dietro un tunnel. Se la nebulosa e' gia' accesa, apre solo la pagina.
 # Uso, dalla cartella nebulosa-memoria:
 #   bash avvia-server.sh            la nebulosa per l'installazione
-#   bash avvia-server.sh mano       la versione che si esplora con la mano (webcam)
 #   INDIRIZZO=https://indirizzo-del-tunnel bash avvia-server.sh     (cosi' il QR porta i telefoni al tunnel)
 # La porta e' 8002 (si cambia con PORTA=...). Su un server senza schermo scrive solo l'indirizzo. Per spegnere: Ctrl+C.
 
 cd "$(dirname "$0")" || exit 1
 export PORTA="${PORTA:-8002}"
 PAGINA="${PAGINA:-}"
-[ "$1" = "mano" ] && PAGINA="versioni/mano"
 URL="http://localhost:$PORTA/$PAGINA"
 FLAG="--autoplay-policy=no-user-gesture-required --no-first-run --no-default-browser-check --new-window"
 
