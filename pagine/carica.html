@@ -71,7 +71,7 @@ input[type=file]{display:none}
   <button id="invia"></button>
 
   <div id="lista"></div>
-  <p class="foot">Le foto vengono inviate solo al computer della nebulosa, sulla vostra rete Wi-Fi: una versione ridotta per lo schermo e l'originale, che viene conservato così com'è.</p>
+  <p class="foot">Le foto vengono inviate solo al computer della nebulosa, sulla vostra rete Wi-Fi: la foto viene compressa e ridotta per lo schermo; l'originale non viene conservato.</p>
 </main>
 <script>
 const $ = id => document.getElementById(id);
@@ -118,18 +118,6 @@ $('invia').addEventListener('click', async () => {
   for (const f of daInviare) { await invia(f.file); URL.revokeObjectURL(f.url); }
   $('invia').disabled = false;
 });
-// poi il file originale, intatto e a piena risoluzione: il computer della nebulosa lo conserva a parte
-const TIPI = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', heic: 'image/heic', heif: 'image/heif', webp: 'image/webp', gif: 'image/gif', tif: 'image/tiff', tiff: 'image/tiff' };
-async function inviaOriginale(file, id, riga) {
-  const tipo = file.type || TIPI[(file.name.split('.').pop() || '').toLowerCase()] || '';
-  try {
-    const r = await fetch('/api/originale', { method: 'POST', headers: { 'Content-Type': tipo, 'X-Id': id }, body: file });
-    if (!r.ok) throw new Error((await r.json()).errore || 'errore');
-    riga.textContent = 'Originale salvato ✓';
-  } catch (e) {
-    riga.textContent = 'L\'originale non è stato salvato (' + e.message + '), ma la foto è nella nebulosa.';
-  }
-}
 async function invia(file) {
   const card = document.createElement('div'); card.className = 'card';
   card.innerHTML = `<img alt=""><div style="flex:1"><div class="t">Invio in corso…</div><div class="bar"><i></i></div></div>`;
@@ -140,8 +128,7 @@ async function invia(file) {
     const r = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Nome': encodeURIComponent($('nome').value.trim()) }, body: JSON.stringify({ img: dataurl, nome: $('nome').value, frase: $('frase').value }) });
     const j = await r.json();
     if (!r.ok) throw new Error(j.errore || 'errore');
-    card.querySelector('div').innerHTML = `<div class="t">È entrata nella nebulosa ✓ · guarda lo schermo</div><div class="why">Ora è nella memoria. Verrà letta con attenzione e troverà il suo posto tra le altre.</div><div class="t orig">Salvo anche l'originale…</div>`;
-    inviaOriginale(file, j.id, card.querySelector('.orig'));   // non aspetto: intanto possono partire le altre foto
+    card.querySelector('div').innerHTML = `<div class="t">È entrata nella nebulosa ✓ · guarda lo schermo</div><div class="why">Ora è nella memoria. Verrà letta con attenzione e troverà il suo posto tra le altre.</div>`;
   } catch (e) {
     card.querySelector('div').innerHTML = `<div class="err">Non è stato possibile inviarla: ${esc(e.message)}. Riprova.</div>`;
   }
