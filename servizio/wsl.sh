@@ -8,5 +8,7 @@ fi
 if [ -z "$WSL_INTEROP" ]; then       # il collegamento con Windows: in ssh va indicato a mano (l'ultimo aperto)
   WSL_INTEROP="$(ls -t /run/WSL/*_interop 2>/dev/null | head -1)"; export WSL_INTEROP
 fi
-command -v powershell.exe >/dev/null || { echo "Non trovo powershell.exe: l'integrazione con Windows di WSL è spenta?"; exit 1; }
-powershell.exe -NoProfile -Command exit 0 >/dev/null 2>&1 || { echo "Non riesco a chiamare Windows da qui (WSL_INTEROP=${WSL_INTEROP:-vuoto})."; exit 1; }
+PS="$(command -v powershell.exe)"     # in ssh il PATH non include Windows: provo il percorso fisso
+[ -n "$PS" ] || PS=/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe
+[ -x "$PS" ] || { echo "Non trovo powershell.exe ($PS): il disco C: è visibile in /mnt/c?"; exit 1; }
+"$PS" -NoProfile -Command exit 0 >/dev/null 2>&1 || { echo "Non riesco a chiamare Windows da qui (WSL_INTEROP=${WSL_INTEROP:-vuoto})."; exit 1; }
