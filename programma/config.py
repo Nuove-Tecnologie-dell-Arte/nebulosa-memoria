@@ -16,8 +16,9 @@ for flusso in (sys.stdout, sys.stderr):
 
 ARRIVI = os.path.join(PROGETTO, 'dati', 'arrivi.json')
 FULL, THUMB = os.path.join(PROGETTO, 'foto', 'full'), os.path.join(PROGETTO, 'foto', 'thumb')
-ORIGINALI = os.path.join(PROGETTO, 'foto', 'originali')   # i file cosi' come sono arrivati dal telefono, a piena risoluzione
 
 MAX_BYTES = 15 * 1024 * 1024
-MAX_ORIGINALE = 80 * 1024 * 1024
-ESTENSIONI = {'image/jpeg': 'jpg', 'image/png': 'png', 'image/heic': 'heic', 'image/heif': 'heif', 'image/webp': 'webp', 'image/gif': 'gif', 'image/tiff': 'tiff'}
+
+# la compressione: lato lungo in pixel e qualita' JPEG
+LATO_FULL, QUALITA_FULL = 1400, 84
+LATO_THUMB, QUALITA_THUMB = 360, 74

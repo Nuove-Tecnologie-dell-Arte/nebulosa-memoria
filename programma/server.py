@@ -17,7 +17,7 @@ Perche' il QR porti i telefoni al tunnel anche quando la nebulosa e' aperta su l
 Quello che arriva dal tunnel non conta mai come «dal computer della nebulosa»: da li' non si possono eliminare foto.
 
 In rete il server mostra solo quello che serve alle pagine (vedi indirizzi.py): le pagine, le foto ridotte e dati.js.
-Gli originali, i programmi e gli altri dati restano sul computer.
+I programmi e gli altri dati restano sul computer.
 
 I pezzi: config.py (impostazioni), stato.py (dati condivisi ed eventi), indirizzi.py (cosa si puo' vedere in rete),
 foto.py (cosa succede a una foto), gestore.py (le richieste HTTP).

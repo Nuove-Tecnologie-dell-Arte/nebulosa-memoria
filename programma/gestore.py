@@ -3,7 +3,7 @@ import json, queue, re, urllib.parse
 from http.server import SimpleHTTPRequestHandler
 
 import foto
-from config import PROGETTO, PORTA, INDIRIZZO, LOCALI, INOLTRO, MAX_BYTES, ESTENSIONI
+from config import PROGETTO, PORTA, INDIRIZZO, LOCALI, INOLTRO, MAX_BYTES
 from indirizzi import file_per
 from stato import DATI, ascoltatori, annuncia, ip_locale, leggi_arrivi
 
@@ -102,8 +102,6 @@ class Gestore(SimpleHTTPRequestHandler):
     # ---------------- foto in arrivo ----------------
     def do_POST(self):
         p = self.path.split('?')[0]
-        if p == '/api/originale':
-            return self.originale()
         if p == '/api/upload':
             # avviso subito la nebulosa: la foto e' partita dal telefono
             annuncia('inarrivo', {'nome': urllib.parse.unquote(self.headers.get('X-Nome', ''))[:40]})
@@ -131,13 +129,3 @@ class Gestore(SimpleHTTPRequestHandler):
                 return self.json_out({'errore': e.messaggio}, e.codice)
             return self.json_out({'ok': True})
         self.json_out({'errore': 'non trovato'}, 404)
-
-    def originale(self):
-        fid = self.headers.get('X-Id', '')
-        n = int(self.headers.get('Content-Length', '0'))
-        ext = ESTENSIONI.get(self.headers.get('Content-Type', '').split(';')[0].strip().lower())
-        try:
-            byte = foto.conserva_originale(fid, ext, n, self.rfile)
-        except foto.ErroreFoto as e:
-            return self.json_out({'errore': e.messaggio}, e.codice)
-        self.json_out({'ok': True, 'byte': byte})

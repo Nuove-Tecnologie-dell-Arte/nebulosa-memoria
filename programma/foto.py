@@ -1,12 +1,13 @@
-"""Cosa succede a una foto: arriva dal telefono, viene letta, si conserva l'originale, viene eliminata.
+"""Cosa succede a una foto: arriva dal telefono, viene compressa subito e letta, viene eliminata.
+Dell'originale non resta niente: la nebulosa usa solo la versione compressa.
 
 Nessuna di queste funzioni sa di HTTP: se qualcosa non va alzano ErroreFoto, e il gestore lo traduce in una risposta.
 """
-import base64, glob, io, os, re, threading, time
+import base64, io, os, threading, time
 from PIL import Image, ImageOps
 
 import genera_dati, lettore
-from config import FULL, THUMB, ORIGINALI, MAX_ORIGINALE
+from config import FULL, THUMB, LATO_FULL, LATO_THUMB, QUALITA_FULL, QUALITA_THUMB
 from stato import DATI, blocco, leggi_arrivi, scrivi_arrivi, aggiorna, annuncia
 
 
@@ -14,6 +15,18 @@ class ErroreFoto(Exception):
     def __init__(self, messaggio, codice=400):
         super().__init__(messaggio)
         self.messaggio, self.codice = messaggio, codice
+
+
+def salva_full(im, percorso):
+    """La foto ridotta per lo schermo. Ridimensiona, toglie i metadati (GPS compreso) e comprime."""
+    im = im.copy(); im.thumbnail((LATO_FULL, LATO_FULL))
+    im.save(percorso, 'JPEG', quality=QUALITA_FULL, optimize=True, progressive=True)
+    return im
+
+
+def salva_thumb(im, percorso):
+    im = im.copy(); im.thumbnail((LATO_THUMB, LATO_THUMB))
+    im.save(percorso, 'JPEG', quality=QUALITA_THUMB, optimize=True, progressive=True)
 
 
 def accogli(corpo):
@@ -25,15 +38,14 @@ def accogli(corpo):
         raise ErroreFoto('non riesco a leggere questa immagine')
     nome = str(corpo.get('nome', ''))[:40].strip()
     frase = str(corpo.get('frase', ''))[:200].strip()
-    im.thumbnail((1400, 1400))
     with blocco:
         lista = leggi_arrivi()
         num = max([int(a['id'][1:]) for a in lista] + [0]) + 1
         while os.path.exists(os.path.join(FULL, f'u{num:04d}.jpg')):
             num += 1
         fid = f'u{num:04d}'
-        im.save(os.path.join(FULL, fid + '.jpg'), 'JPEG', quality=84)
-        t = im.copy(); t.thumbnail((360, 360)); t.save(os.path.join(THUMB, fid + '.jpg'), 'JPEG', quality=74)
+        im = salva_full(im, os.path.join(FULL, fid + '.jpg'))
+        salva_thumb(im, os.path.join(THUMB, fid + '.jpg'))
         arrivo = {'id': fid, 'nome': nome, 'frase': frase, 'quando': time.strftime('%Y-%m-%d %H:%M:%S')}
         lista.append(arrivo); scrivi_arrivi(lista)
         aggiorna()   # entra subito tra le altre, con un posto provvisorio
@@ -60,46 +72,13 @@ def leggi_in_secondo_piano(fid, jpeg, frase):
     annuncia('letta', {'id': fid, 'dato': DATI['foto'].get(fid)})
 
 
-def conserva_originale(fid, ext, n, flusso):
-    """Il file originale di una foto appena arrivata, intatto: viene solo conservato, la nebulosa usa la versione ridotta.
-    Legge n byte da flusso. Restituisce i byte salvati."""
-    if not re.fullmatch(r'u\d{4,}', fid) or not ext:
-        raise ErroreFoto('richiesta non valida')
-    if n <= 0 or n > MAX_ORIGINALE:
-        raise ErroreFoto('originale troppo grande o vuoto', 413)
-    with blocco:
-        if not any(a['id'] == fid for a in leggi_arrivi()) or glob.glob(os.path.join(ORIGINALI, fid + '.*')):
-            raise ErroreFoto("foto sconosciuta o originale gia' salvato", 409)
-    os.makedirs(ORIGINALI, exist_ok=True)
-    dest = os.path.join(ORIGINALI, f'{fid}.{ext}'); tmp = dest + '.parziale'
-    letti = 0
-    with open(tmp, 'wb') as f:
-        while letti < n:
-            pezzo = flusso.read(min(1 << 20, n - letti))
-            if not pezzo:
-                break
-            f.write(pezzo); letti += len(pezzo)
-    if letti < n:
-        os.remove(tmp)
-        raise ErroreFoto("originale arrivato a meta'")
-    os.replace(tmp, dest)
-    with blocco:
-        lista = leggi_arrivi()
-        for a in lista:
-            if a['id'] == fid:
-                a['originale'] = os.path.basename(dest); a['originale_byte'] = n
-        scrivi_arrivi(lista)
-    print(f'    originale di {fid} salvato ({n / 1024 / 1024:.1f} MB)')
-    return n
-
-
 def elimina(fid):
     with blocco:
         lista = leggi_arrivi(); nuova = [a for a in lista if a['id'] != fid]
         if len(nuova) == len(lista):
             raise ErroreFoto('foto non trovata', 404)
         scrivi_arrivi(nuova)
-        for f in [os.path.join(FULL, fid + '.jpg'), os.path.join(THUMB, fid + '.jpg')] + glob.glob(os.path.join(ORIGINALI, fid + '.*')):
+        for f in (os.path.join(FULL, fid + '.jpg'), os.path.join(THUMB, fid + '.jpg')):
             try:
                 os.remove(f)
             except OSError:
