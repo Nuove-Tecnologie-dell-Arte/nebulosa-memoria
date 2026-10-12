@@ -19,9 +19,14 @@ class Gestore(SimpleHTTPRequestHandler):
     def log_message(self, fmt, *args):
         pass   # silenzio: stampiamo solo gli arrivi
 
+    def send_error(self, code, *a, **k):
+        self.errore = True
+        super().send_error(code, *a, **k)
+
     def end_headers(self):
-        if self.path.split('?')[0].endswith(('.js', '.css', '.html', '.json')):
-            self.send_header('Cache-Control', 'no-store')   # i dati cambiano dopo ogni lettura
+        # i dati cambiano dopo ogni lettura; e un tunnel con cache (Cloudflare) non deve tenersi a mente gli errori
+        if getattr(self, 'errore', False) or self.path.split('?')[0].endswith(('.js', '.css', '.html', '.json')):
+            self.send_header('Cache-Control', 'no-store')
         super().end_headers()
 
     def json_out(self, dati, code=200):
