@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Nebulosa — Memoria collettiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06050a;--ink:#ece6e1;--dim:#8c8590;--amber:#d9a566;--trace:#f08a64;--line:rgba(236,230,225,.12)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Jost',sans-serif;font-weight:300;overflow:hidden}
+button{font:inherit}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab;transition:filter .6s}
+canvas.drag{cursor:grabbing}
+canvas.blur{filter:blur(6px) brightness(.8)}
+.top,.intro,.hintbar,#home{transition:opacity .4s}
+body.ov .top,body.ov .intro,body.ov .hintbar,body.ov #home{opacity:0!important;pointer-events:none!important}
+header.top{position:fixed;top:0;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);background:linear-gradient(#06050a,rgba(6,5,10,.5));z-index:5}
+.brand small{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.brand b{font-weight:400;letter-spacing:.22em;font-size:15px;white-space:nowrap}
+.status{display:flex;align-items:center;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;white-space:nowrap}
+.status > *+*{margin-left:14px;padding-left:14px;border-left:1px solid var(--line)}
+.intro{position:fixed;left:40px;top:92px;width:220px;z-index:4;pointer-events:none;transition:opacity .5s}
+.intro.hide{opacity:0}
+.intro h1{font:300 22px/1.2 'Jost',sans-serif}
+.intro h1 em{font-family:'Playfair Display',serif;color:var(--trace);font-size:24px}
+.intro p{margin-top:14px;font-size:11px;line-height:1.7;color:var(--dim)}
+.hintbar{position:fixed;right:28px;top:84px;z-index:4;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;text-align:right;line-height:1.9;pointer-events:none}
+#qrbtn{background:none;border:0;border-left:1px solid var(--line);color:#aaa1f2;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#qrbtn:hover{color:var(--ink)}
+#cronbtn{background:none;border:0;border-left:1px solid var(--line);color:#f0c88c;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#cronbtn:hover{color:var(--ink)}
+#cronN{font-style:normal;color:var(--ink);margin-left:4px}
+#liveDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#5a5560;margin-right:8px;vertical-align:1px}
+#liveDot.on{background:#7fd38a;box-shadow:0 0 8px #7fd38a}
+#cron{position:fixed;top:76px;right:24px;bottom:110px;z-index:9;width:350px;background:rgba(10,9,13,.97);border:1px solid rgba(240,200,140,.4);display:none;flex-direction:column;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#cron.open{display:flex}
+#cron .hd{padding:16px 18px 12px;border-bottom:1px solid var(--line);position:relative}
+#cron h3{font:italic 400 20px 'Playfair Display',serif;color:#f0c88c}
+#cron .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:6px;line-height:1.7}
+#cronx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
+#cronL{overflow:auto;padding:4px 10px 14px;flex:1}
+#cronL .vuota{font-size:12px;line-height:1.6;color:#c9c1bb;padding:16px 8px}
+.ci{display:flex;gap:12px;padding:12px 8px;border-bottom:1px solid rgba(236,230,225,.07);cursor:pointer}
+.ci:hover{background:rgba(240,200,140,.06)}
+.ci img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;background:#222}
+.ci .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.ci .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
+.ci .w{font-size:11px;line-height:1.45;color:#d6cfc9}
+.ci .att{color:#7fd38a}
+.ci button,#cronAll{margin-top:6px;background:none;border:1px solid rgba(240,138,138,.45);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;cursor:pointer}
+#cronAll{margin-top:10px}
+#cron.open ~ #toasts{right:390px}
+body.ov #cron{opacity:0;pointer-events:none}
+#inarr{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:9;background:rgba(10,9,13,.9);border:1px solid rgba(127,211,138,.5);color:#a9e6b1;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;display:none;pointer-events:none}
+#inarr.on{display:block;animation:pulsa 1.4s ease-in-out infinite}
+@keyframes pulsa{50%{opacity:.55}}
+#qr{position:fixed;top:76px;right:24px;z-index:9;width:280px;padding:18px;background:rgba(10,9,13,.97);border:1px solid rgba(170,161,242,.45);display:none;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#qr.open{display:block}
+#qr h3{font:italic 400 20px 'Playfair Display',serif;color:#aaa1f2}
+#qr p{font-size:12px;line-height:1.55;color:#c9c1bb;margin-top:8px}
+#qr .code{margin:14px auto 10px;width:200px;height:200px;background:#fff;padding:10px;display:flex;align-items:center;justify-content:center}
+#qr .code img,#qr .code canvas{width:180px!important;height:180px!important}
+#qr .url{font:400 13px 'JetBrains Mono',monospace;color:var(--ink);word-break:break-all;text-align:center;user-select:all}
+#qr .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:10px;line-height:1.7}
+#qrx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
+#toasts{position:fixed;right:24px;top:150px;z-index:7;width:300px;display:grid;gap:10px;pointer-events:none}
+.toast{pointer-events:auto;display:flex;gap:12px;padding:10px 12px;background:rgba(10,9,13,.94);border:1px solid rgba(240,200,140,.45);box-shadow:0 10px 40px rgba(0,0,0,.6);cursor:pointer;animation:tin .5s ease-out;transition:opacity .6s}
+.toast.out{opacity:0}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.toast img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none}
+.toast .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.toast .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
+.toast .w{font-size:11px;line-height:1.45;color:#d6cfc9}
+body.ov #toasts,body.ov #qr{opacity:0;pointer-events:none}
+.why{margin:12px auto 0;max-width:560px;padding:10px 14px;border:1px solid rgba(240,200,140,.35);background:rgba(10,9,13,.7);text-align:left;font-size:13px;line-height:1.5;color:#e2dbd5}
+.why b{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#f0c88c;text-transform:uppercase;margin-bottom:3px}
+.why button{margin-top:8px;background:none;border:1px solid rgba(240,138,138,.5);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;cursor:pointer}
+#arrivo{position:fixed;left:50%;z-index:8;width:min(560px,90vw);transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .5s;padding:14px 18px 16px;background:rgba(6,5,10,.86);border:1px solid rgba(240,200,140,.25);box-shadow:0 18px 60px rgba(0,0,0,.6)}
+#arrivo.on{opacity:1}
+#arrivo .k{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#f0c88c;text-transform:uppercase;text-shadow:0 2px 12px #000}
+#arrivo .e{font:300 13px 'Jost',sans-serif;color:#c9c1bb;margin-top:10px;text-shadow:0 2px 12px #000}
+#arrivo .t{font:italic 400 40px/1.1 'Playfair Display',serif;margin-top:2px;text-shadow:0 2px 24px #000}
+#arrivo .w{font:300 14px/1.5 'Jost',sans-serif;color:#e6dfd9;margin:10px auto 0;max-width:480px}
+#arrivo .q{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#8c8590;text-transform:uppercase;margin-top:8px}
+#home{position:fixed;right:28px;bottom:44px;z-index:5;background:rgba(10,9,13,.8);border:1px solid var(--line);color:var(--dim);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:0 14px;height:46px;cursor:pointer}
+#home:hover{color:var(--amber)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:11px;padding:4px 10px;border:1px solid var(--line);cursor:pointer;border-radius:20px;color:var(--ink);background:rgba(10,9,13,.5)}
+.chip:hover,.chip.on{border-color:currentColor}
+.chip small{font:300 9px 'JetBrains Mono',monospace;color:var(--dim);margin-left:6px}
+.chip.theme{font-family:'Playfair Display',serif;font-style:italic;font-size:12px}
+#pv{position:fixed;z-index:8;pointer-events:none;background:rgba(9,8,12,.94);border:1px solid rgba(236,230,225,.18);padding:9px 12px;display:none;box-shadow:0 8px 40px rgba(0,0,0,.6);max-width:300px}
+#pv .t{font:italic 400 15px/1.3 'Playfair Display',serif}
+#pv .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:4px;line-height:1.7}
+#pv q{display:block;font:italic 400 13px/1.4 'Playfair Display',serif;color:var(--amber);margin-top:6px;quotes:none}
+#pv .h{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--amber);text-transform:uppercase;margin-top:7px}
+.fly{position:fixed;z-index:13;border-radius:50%;background:#151219 center/cover no-repeat;pointer-events:none;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 30px 90px rgba(0,0,0,.7);transition:left .65s cubic-bezier(.2,.8,.2,1),top .65s cubic-bezier(.2,.8,.2,1),width .65s cubic-bezier(.2,.8,.2,1),height .65s cubic-bezier(.2,.8,.2,1)}
+/* sfoglia */
+#sf{position:fixed;inset:0;z-index:12;background:radial-gradient(ellipse at center,rgba(6,5,9,.55),rgba(6,5,9,.2) 70%);display:none;flex-direction:column}
+#sf.open{display:flex}
+#sf .ui{transition:opacity .45s .25s;opacity:0}
+#sf.shown .ui{opacity:1}
+.sfh{display:flex;align-items:flex-start;gap:24px;padding:22px 80px 8px 32px;flex:none}
+.sfh .l{flex:1;min-width:0}
+#sfk{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#b3abb4;text-transform:uppercase}
+#sft{font:italic 400 30px/1.15 'Playfair Display',serif;margin-top:6px;text-shadow:0 2px 20px rgba(0,0,0,.8)}
+#sfd{font:italic 400 14px/1.5 'Playfair Display',serif;opacity:.88;margin-top:6px;max-width:760px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+#sfp{margin-top:10px;max-height:62px;overflow:auto}
+#sfc{font:300 12px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3abb4;white-space:nowrap;padding-top:4px}
+#sfx{position:absolute;top:16px;right:24px;background:none;border:0;color:#b3abb4;font-size:30px;cursor:pointer;z-index:2}
+#sfx:hover{color:var(--ink)}
+#sftrack{--D:min(46vh,58vw);flex:1;min-height:0;display:flex;align-items:center;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;padding-inline:calc(50% - var(--D) / 2 - 40px)}
+#sftrack::-webkit-scrollbar{display:none}
+.slide{flex:0 0 auto;width:calc(var(--D) + 80px);scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;--k:1}
+.disc{width:var(--D);height:var(--D);border-radius:50%;overflow:hidden;background:#151219 center/cover no-repeat;transform:scale(calc(1 - var(--k) * .3));opacity:calc(1 - var(--k) * .5);transition:transform .15s,opacity .15s;cursor:pointer;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 24px 90px rgba(0,0,0,.7)}
+.disc img{width:100%;height:100%;object-fit:cover;display:block}
+.cap{margin-top:16px;width:min(calc(var(--D) + 260px),92vw);text-align:center;opacity:calc(1 - var(--k) * 2.2);transition:opacity .15s;min-height:90px}
+.cap .lettura{display:block;font:italic 400 16px/1.5 'Playfair Display',serif;color:var(--ink);margin-bottom:12px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+.cap .frase{display:block;font:300 13px/1.5 'Jost',sans-serif;color:var(--amber);margin-bottom:10px}
+.cap .chips{justify-content:center}
+.sfnav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:rgba(10,9,13,.6);border:1px solid var(--line);color:var(--ink);font-size:26px;cursor:pointer;z-index:2}
+.sfnav:hover{border-color:var(--amber);color:var(--amber)}
+.sfnav:disabled{opacity:.2;cursor:default}
+#sfprev{left:24px}#sfnext{right:24px}
+#sfstrip{flex:none;display:flex;gap:8px;overflow-x:auto;padding:12px 32px 22px;scrollbar-width:thin;scrollbar-color:#333 transparent}
+#sfstrip img{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover;opacity:.45;cursor:pointer;transition:opacity .2s,transform .2s;outline:2px solid transparent;outline-offset:2px}
+#sfstrip img:hover{opacity:.85}
+#sfstrip img.on{opacity:1;outline-color:var(--amber);transform:scale(1.08)}
+@media(max-width:900px){.intro,.hintbar{display:none}.status > span{display:none}.status > button{border-left:0}#home{top:76px;bottom:auto;right:12px;height:34px}.sfh{padding:18px 56px 8px 18px}#sft{font-size:22px}#sfd{display:none}#sftrack{--D:min(74vw,40vh)}.sfnav{display:none}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<header class="top">
+  <div class="brand"><small>Memoria collettiva</small><b>LA NEBULOSA</b></div>
+  <div class="status"><span id="luogo"></span><span id="st"></span><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
+</header>
+<div class="intro" id="intro">
+  <h1>Una memoria<br><em>senza nomi.</em></h1>
+  <p id="introp"></p>
+</div>
+<div class="hintbar" id="hintbar">Passa sopra una foto: si accendono<br>quelle che le somigliano nel senso<br>Clicca per aprirla · rotella per avvicinarti</div>
+<button id="home">↺ Vista iniziale</button>
+<div id="pv"></div>
+<div id="qr"><button id="qrx" aria-label="Chiudi">×</button><h3>Carica dal telefono</h3><p>Inquadra il codice con la fotocamera del telefono, oppure scrivi l'indirizzo nel browser. Il telefono deve essere sulla stessa rete Wi-Fi di questo computer.</p><div class="code" id="qrcode"></div><div class="url" id="qrurl">…</div><div class="meta" id="qrmeta"></div></div>
+<div id="cron"><div class="hd"><button id="cronx" aria-label="Chiudi">×</button><h3>Cronologia</h3><div class="meta" id="cronC"></div></div><div id="cronL"></div></div>
+<div id="toasts"></div>
+<div id="inarr"></div>
+<div id="arrivo"><div class="k" id="arrK"></div><div class="w" id="arrW"></div><div class="q" id="arrQ"></div></div>
+<div id="sf" role="dialog" aria-label="Sfoglia le foto">
+  <button id="sfx" class="ui" aria-label="Chiudi">×</button>
+  <div class="sfh ui"><div class="l"><div id="sfk"></div><div id="sft"></div><div id="sfd"></div><div class="chips" id="sfp"></div></div><div id="sfc"></div></div>
+  <div id="sftrack"></div>
+  <button class="sfnav ui" id="sfprev" aria-label="Foto precedente">‹</button>
+  <button class="sfnav ui" id="sfnext" aria-label="Foto successiva">›</button>
+  <div id="sfstrip" class="ui"></div>
+</div>
+
+<script src="/dati.js"></script>
+<script>
+(() => {
+const D = window.NEBULOSA;
+if (!D) {
+  const m = document.createElement('div');
+  m.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;max-width:440px;padding:22px 24px;background:#131116;border:1px solid rgba(240,138,100,.5);color:#ece6e1;font:300 14px/1.6 Jost,sans-serif';
+  m.innerHTML = '<b style="font-weight:400;color:#f08a64">Mancano i dati della nebulosa.</b><br>Apri la nebulosa con <code>Apri la nebulosa.command</code>, oppure lancia <code>python3 programma/genera_dati.py</code>.';
+  document.body.appendChild(m);
+  return;
+}
+const $ = id => document.getElementById(id);
+const cv = $('c'), ctx = cv.getContext('2d');
+let W, H, DPR = Math.min(devicePixelRatio || 1, 2);
+const thumbSrc = id => '/foto/thumb/' + id + '.jpg';
+const fullSrc = id => '/foto/full/' + id + '.jpg';
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const TAU = Math.PI * 2;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let seed = 20261009; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+// ---------------- dati: nessun nome, nessuna categoria ----------------
+// ogni foto ha un posto (x, y nel cerchio), un colore e un modo di muoversi, tutti nati da quello che racconta
+const RC = D.rc || .33 * Math.sqrt(Math.PI / Math.max(1, D.tutte.length));   // raggio di una foto, nel cerchio di raggio 1
+const ATTESA = 'hsl(30,6%,58%)';
+const photos = [], photoById = {};
+function makePhoto(id) {
+  const f = D.foto[id] || null;
+  const p = { id, f, ph: rnd() * TAU, dir: rnd() * TAU };
+  if (f) {
+    p.tx = f.x; p.ty = f.y; p.sz = f.s; p.mv = f.mv; p.col = `hsl(${f.h},58%,${f.l}%)`; p.hue = f.h; p.lum = f.l;
+    p.vic = new Map(f.vicine);
+  } else {
+    p.sz = .9; p.mv = [0, .7, 0, 0]; p.col = ATTESA; p.vic = new Map();
+    placeAlone(p);   // non ancora letta: aspetta ai margini, da sola
+  }
+  const a = rnd() * TAU, r = rnd() * .12;     // all'inizio sono tutte raccolte al centro, poi si separano
+  p.X = Math.cos(a) * r; p.Y = Math.sin(a) * r;
+  photos.push(p); photoById[id] = p;
+  return p;
+}
+function placeAlone(p) {
+  for (let k = 0; k < 400; k++) {
+    const a = rnd() * TAU, r = .86 + rnd() * (.97 - .86 - RC * p.sz);
+    const x = Math.cos(a) * r, y = Math.sin(a) * r;
+    if (photos.every(q => q === p || q.tx == null || Math.hypot(q.tx - x, q.ty - y) > RC * (q.sz + p.sz) * 1.05)) { p.tx = x; p.ty = y; return; }
+  }
+  const a = rnd() * TAU; p.tx = Math.cos(a) * .95; p.ty = Math.sin(a) * .95;
+}
+D.tutte.forEach(id => { if (D.foto[id]) makePhoto(id); });
+D.tutte.forEach(id => { if (!D.foto[id]) makePhoto(id); });
+
+$('luogo').textContent = D.luogo ? '● ' + D.luogo : '';
+function counts() {
+  const n = photos.length, att = photos.filter(p => !p.f).length;
+  $('st').textContent = n + ' foto';
+  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Nessuna ha un nome o una categoria. Ognuna è stata guardata a fondo e le foto che raccontano la stessa cosa si sono avvicinate da sole, prendendo colori vicini. Ognuna si muove secondo quello che porta dentro: chi è piena di vita vibra, chi è vuota quasi si ferma, chi è ferita trema, chi è di passaggio scivola.` +
+    (att ? ` Le ${att} foto grigie ai margini aspettano ancora di essere lette.` : '');
+  $('qrmeta').textContent = arrivate + ' foto arrivate dai telefoni';
+}
+
+// ---------------- miniature rotonde con il loro alone, gia' pronte ----------------
+const SPR = 72, HALO = 1.55;
+function loadSprite(p) {
+  const im = new Image(); p.im = im;
+  im.onload = () => {
+    const S = Math.round(SPR * HALO), c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d');
+    const g = x.createRadialGradient(S / 2, S / 2, SPR * .38, S / 2, S / 2, S / 2);
+    g.addColorStop(0, p.col.replace('hsl', 'hsla').replace(')', ',.75)')); g.addColorStop(1, p.col.replace('hsl', 'hsla').replace(')', ',0)'));
+    x.fillStyle = g; x.beginPath(); x.arc(S / 2, S / 2, S / 2, 0, TAU); x.fill();
+    const m = Math.min(im.naturalWidth, im.naturalHeight);
+    x.save(); x.beginPath(); x.arc(S / 2, S / 2, SPR / 2, 0, TAU); x.clip();
+    x.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, (S - SPR) / 2, (S - SPR) / 2, SPR, SPR); x.restore();
+    x.strokeStyle = p.col; x.lineWidth = 2.5; x.beginPath(); x.arc(S / 2, S / 2, SPR / 2 - 1, 0, TAU); x.stroke();
+    p.spr = c;
+  };
+  im.src = thumbSrc(p.id);
+}
+photos.forEach(loadSprite);
+
+// ---------------- il cerchio ----------------
+let EW, Dp, CX, CY;
+function layout() {
+  EW = Math.max(140, Math.min(W * .34, (W - 500) / 2, (H - 170) / 2));
+  CX = W / 2; CY = 64 + (H - 64 - 70) / 2;
+  Dp = 2 * RC * EW;     // diametro medio di una foto sullo schermo
+}
+function resize() { W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; layout(); }
+addEventListener('resize', resize); resize();
+const view = { s: 1, x: 0, y: 0 }, viewT = { s: 1, x: 0, y: 0 };
+const toS = (x, y) => [CX + view.x + x * EW * view.s, CY + view.y + y * EW * view.s];
+
+// ---------------- interazione ----------------
+let mouse = { x: -1, y: -1 }, hover = null, drag = null;
+cv.addEventListener('wheel', e => {
+  e.preventDefault();
+  const s0 = viewT.s, s1 = clamp(s0 * Math.exp(-e.deltaY * .0013), 1, 6);
+  const wx = (e.clientX - CX - viewT.x) / s0, wy = (e.clientY - CY - viewT.y) / s0;
+  viewT.s = s1; viewT.x = e.clientX - CX - wx * s1; viewT.y = e.clientY - CY - wy * s1;
+  if (s1 === 1) { viewT.x = 0; viewT.y = 0; }
+}, { passive: false });
+cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, vx: viewT.x, vy: viewT.y, moved: 0 }; try { cv.setPointerCapture(e.pointerId); } catch (_) {} });
+cv.addEventListener('pointermove', e => {
+  mouse.x = e.clientX; mouse.y = e.clientY;
+  if (drag) { const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.moved = Math.max(drag.moved, Math.hypot(dx, dy)); if (drag.moved > 5 && viewT.s > 1) { cv.classList.add('drag'); viewT.x = drag.vx + dx; viewT.y = drag.vy + dy; view.x = viewT.x; view.y = viewT.y; } }
+});
+cv.addEventListener('pointerleave', () => { mouse.x = mouse.y = -1; });
+document.addEventListener('pointermove', e => { if (e.target !== cv && !drag) mouse.x = mouse.y = -1; });
+cv.addEventListener('pointerup', () => {
+  cv.classList.remove('drag');
+  if (drag && drag.moved < 5 && hover) openPhoto(hover, { x: hover.sx, y: hover.sy, r: Math.max(hover.sd / 2, 10) });
+  drag = null;
+});
+$('home').onclick = () => { viewT.s = 1; viewT.x = 0; viewT.y = 0; };
+
+// ---------------- il movimento: ogni foto si muove secondo quello che racconta ----------------
+// mv = [vita, quiete, tremore, scivolare]
+function motion(p, t) {
+  const [vi, qu, tr, sc] = p.mv, k = RC;
+  const sp = Math.max(.08, .3 + 1.1 * vi - .22 * qu);                      // velocita': la vita accelera, la quiete rallenta
+  const a = k * (.12 + .32 * vi + .05 * sc) * (1 - .45 * qu);              // ampiezza del galleggiare
+  let x = Math.sin(t * sp + p.ph) * a, y = Math.cos(t * sp * .83 + p.ph * 1.3) * a;
+  if (tr) { x += Math.sin(t * 17 + p.ph * 5) * k * .07 * tr; y += Math.cos(t * 21 + p.ph * 3) * k * .07 * tr; }   // tremore
+  if (sc) { const s = Math.sin(t * (.22 + .2 * sc) + p.ph) * k * .9 * sc; x += Math.cos(p.dir) * s; y += Math.sin(p.dir) * s; }   // scivolare
+  const pulse = 1 + .05 * vi * Math.sin(t * 2.4 + p.ph);                    // chi e' pieno di vita respira
+  return [x, y, pulse];
+}
+
+// ---------------- disegno ----------------
+const stars = Array.from({ length: 220 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.2 + .2, a: Math.random() * .45 + .06 }));
+let last = performance.now(), phase = 0, born = performance.now();
+const wave = th => Math.sin(5 * th - phase) + .3 * Math.sin(10 * th + phase * 1.7);
+const overlayOpen = () => $('sf').classList.contains('open');
+function draw(now) {
+  const dt = Math.min((now - last) / 1000, .1); last = now;
+  phase += dt * (reduced ? .2 : .7);
+  view.s += (viewT.s - view.s) * .15; view.x += (viewT.x - view.x) * .15; view.y += (viewT.y - view.y) * .15;
+  const t = reduced ? 0 : now / 1000, s = view.s;
+
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = '#06050a'; ctx.fillRect(0, 0, W, H);
+  const [cx, cy] = toS(0, 0);
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * .7);
+  g.addColorStop(0, 'rgba(40,24,34,.45)'); g.addColorStop(.6, 'rgba(14,11,24,.3)'); g.addColorStop(1, 'rgba(6,5,10,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  for (const st of stars) { ctx.fillStyle = `rgba(236,230,225,${st.a})`; ctx.fillRect(st.x * W, st.y * H, st.r, st.r); }
+
+  if (!drag && !overlayOpen()) pick(); else if (overlayOpen()) hover = null;
+
+  // le foto si raccolgono nel loro posto (all'apertura nascono dal centro e si separano piano)
+  const k = reduced ? 1 : (now - born < 9000 ? .018 : .03);
+  for (const p of photos) { if (p.hold) continue; p.X += (p.tx - p.X) * k; p.Y += (p.ty - p.Y) * k; }
+
+  // i fili: dalla foto sotto il mouse verso quelle che le somigliano
+  if (hover) {
+    for (const [id, sim] of hover.vic) {
+      const q = photoById[id]; if (!q || q.sx == null) continue;
+      ctx.strokeStyle = q.col.replace('hsl', 'hsla').replace(')', `,${clamp(sim * 1.4, .15, .7)})`); ctx.lineWidth = .6 + 2 * sim;
+      ctx.beginPath(); ctx.moveTo(hover.sx, hover.sy); ctx.lineTo(q.sx, q.sy); ctx.stroke();
+    }
+  }
+  for (const p of photos) {
+    if (p.hold) continue;
+    const [mx, my, pulse] = motion(p, t);
+    const [x, y] = toS(p.X + mx, p.Y + my), d = Dp * p.sz * s * pulse;
+    p.sx = x; p.sy = y; p.sd = d;
+    if (x < -d || x > W + d || y < -d || y > H + d) continue;
+    ctx.globalAlpha = hover ? (p === hover ? 1 : hover.vic.has(p.id) ? .5 + .5 * Math.min(1, hover.vic.get(p.id) * 1.6) : .1) : 1;
+    const dh = d * HALO;
+    if (p.spr) ctx.drawImage(p.spr, x - dh / 2, y - dh / 2, dh, dh);
+    else { ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(x, y, d / 2, 0, TAU); ctx.fill(); }
+    if (p.nuova && now < p.nuova) { const a = (p.nuova - now) / 9000; ctx.globalAlpha = 1; ctx.strokeStyle = `rgba(240,200,140,${.4 + .6 * a})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, d / 2 + 3 + 3 * Math.sin(now / 160), 0, TAU); ctx.stroke(); }
+  }
+  ctx.globalAlpha = 1;
+
+  if (inViaggio > 0 && !arrivo) {                          // una foto e' partita da un telefono: il centro pulsa, in attesa
+    const R0 = EW * .2 * s;
+    for (let k2 = 0; k2 < 3; k2++) { const u = ((now / 1000 * .6 + k2 / 3) % 1); ctx.strokeStyle = `rgba(169,230,177,${.5 * (1 - u)})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, R0 * (.25 + .75 * u), 0, TAU); ctx.stroke(); }
+  }
+
+  // la linea dell'onda corre lungo il bordo del cerchio
+  for (let L = 0; L < 3; L++) {
+    ctx.beginPath();
+    for (let k2 = 0; k2 <= 360; k2++) {
+      const th = k2 / 360 * TAU - Math.PI / 2;
+      const r = EW * 1.04 + Dp + L * 7 + EW * .02 * wave(th) * (1 - L * .2);
+      const x = cx + Math.cos(th) * r * s, y = cy + Math.sin(th) * r * s;
+      k2 ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    const a = .2 * (1 - L * .3);
+    ctx.strokeStyle = L === 0 ? `rgba(240,150,110,${a + .15})` : `rgba(217,165,102,${a})`;
+    ctx.lineWidth = L === 0 ? 1.6 : 1;
+    if (L === 0) { ctx.shadowColor = 'rgba(240,138,100,.8)'; ctx.shadowBlur = 8; }
+    ctx.stroke(); ctx.shadowBlur = 0;
+  }
+
+  drawArrival(now);
+  // la foto sotto il mouse, ingrandita
+  if (hover) {
+    const big = Math.max(84, hover.sd * 3.4), x = hover.sx, y = hover.sy, im = hover.im;
+    ctx.save(); ctx.shadowColor = hover.col; ctx.shadowBlur = 30; ctx.fillStyle = '#151219'; ctx.beginPath(); ctx.arc(x, y, big / 2, 0, TAU); ctx.fill(); ctx.restore();
+    if (im.complete && im.naturalWidth) { const m = Math.min(im.naturalWidth, im.naturalHeight); ctx.save(); ctx.beginPath(); ctx.arc(x, y, big / 2, 0, TAU); ctx.clip(); ctx.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, x - big / 2, y - big / 2, big, big); ctx.restore(); }
+    ctx.strokeStyle = hover.col; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, big / 2, 0, TAU); ctx.stroke();
+  }
+
+  $('intro').classList.toggle('hide', view.s > 1.25 || overlayOpen());
+  cv.style.cursor = hover ? 'pointer' : (drag && drag.moved > 5 ? 'grabbing' : (view.s > 1 ? 'grab' : 'default'));
+  updatePreview();
+  requestAnimationFrame(draw);
+}
+function pick() {
+  hover = null; if (mouse.x < 0) return;
+  let bd = 1e9;
+  for (const p of photos) { if (p.hold || p.sd == null) continue; const d = Math.hypot(mouse.x - p.sx, mouse.y - p.sy); if (d < Math.max(p.sd * .6, 6) && d < bd) { bd = d; hover = p; } }
+}
+
+// ---------------- anteprima: solo per le foto arrivate dai telefoni (chi l'ha mandata, la sua frase) ----------------
+let pvKey = null;
+function updatePreview() {
+  const pv = $('pv'), a = hover && cron.get(hover.id);
+  const key = a ? hover.id : null;
+  if (!key || (drag && drag.moved > 5) || overlayOpen()) { pv.style.display = 'none'; pvKey = null; return; }
+  if (key !== pvKey) {
+    pvKey = key;
+    pv.innerHTML = `<div class="k" style="color:#f0c88c">dal telefono${a.nome ? ' di ' + esc(a.nome) : ''} · ${quando(a.quando)}</div>${a.frase ? `<q>«${esc(a.frase)}»</q>` : ''}${hover.f ? '' : '<div class="k">non ancora letta</div>'}`;
+  }
+  pv.style.display = 'block';
+  const off = Math.max(44, hover.sd * 1.8), w = pv.offsetWidth, h = pv.offsetHeight;
+  pv.style.left = clamp(mouse.x + off, 8, W - w - 8) + 'px'; pv.style.top = clamp(mouse.y + off * .4, 70, H - h - 8) + 'px';
+}
+
+// ---------------- aprire una foto: lei, e poi le foto che le somigliano, dalla piu' vicina ----------------
+function vicineDi(p) { return [...p.vic.entries()].filter(([id]) => photoById[id]).sort((a, b) => b[1] - a[1]).map(e => e[0]); }
+function openPhoto(p, from = null) { openSf([p.id, ...vicineDi(p)], 0, from); }
+
+const sf = { ids: [], cur: 0, slides: [], pos: [] };
+const track = $('sftrack'), strip = $('sfstrip');
+function whyHTML(id, a) {
+  const qui = ['localhost', '127.0.0.1'].includes(location.hostname);
+  return `<div class="why"><b>Arrivata dal telefono${a.nome ? ' · foto di ' + esc(a.nome) : ''} · ${quando(a.quando)}</b>${a.frase ? '«' + esc(a.frase) + '»' : '<span style="color:#8c8590">nessuna frase</span>'}${photoById[id] && photoById[id].f ? '' : '<br><span style="color:#8c8590;font-size:11px">Non ancora letta: per ora aspetta ai margini.</span>'}${qui ? `<br><button data-elimina="${id}">Rimuovi questa foto</button>` : ''}</div>`;
+}
+function openSf(ids, start = 0, from = null) {
+  sf.ids = ids; sf.cur = -1;
+  $('sfk').textContent = ids.length > 1 ? 'una foto, e le ' + (ids.length - 1) + ' che le somigliano di più' : 'una foto';
+  $('sft').textContent = ''; $('sfd').textContent = ''; $('sfp').innerHTML = '';
+  track.innerHTML = ids.map((id, i) => {
+    const p = photoById[id], a = cron.get(id), col = p ? p.col : ATTESA;
+    return `<div class="slide" data-i="${i}"><div class="disc" style="background-image:url(${thumbSrc(id)});box-shadow:0 0 0 2px ${col},0 0 70px ${col.replace('hsl', 'hsla').replace(')', ',.35)')},0 24px 90px rgba(0,0,0,.7)"><img loading="lazy" data-full="${fullSrc(id)}" src="${thumbSrc(id)}" alt=""></div>` +
+      `<div class="cap">${p && p.f ? `<span class="lettura">${esc(p.f.lettura)}</span>` : ''}${i > 0 && p && p.vic.size ? `<button class="chip" data-centra="${id}" style="color:${col}">parti da questa →</button>` : ''}${a ? whyHTML(id, a) : ''}</div></div>`;
+  }).join('');
+  strip.innerHTML = ids.map((id, i) => `<img loading="lazy" data-go="${i}" src="${thumbSrc(id)}" alt="" style="box-shadow:0 0 0 2px ${photoById[id] ? photoById[id].col : ATTESA}">`).join('');
+  strip.style.display = ids.length > 1 ? '' : 'none';
+  sf.slides = [...track.children];
+  const wasOpen = $('sf').classList.contains('open');
+  $('sf').classList.add('open'); cv.classList.add('blur'); document.body.classList.add('ov'); $('pv').style.display = 'none';
+  setTimeout(() => {
+    measure(); jump(start, false); sfRaf = 0; onScroll();
+    const disc = sf.slides[start] && sf.slides[start].querySelector('.disc');
+    if (from && disc && !reduced && !wasOpen) {
+      const b = disc.getBoundingClientRect();
+      const fly = document.createElement('div'); fly.className = 'fly';
+      fly.style.cssText = `left:${from.x - from.r}px;top:${from.y - from.r}px;width:${2 * from.r}px;height:${2 * from.r}px;background-image:url(${fullSrc(ids[start])}),url(${thumbSrc(ids[start])})`;
+      document.body.appendChild(fly); disc.style.visibility = 'hidden';
+      fly.getBoundingClientRect();
+      Object.assign(fly.style, { left: b.left + 'px', top: b.top + 'px', width: b.width + 'px', height: b.height + 'px' });
+      setTimeout(() => { disc.style.visibility = ''; fly.remove(); }, 680);
+    }
+    $('sf').classList.add('shown');
+  }, 30);
+}
+function measure() { sf.pos = sf.slides.map(s => s.offsetLeft + s.offsetWidth / 2); }
+function jump(i, smooth = true) {
+  i = clamp(i, 0, sf.ids.length - 1); const s = sf.slides[i]; if (!s) return;
+  track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: smooth && !reduced ? 'smooth' : 'auto' });
+}
+let sfRaf = 0;
+function onScroll() {
+  if (sfRaf) return;
+  sfRaf = requestAnimationFrame(() => {
+    sfRaf = 0; if (!sf.slides.length) return;
+    const c = track.scrollLeft + track.clientWidth / 2, w = sf.slides[0].offsetWidth;
+    let best = 0, bd = 1e9;
+    sf.pos.forEach((p, i) => { const d = Math.abs(p - c) / w; if (d < 2.5) sf.slides[i].style.setProperty('--k', Math.min(d, 1.5).toFixed(3)); if (d < bd) { bd = d; best = i; } });
+    setCur(best);
+  });
+}
+function setCur(i) {
+  if (i === sf.cur) return;
+  const prev = sf.cur; sf.cur = i;
+  if (prev >= 0 && sf.slides[prev]) sf.slides[prev].style.setProperty('--k', 1);
+  $('sfc').textContent = (i + 1) + ' / ' + sf.ids.length;
+  $('sfprev').disabled = i === 0; $('sfnext').disabled = i === sf.ids.length - 1;
+  for (let k = i - 2; k <= i + 2; k++) { const s = sf.slides[k]; if (!s) continue; const im = s.querySelector('img'); if (im.dataset.full) { im.src = im.dataset.full; delete im.dataset.full; } }
+  [...strip.children].forEach((el, k) => el.classList.toggle('on', k === i));
+  const el = strip.children[i]; if (el) strip.scrollTo({ left: el.offsetLeft - strip.clientWidth / 2 + el.offsetWidth / 2, behavior: reduced ? 'auto' : 'smooth' });
+}
+track.addEventListener('scroll', onScroll, { passive: true });
+let wheelT = 0;
+track.addEventListener('wheel', e => {
+  if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+  e.preventDefault();
+  const t = performance.now(); if (t - wheelT < 380 || Math.abs(e.deltaY) < 4) return;
+  wheelT = t; jump(sf.cur + Math.sign(e.deltaY));
+}, { passive: false });
+track.addEventListener('click', e => { const d = e.target.closest('.disc'); if (d) { const i = +d.parentNode.dataset.i; if (i !== sf.cur) jump(i); return; } if (e.target === track) closeSf(); });
+strip.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) jump(+g.dataset.go); });
+$('sfprev').onclick = () => jump(sf.cur - 1);
+$('sfnext').onclick = () => jump(sf.cur + 1);
+function closeSf() { $('sf').classList.remove('open', 'shown'); track.innerHTML = ''; strip.innerHTML = ''; sf.slides = []; cv.classList.remove('blur'); document.body.classList.remove('ov'); }
+$('sfx').onclick = closeSf;
+addEventListener('resize', () => { if ($('sf').classList.contains('open')) { measure(); jump(sf.cur, false); } });
+document.addEventListener('click', e => { const c = e.target.closest('[data-centra]'); if (c) { const p = photoById[c.dataset.centra]; if (p) openSf([p.id, ...vicineDi(p)], 0); } });
+addEventListener('keydown', e => {
+  const sfOpen = $('sf').classList.contains('open');
+  if (sfOpen && e.key === 'ArrowRight') { e.preventDefault(); jump(sf.cur + 1); return; }
+  if (sfOpen && e.key === 'ArrowLeft') { e.preventDefault(); jump(sf.cur - 1); return; }
+  if (e.key !== 'Escape') return;
+  if (sfOpen) closeSf(); else $('home').click();
+});
+
+// ---------------- foto dai telefoni, in tempo reale ----------------
+const LIVE = location.protocol.startsWith('http');
+const QUI = ['localhost', '127.0.0.1'].includes(location.hostname);
+const cron = new Map();   // le foto arrivate dai telefoni, in ordine di arrivo
+let online = false, arrivate = 0;
+const arrQueue = [];
+let arrivo = null;
+function addArrival(a, animate) {
+  if (photoById[a.id] || arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id)) return;
+  if (animate) { arrQueue.push(a); return; }   // aspetta il suo turno: entrano una alla volta
+  insertPhoto(a);
+}
+function insertPhoto(a) {
+  const p = makePhoto(a.id);
+  p.X = p.tx; p.Y = p.ty;
+  loadSprite(p);
+  counts();
+  return p;
+}
+// tre momenti: si materializza al centro · vaga intorno al cerchio · si posa. Con altre foto in coda il viaggio si accorcia.
+const PAUSA = 1200;
+let fineUltimo = 0;
+function nextArrival(now) {
+  if (arrivo || !arrQueue.length || now < fineUltimo + PAUSA) return;
+  const a = arrQueue.shift(), p = insertPhoto(a); p.hold = true;
+  const coda = arrQueue.length, f = coda === 0 ? 1 : coda <= 2 ? .72 : .5;
+  const T1 = Math.max(2000, 3200 * f), T2 = T1 + 6600 * f, T3 = T2 + 1400 * Math.min(1, f + .25);
+  if ($('sf').classList.contains('open')) closeSf();
+  const big = new Image(); big.src = fullSrc(a.id);
+  const parts = Array.from({ length: 80 }, () => ({ ang: Math.random() * TAU, r0: EW * (.75 + Math.random() * .5), del: Math.random() * 1000, sz: 1 + Math.random() * 2.2, w: Math.random() < .3 }));
+  arrivo = { a, p, big, t0: now, step: 0, parts, trail: [], T1, T2, T3, aStart: Math.atan2(p.ty, p.tx) - TAU * (1.05 + Math.random() * .2) };
+  $('arrK').textContent = 'Nuova foto' + (a.nome ? ' · da ' + a.nome : ' · dal telefono');
+  $('arrW').textContent = a.frase ? '«' + a.frase + '»' : '';
+  $('arrQ').textContent = arrQueue.length ? '+ ' + arrQueue.length + ' in arrivo' : '';
+  $('arrivo').classList.add('on');
+  renderCron();
+}
+const easeIO = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+const easeBack = u => { const c = 1.6; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); };
+const sstep = (a, b, x) => { const u = clamp((x - a) / (b - a), 0, 1); return u * u * (3 - 2 * u); };
+const alpha = (col, a) => col.replace('hsl', 'hsla').replace(')', `,${a})`);
+function drawArrival(now) {
+  nextArrival(now);
+  if (!arrivo) return;
+  const { p, big, T1: T_GRANDE, T2: T_VIAGGIO, T3: T_POSA } = arrivo, el = now - arrivo.t0, col = p.col, s = view.s;
+  const [cx, cy] = toS(0, 0), BIG = Math.min(W, H) * .3;
+  const [tx, ty] = toS(p.tx, p.ty), dT = Dp * p.sz * s;
+  let x, y, d, glow = 1, alp = 1;
+  if (el < T_GRANDE) {                                     // 1. si materializza al centro
+    const u = Math.min(1, el / 1700);
+    x = cx; y = cy; d = BIG * (.5 + .5 * easeBack(u)); alp = sstep(150, 1500, el);
+    $('arrivo').style.top = Math.min(H - 200, cy + BIG / 2 + 14) + 'px';
+  } else if (el < T_VIAGGIO) {                             // 2. vaga intorno al cerchio, cercando il suo posto
+    if (arrivo.step < 1) { arrivo.step = 1; $('arrivo').classList.remove('on'); }
+    const u = (el - T_GRANDE) / (T_VIAGGIO - T_GRANDE), aEnd = Math.atan2(p.ty, p.tx);
+    const ang = arrivo.aStart + (aEnd - arrivo.aStart) * (easeIO(u) + .03 * Math.sin(u * TAU * 2.5) * Math.sin(u * Math.PI));
+    const out = sstep(0, .16, u), dive = sstep(.84, 1, u);
+    const rr = (1 + RC * 4) * out + RC * 1.4 * Math.sin(u * TAU * 4) * out * (1 - u);
+    const wx = Math.cos(ang) * rr * (1 - dive) + p.tx * dive, wy = Math.sin(ang) * rr * (1 - dive) + p.ty * dive;
+    [x, y] = toS(wx, wy);
+    const dOrb = Math.max(Dp * 2.8 * s, 52);
+    d = BIG + (dOrb - BIG) * sstep(0, .2, u); d = d + (dT * 1.3 - d) * dive;
+    arrivo.trail.push([wx, wy]); if (arrivo.trail.length > 34) arrivo.trail.shift();
+    arrivo.trail.forEach(([qx, qy], i) => { const [sx, sy] = toS(qx, qy), k = i / arrivo.trail.length; ctx.fillStyle = alpha(col, .5 * k * (1 - dive)); ctx.beginPath(); ctx.arc(sx, sy, 1 + 3 * k, 0, TAU); ctx.fill(); });
+    ctx.font = "400 10px 'JetBrains Mono', monospace"; ctx.textAlign = 'center'; ctx.fillStyle = alpha(col, .85 * (1 - dive));
+    if (u < .8) ctx.fillText('CERCA IL SUO POSTO…', x, y + d / 2 + 16);
+  } else {                                                 // 3. si posa: cerchi nell'acqua
+    if (arrivo.step < 2) { arrivo.step = 2; }
+    const v = Math.min(1, (el - T_VIAGGIO) / (T_POSA - T_VIAGGIO));
+    x = tx; y = ty; d = dT * (1 + .3 * (1 - easeBack(Math.min(1, v * 2)))); glow = 1 - v;
+    for (let k = 0; k < 3; k++) { const vv = Math.min(1, Math.max(0, v * 1.3 - k * .18)); if (vv <= 0) continue; ctx.strokeStyle = alpha(col, .8 * (1 - vv)); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, d / 2 + vv * Dp * 3.2 * s, 0, TAU); ctx.stroke(); }
+    if (el >= T_POSA) { p.hold = false; p.X = p.tx; p.Y = p.ty; p.nuova = now + 9000; toast(arrivo.a); arrivo = null; fineUltimo = now; renderCron(); return; }
+  }
+  const veil = el < T_GRANDE ? .62 * Math.min(1, el / 400) : .62 * Math.max(0, 1 - (el - T_GRANDE) / 1400);
+  if (veil > 0) { ctx.fillStyle = `rgba(6,5,10,${veil})`; ctx.fillRect(0, 0, W, H); }
+  if (el < T_GRANDE) {                                     // la polvere del cerchio si raccoglie al centro e diventa la foto
+    for (const q of arrivo.parts) {
+      const v = clamp((el - q.del) / 1300, 0, 1); if (v <= 0 || v >= 1) continue;
+      const e = easeIO(v), r = (q.r0 * s) * (1 - e) + d * .25 * e, an = q.ang + e * 1.6;
+      ctx.fillStyle = q.w ? `rgba(255,255,255,${.8 * (1 - v)})` : alpha(col, .9 * (1 - v));
+      ctx.beginPath(); ctx.arc(cx + Math.cos(an) * r, cy + Math.sin(an) * r, q.sz, 0, TAU); ctx.fill();
+    }
+  }
+  ctx.save(); ctx.globalAlpha = alp;
+  const g = ctx.createRadialGradient(x, y, d * .35, x, y, d * .9); g.addColorStop(0, alpha(col, .5 * glow)); g.addColorStop(1, alpha(col, 0));
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, d * .9, 0, TAU); ctx.fill();
+  const im = big.complete && big.naturalWidth ? big : p.im;
+  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 30; ctx.fillStyle = '#151219'; ctx.beginPath(); ctx.arc(x, y, d / 2, 0, TAU); ctx.fill(); ctx.restore();
+  if (im && im.complete && im.naturalWidth) { const m = Math.min(im.naturalWidth, im.naturalHeight); ctx.save(); ctx.beginPath(); ctx.arc(x, y, d / 2, 0, TAU); ctx.clip(); ctx.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, x - d / 2, y - d / 2, d, d); ctx.restore(); }
+  ctx.strokeStyle = col; ctx.lineWidth = Math.max(2, d * .012); ctx.beginPath(); ctx.arc(x, y, d / 2, 0, TAU); ctx.stroke();
+  ctx.restore();
+}
+function removePhoto(id) {
+  const p = photoById[id]; if (!p) return;
+  photos.splice(photos.indexOf(p), 1); delete photoById[id];
+}
+function removeArrival(id) {
+  cron.delete(id); const qi = arrQueue.findIndex(x => x.id === id); if (qi >= 0) arrQueue.splice(qi, 1);
+  if (arrivo && arrivo.a.id === id) { arrivo = null; $('arrivo').classList.remove('on'); }
+  if (photoById[id]) { removePhoto(id); arrivate--; }
+  renderCron(); counts();
+}
+function toast(a) {
+  const p = photoById[a.id]; if (!p) return;
+  const el = document.createElement('div'); el.className = 'toast'; el.style.borderColor = alpha(p.col, .6);
+  el.innerHTML = `<img src="${thumbSrc(a.id)}" alt="" style="box-shadow:0 0 0 2px ${p.col}"><div><div class="k">Nuova foto${a.nome ? ' · ' + esc(a.nome) : ''}</div><div class="w">${esc(a.frase || 'è entrata nella memoria')}</div></div>`;
+  el.onclick = () => { const q = photoById[a.id]; if (q) openPhoto(q); };
+  $('toasts').prepend(el);
+  while ($('toasts').children.length > 4) $('toasts').lastChild.remove();
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 700); }, 11000);
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-elimina]'); if (!b) return;
+  e.stopPropagation();
+  if (!confirm('Rimuovere questa foto dalla nebulosa? Verrà cancellata anche dal computer.')) return;
+  const r = await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.elimina }) });
+  if (r.ok) closeSf();
+}, true);
+
+// ---------------- la cronologia: tutte le foto arrivate dai telefoni ----------------
+function quando(q) {
+  if (!q) return '';
+  const [d, h] = q.split(' '), n = new Date(), oggi = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
+  return (d === oggi ? 'oggi' : d.slice(8, 10) + '/' + d.slice(5, 7)) + ' ' + h.slice(0, 5);
+}
+function renderCron() {
+  const list = [...cron.values()].reverse();
+  $('cronN').textContent = list.length ? '· ' + list.length : '';
+  if (!$('cron').classList.contains('open')) return;
+  $('cronC').innerHTML = (online ? '<span style="color:#7fd38a">● in diretta</span>' : '<span style="color:#e6a08c">○ mi sto ricollegando…</span>') + ' · ' +
+    (list.length === 1 ? '1 foto arrivata' : list.length + ' foto arrivate') + (QUI && list.length ? '<br><button id="cronAll">Rimuovi tutte</button>' : '');
+  $('cronL').innerHTML = list.length ? list.map(a => {
+    const p = photoById[a.id], col = p ? p.col : ATTESA, att = arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id);
+    return `<div class="ci" data-apri="${a.id}"><img src="${thumbSrc(a.id)}" alt="" loading="lazy" style="box-shadow:0 0 0 2px ${col}"><div style="flex:1;min-width:0"><div class="k">${esc(a.nome || 'anonimo')} · ${quando(a.quando)}${att ? ' · <span class="att">sta entrando</span>' : ''}${p && !p.f ? ' · non ancora letta' : ''}</div>` +
+      `<div class="w">${a.frase ? '«' + esc(a.frase) + '»' : ''}</div>${QUI ? `<button data-elimina="${a.id}">Rimuovi</button>` : ''}</div></div>`;
+  }).join('') : '<div class="vuota">Ancora nessuna foto. Inquadra il QR code con un telefono: ogni foto che arriva comparirà qui, con chi l\'ha mandata e quando.</div>';
+}
+$('cronbtn').onclick = () => { $('qr').classList.remove('open'); $('cron').classList.toggle('open'); renderCron(); };
+$('cronx').onclick = () => $('cron').classList.remove('open');
+$('cronL').addEventListener('click', e => { const it = e.target.closest('[data-apri]'); if (!it) return; const p = photoById[it.dataset.apri]; if (p && !p.hold) openPhoto(p); });
+$('cron').addEventListener('click', async e => {
+  if (e.target.id !== 'cronAll') return;
+  if (!confirm('Rimuovere tutte le ' + cron.size + ' foto arrivate dai telefoni? Verranno cancellate anche dal computer.')) return;
+  for (const id of [...cron.keys()]) await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }).catch(() => {});
+});
+let inViaggio = 0, chiViaggia = '';
+function viaggio(d, nome) {
+  inViaggio = Math.max(0, inViaggio + d); if (nome != null) chiViaggia = nome;
+  $('inarr').textContent = '● Una foto sta arrivando' + (chiViaggia ? ' da ' + chiViaggia : '') + (inViaggio > 1 ? ' (+' + (inViaggio - 1) + ')' : '') + '…';
+  $('inarr').classList.toggle('on', inViaggio > 0 && !arrivo);
+}
+setInterval(() => $('inarr').classList.toggle('on', inViaggio > 0 && !arrivo), 500);
+function arrivata(a, animate) { if (!cron.has(a.id)) { cron.set(a.id, a); arrivate++; } addArrival(a, animate); renderCron(); }
+if (LIVE) {
+  fetch('/api/arrivi', { cache: 'no-store' }).then(r => r.ok ? r.json() : []).then(list => {
+    // ?prova-arrivo nell'indirizzo: rifa' l'ingresso dell'ultima foto arrivata
+    const prova = /prova-arrivo/.test(location.search) && list.length ? list.pop() : null;
+    list.forEach(a => arrivata(a, false));
+    if (prova) {
+      cron.set(prova.id, prova); arrivate++;
+      removePhoto(prova.id);
+      setTimeout(() => { addArrival(prova, true); renderCron(); }, 600);
+    }
+    counts();
+  }).catch(() => {});
+  const conn = () => {
+    const es = new EventSource('/api/eventi');
+    es.onopen = () => setOnline(true);
+    es.addEventListener('inarrivo', e => {
+      if ($('sf').classList.contains('open')) closeSf();
+      viaggio(+1, JSON.parse(e.data).nome || ''); setTimeout(() => viaggio(-1), 30000); });
+    es.addEventListener('annullata', () => viaggio(-1));
+    es.addEventListener('foto', e => { viaggio(-1); arrivata(JSON.parse(e.data), true); });
+    es.addEventListener('rimossa', e => removeArrival(JSON.parse(e.data).id));
+    es.onerror = () => { setOnline(false); es.close(); setTimeout(conn, 2000); };
+  };
+  conn();
+  // per sicurezza ogni 5 secondi controllo l'elenco: se la diretta si e' persa qualcosa, lo recupero
+  setInterval(() => fetch('/api/arrivi', { cache: 'no-store' }).then(r => r.json()).then(list => {
+    const ids = new Set(list.map(a => a.id));
+    list.forEach(a => { if (!cron.has(a.id)) arrivata(a, true); });
+    [...cron.keys()].forEach(id => { if (!ids.has(id)) removeArrival(id); });
+  }).catch(() => setOnline(false)), 5000);
+}
+function setOnline(v) { online = v; $('liveDot').classList.toggle('on', v); $('liveDot').title = v ? 'in diretta' : 'non collegata'; renderCron(); }
+// il pannello con il QR code
+$('qrbtn').onclick = async () => {
+  $('cron').classList.remove('open');
+  $('qr').classList.toggle('open');
+  if (!$('qr').classList.contains('open')) return;
+  if (!LIVE) { $('qrurl').textContent = 'Apri la nebulosa con «Apri la nebulosa.command» per ricevere foto dai telefoni.'; return; }
+  try {
+    const inf = await (await fetch('/api/info')).json();
+    $('qrurl').textContent = inf.carica; counts();
+    const drawQR = () => { $('qrcode').innerHTML = ''; new QRCode($('qrcode'), { text: inf.carica, width: 180, height: 180, colorDark: '#06050a', colorLight: '#ffffff' }); };
+    if (window.QRCode) drawQR();
+    else { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload = drawQR; sc.onerror = () => { $('qrcode').textContent = 'QR non disponibile senza internet: usa l’indirizzo qui sotto.'; $('qrcode').style.cssText += ';color:#06050a;font-size:12px;text-align:center'; }; document.head.appendChild(sc); }
+  } catch (e) { $('qrurl').textContent = 'Il server non risponde.'; }
+};
+$('qrx').onclick = () => $('qr').classList.remove('open');
+
+counts();
+requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

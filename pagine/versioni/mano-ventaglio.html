@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Nebulosa · mano</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06050a;--ink:#ece6e1;--dim:#8c8590;--amber:#d9a566;--trace:#f08a64;--line:rgba(236,230,225,.12)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Jost',sans-serif;font-weight:300;overflow:hidden}
+button{font:inherit}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab;transition:filter .6s}
+canvas.drag{cursor:grabbing}
+canvas.blur{filter:blur(6px) brightness(.8)}
+.top,.intro,.hintbar,#home{transition:opacity .4s}
+body.ov .top,body.ov .intro,body.ov .hintbar,body.ov #home{opacity:0!important;pointer-events:none!important}
+header.top{position:fixed;top:0;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);background:linear-gradient(#06050a,rgba(6,5,10,.5));z-index:5}
+.brand small{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.brand b{font-weight:400;letter-spacing:.22em;font-size:15px;white-space:nowrap}
+.status{display:flex;align-items:center;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;white-space:nowrap}
+.status > *+*{margin-left:14px;padding-left:14px;border-left:1px solid var(--line)}
+.intro{position:fixed;left:40px;top:92px;width:220px;z-index:4;pointer-events:none;transition:opacity .5s}
+.intro.hide{opacity:0}
+.intro h1{font:300 22px/1.2 'Jost',sans-serif}
+.intro h1 em{font-family:'Playfair Display',serif;color:var(--trace);font-size:24px}
+.intro p{margin-top:14px;font-size:11px;line-height:1.7;color:var(--dim)}
+.hintbar{position:fixed;right:28px;top:84px;z-index:4;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;text-align:right;line-height:1.9;pointer-events:none}
+#qrbtn{background:none;border:0;border-left:1px solid var(--line);color:#aaa1f2;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#qrbtn:hover,#palbtn:hover{color:var(--ink)}
+#palbtn{background:none;border:0;border-left:1px solid var(--line);color:var(--amber);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#cronbtn{background:none;border:0;border-left:1px solid var(--line);color:#f0c88c;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#cronbtn:hover{color:var(--ink)}
+#cronN{font-style:normal;color:var(--ink);margin-left:4px}
+#liveDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#5a5560;margin-right:8px;vertical-align:1px}
+#liveDot.on{background:#7fd38a;box-shadow:0 0 8px #7fd38a}
+#cron{position:fixed;top:76px;right:24px;bottom:110px;z-index:9;width:350px;background:rgba(10,9,13,.97);border:1px solid rgba(240,200,140,.4);display:none;flex-direction:column;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#cron.open{display:flex}
+#cron .hd{padding:16px 18px 12px;border-bottom:1px solid var(--line);position:relative}
+#cron h3{font:italic 400 20px 'Playfair Display',serif;color:#f0c88c}
+#cron .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:6px;line-height:1.7}
+#cronx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
+#cronL{overflow:auto;padding:4px 10px 14px;flex:1}
+#cronL .vuota{font-size:12px;line-height:1.6;color:#c9c1bb;padding:16px 8px}
+.ci{display:flex;gap:12px;padding:12px 8px;border-bottom:1px solid rgba(236,230,225,.07);cursor:pointer}
+.ci:hover{background:rgba(240,200,140,.06)}
+.ci img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;background:#222}
+.ci .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.ci .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
+.ci .w{font-size:11px;line-height:1.45;color:#d6cfc9}
+.ci .att{color:#7fd38a}
+.ci button,#cronAll{margin-top:6px;background:none;border:1px solid rgba(240,138,138,.45);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;cursor:pointer}
+#cronAll{margin-top:10px}
+#cron.open ~ #toasts{right:390px}
+body.ov #cron{opacity:0;pointer-events:none}
+#inarr{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:9;background:rgba(10,9,13,.9);border:1px solid rgba(127,211,138,.5);color:#a9e6b1;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;display:none;pointer-events:none}
+#inarr.on{display:block;animation:pulsa 1.4s ease-in-out infinite}
+@keyframes pulsa{50%{opacity:.55}}
+#qr{position:fixed;top:76px;right:24px;z-index:9;width:280px;padding:18px;background:rgba(10,9,13,.97);border:1px solid rgba(170,161,242,.45);display:none;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#qr.open{display:block}
+#qr h3{font:italic 400 20px 'Playfair Display',serif;color:#aaa1f2}
+#qr p{font-size:12px;line-height:1.55;color:#c9c1bb;margin-top:8px}
+#qr .code{margin:14px auto 10px;width:200px;height:200px;background:#fff;padding:10px;display:flex;align-items:center;justify-content:center}
+#qr .code img,#qr .code canvas{width:180px!important;height:180px!important}
+#qr .url{font:400 13px 'JetBrains Mono',monospace;color:var(--ink);word-break:break-all;text-align:center;user-select:all}
+#qr .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:10px;line-height:1.7}
+#qrx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
+#toasts{position:fixed;right:24px;top:150px;z-index:7;width:300px;display:grid;gap:10px;pointer-events:none}
+.toast{pointer-events:auto;display:flex;gap:12px;padding:10px 12px;background:rgba(10,9,13,.94);border:1px solid rgba(240,200,140,.45);box-shadow:0 10px 40px rgba(0,0,0,.6);cursor:pointer;animation:tin .5s ease-out;transition:opacity .6s}
+.toast.out{opacity:0}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.toast img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none}
+.toast .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.toast .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
+.toast .w{font-size:11px;line-height:1.45;color:#d6cfc9}
+body.ov #toasts,body.ov #qr{opacity:0;pointer-events:none}
+.why{margin:12px auto 0;max-width:560px;padding:10px 14px;border:1px solid rgba(240,200,140,.35);background:rgba(10,9,13,.7);text-align:left;font-size:13px;line-height:1.5;color:#e2dbd5}
+.why b{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#f0c88c;text-transform:uppercase;margin-bottom:3px}
+.why button{margin-top:8px;background:none;border:1px solid rgba(240,138,138,.5);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;cursor:pointer}
+#arrivo{position:fixed;left:50%;z-index:8;width:min(560px,90vw);transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .5s;padding:14px 18px 16px;background:rgba(6,5,10,.86);border:1px solid rgba(240,200,140,.25);box-shadow:0 18px 60px rgba(0,0,0,.6)}
+#arrivo.on{opacity:1}
+#arrivo .k{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#f0c88c;text-transform:uppercase;text-shadow:0 2px 12px #000}
+#arrivo .e{font:300 13px 'Jost',sans-serif;color:#c9c1bb;margin-top:10px;text-shadow:0 2px 12px #000}
+#arrivo .t{font:italic 400 40px/1.1 'Playfair Display',serif;margin-top:2px;text-shadow:0 2px 24px #000}
+#arrivo .w{font:300 14px/1.5 'Jost',sans-serif;color:#e6dfd9;margin:10px auto 0;max-width:480px}
+#arrivo .q{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#8c8590;text-transform:uppercase;margin-top:8px}
+#home{position:fixed;right:28px;bottom:44px;z-index:5;background:rgba(10,9,13,.8);border:1px solid var(--line);color:var(--dim);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:0 14px;height:46px;cursor:pointer}
+#home:hover{color:var(--amber)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:11px;padding:4px 10px;border:1px solid var(--line);cursor:pointer;border-radius:20px;color:var(--ink);background:rgba(10,9,13,.5)}
+.chip:hover,.chip.on{border-color:currentColor}
+.chip small{font:300 9px 'JetBrains Mono',monospace;color:var(--dim);margin-left:6px}
+.chip.theme{font-family:'Playfair Display',serif;font-style:italic;font-size:12px}
+#pv{position:fixed;z-index:8;pointer-events:none;background:rgba(9,8,12,.94);border:1px solid rgba(236,230,225,.18);padding:9px 12px;display:none;box-shadow:0 8px 40px rgba(0,0,0,.6);max-width:300px}
+#pv .t{font:italic 400 15px/1.3 'Playfair Display',serif}
+#pv .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:4px;line-height:1.7}
+#pv q{display:block;font:italic 400 13px/1.4 'Playfair Display',serif;color:var(--amber);margin-top:6px;quotes:none}
+#pv .h{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--amber);text-transform:uppercase;margin-top:7px}
+.fly{position:fixed;z-index:13;border-radius:50%;background:#151219 center/cover no-repeat;pointer-events:none;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 30px 90px rgba(0,0,0,.7);transition:left .65s cubic-bezier(.2,.8,.2,1),top .65s cubic-bezier(.2,.8,.2,1),width .65s cubic-bezier(.2,.8,.2,1),height .65s cubic-bezier(.2,.8,.2,1)}
+/* sfoglia */
+#sf{position:fixed;inset:0;z-index:12;background:radial-gradient(ellipse at center,rgba(6,5,9,.55),rgba(6,5,9,.2) 70%);display:none;flex-direction:column}
+#sf.open{display:flex}
+#sf .ui{transition:opacity .45s .25s;opacity:0}
+#sf.shown .ui{opacity:1}
+.sfh{display:flex;align-items:flex-start;gap:24px;padding:22px 80px 8px 32px;flex:none}
+.sfh .l{flex:1;min-width:0}
+#sfk{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#b3abb4;text-transform:uppercase}
+#sft{font:italic 400 30px/1.15 'Playfair Display',serif;margin-top:6px;text-shadow:0 2px 20px rgba(0,0,0,.8)}
+#sfd{font:italic 400 14px/1.5 'Playfair Display',serif;opacity:.88;margin-top:6px;max-width:760px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+#sfp{margin-top:10px;max-height:62px;overflow:auto}
+#sfc{font:300 12px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3abb4;white-space:nowrap;padding-top:4px}
+#sfx{position:absolute;top:16px;right:24px;background:none;border:0;color:#b3abb4;font-size:30px;cursor:pointer;z-index:2}
+#sfx:hover{color:var(--ink)}
+#sftrack{--D:min(46vh,58vw);flex:1;min-height:0;display:flex;align-items:center;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;padding-inline:calc(50% - var(--D) / 2 - 40px)}
+#sftrack::-webkit-scrollbar{display:none}
+.slide{flex:0 0 auto;width:calc(var(--D) + 80px);scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;--k:1}
+.disc{width:var(--D);height:var(--D);border-radius:50%;overflow:hidden;background:#151219 center/cover no-repeat;transform:scale(calc(1 - var(--k) * .3));opacity:calc(1 - var(--k) * .5);transition:transform .15s,opacity .15s;cursor:pointer;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 24px 90px rgba(0,0,0,.7)}
+.disc img{width:100%;height:100%;object-fit:cover;display:block}
+.cap{margin-top:16px;width:min(calc(var(--D) + 260px),92vw);text-align:center;opacity:calc(1 - var(--k) * 2.2);transition:opacity .15s;min-height:90px}
+.cap .lettura{display:block;font:italic 400 16px/1.5 'Playfair Display',serif;color:var(--ink);margin-bottom:12px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+.cap .frase{display:block;font:300 13px/1.5 'Jost',sans-serif;color:var(--amber);margin-bottom:10px}
+.cap .chips{justify-content:center}
+.sfnav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:rgba(10,9,13,.6);border:1px solid var(--line);color:var(--ink);font-size:26px;cursor:pointer;z-index:2}
+.sfnav:hover{border-color:var(--amber);color:var(--amber)}
+.sfnav:disabled{opacity:.2;cursor:default}
+#sfprev{left:24px}#sfnext{right:24px}
+#sfstrip{flex:none;display:flex;gap:8px;overflow-x:auto;padding:12px 32px 22px;scrollbar-width:thin;scrollbar-color:#333 transparent}
+#sfstrip img{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover;opacity:.45;cursor:pointer;transition:opacity .2s,transform .2s;outline:2px solid transparent;outline-offset:2px}
+#sfstrip img:hover{opacity:.85}
+#sfstrip img.on{opacity:1;outline-color:var(--amber);transform:scale(1.08)}
+@media(max-width:900px){.intro,.hintbar{display:none}.status > span{display:none}.status > button{border-left:0}#home{top:76px;bottom:auto;right:12px;height:34px}.sfh{padding:18px 56px 8px 18px}#sft{font-size:22px}#sfd{display:none}#sftrack{--D:min(74vw,40vh)}.sfnav{display:none}}
+#sndbtn{background:none;border:0;border-left:1px solid var(--line);color:var(--amber);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#sndbtn:hover{color:var(--ink)}
+/* il volo: la foto scelta e la sua lettura */
+#fuoco{position:fixed;right:28px;top:50%;transform:translate(20px,-50%);z-index:8;width:min(360px,calc(100vw - 32px));padding:20px 22px 18px;background:rgba(8,7,12,.82);border:1px solid var(--c,rgba(240,200,140,.4));border-left-width:3px;box-shadow:0 18px 60px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .7s,transform .7s}
+#fuoco.on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+#fuoco .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+#fl{font:italic 400 18px/1.5 'Playfair Display',serif;color:var(--ink);margin-top:10px}
+#fl:empty{display:none}
+#fa{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;line-height:1.5;color:#e2dbd5}
+#fa b{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#f0c88c;text-transform:uppercase;margin-bottom:4px}
+#fa .nota{color:#8c8590;font-size:11px}
+#fa button{margin-top:8px;background:none;border:1px solid rgba(240,138,138,.5);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;cursor:pointer}
+#fuoco .h{margin-top:14px;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;line-height:1.8}
+#fx{margin-top:12px;background:none;border:1px solid var(--c,var(--line));color:var(--ink);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:8px 12px;cursor:pointer}
+#fx:hover{background:rgba(255,255,255,.05)}
+body.infuoco .hintbar,body.infuoco .intro{opacity:0!important}
+/* l'interfaccia si nasconde da sola dopo qualche secondo di quiete */
+.top,.intro,.hintbar,#home{transition:opacity 1.2s}
+body.calma .top,body.calma .intro,body.calma .hintbar,body.calma #home{opacity:0!important;pointer-events:none!important}
+body.calma canvas{cursor:none!important}
+/* il QR sempre visibile, per chi passa davanti allo schermo */
+#qrfisso{position:fixed;left:28px;bottom:28px;z-index:6;display:none;align-items:center;gap:14px;padding:12px 16px 12px 12px;background:rgba(8,7,12,.78);border:1px solid rgba(170,161,242,.4)}
+#qrfisso.on{display:flex}
+#qrfisso .code{width:104px;height:104px;background:#fff;padding:6px;flex:none}
+#qrfisso .code img,#qrfisso .code canvas{width:92px!important;height:92px!important}
+#qrfisso b{display:block;font:italic 400 17px/1.25 'Playfair Display',serif;color:#d8d2f7}
+#qrfisso small{display:block;margin-top:6px;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;line-height:1.7}
+body.calma #fuoco .h,body.calma #fx{display:none}
+#fuoco .nuova{color:#a9e6b1}
+@media(max-width:900px){#qrfisso{display:none!important}#fuoco{right:16px;left:16px;width:auto;top:auto;bottom:16px;transform:translateY(20px)}#fuoco.on{transform:none}}
+/* la mano: il cursore di luce e il riquadro con la webcam */
+#manoCursore{position:fixed;left:0;top:0;width:0;height:0;z-index:9;pointer-events:none;opacity:0;transition:opacity .4s;--p:0%;--s:60px}
+#manoCursore.on{opacity:1}
+#manoCursore::before{content:'';position:absolute;left:-30px;top:-30px;width:60px;height:60px;border-radius:50%;border:2px solid rgba(180,220,255,.7);box-shadow:0 0 22px rgba(150,200,255,.5),inset 0 0 14px rgba(150,200,255,.3);transition:all .25s}
+#manoCursore::after{content:'';position:absolute;left:calc(var(--s) / -2 - 16px);top:calc(var(--s) / -2 - 16px);width:calc(var(--s) + 32px);height:calc(var(--s) + 32px);border-radius:50%;background:conic-gradient(rgba(255,225,170,.95) var(--p),transparent 0);-webkit-mask:radial-gradient(circle closest-side,transparent 86%,#000 87%,#000 99%,transparent 100%);mask:radial-gradient(circle closest-side,transparent 86%,#000 87%,#000 99%,transparent 100%);opacity:0;transition:opacity .2s}
+#manoCursore.aggancio::before{left:-38px;top:-38px;width:76px;height:76px;border-color:rgba(255,225,170,.9);box-shadow:0 0 30px rgba(255,200,140,.6)}
+#manoCursore.grande::before{left:calc(var(--s) / -2 - 8px);top:calc(var(--s) / -2 - 8px);width:calc(var(--s) + 16px);height:calc(var(--s) + 16px)}
+#manoCursore.aggancio::after{opacity:1}
+#manoAiuto{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);z-index:9;padding:9px 16px;background:rgba(8,7,12,.72);border:1px solid rgba(160,210,255,.3);font:300 12px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#dfe9f5;opacity:0;transition:opacity .5s;pointer-events:none;white-space:nowrap}
+#manoAiuto.on{opacity:1}
+/* il ventaglio: le foto vicine aperte intorno alla mano */
+#ventaglio{position:fixed;inset:0;z-index:8;pointer-events:none;opacity:0;transition:opacity .3s}
+#ventaglio.on{opacity:1}
+#ventaglio::before{content:'';position:absolute;left:calc(var(--cx) - var(--r));top:calc(var(--cy) - var(--r));width:calc(var(--r) * 2);height:calc(var(--r) * 2);border-radius:50%;background:radial-gradient(circle,rgba(6,5,10,.85) 58%,rgba(6,5,10,0) 72%)}
+#ventaglio .vf{position:absolute;left:0;top:0;border-radius:50%;background:#151219 center/cover no-repeat;border:3px solid;transition:transform .45s cubic-bezier(.2,.8,.2,1),filter .2s}
+#ventaglio .vf.su{filter:brightness(1.2)}
+#mano{position:fixed;right:20px;bottom:20px;z-index:10;width:240px;background:rgba(8,7,12,.85);border:1px solid rgba(160,210,255,.35);font:300 10px 'JetBrains Mono',monospace;color:#c8d6e6}
+#mano.nascosta{display:none}
+#manoVideo{display:none}
+#manoCanvas{display:block;width:240px;height:180px;background:#000}
+#manoStato{padding:8px 10px 4px;letter-spacing:.08em;text-transform:uppercase;color:#e6f3ff}
+#manoCamera{margin:4px 10px 8px;width:calc(100% - 20px);background:#14121a;color:#c8d6e6;border:1px solid rgba(255,255,255,.15);font:inherit}
+#mano .legenda{padding:6px 10px 10px;border-top:1px solid rgba(255,255,255,.08);line-height:1.9;color:#9aa6b4}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<header class="top">
+  <div class="brand"><small>Memoria collettiva</small><b>LA NEBULOSA</b></div>
+  <div class="status"><span id="luogo"></span><span id="st"></span><button id="sndbtn">Suono</button><button id="palbtn">Colori</button><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
+</header>
+<div class="intro" id="intro">
+  <h1>Una memoria<br><em>che esplode.</em></h1>
+  <p id="introp"></p>
+</div>
+<div class="hintbar" id="hintbar">Trascina per girarle intorno · rotella per entrare<br>Passa sopra una sfera: si accendono le sorelle<br>Clicca una sfera per volarci dentro</div>
+<button id="home">↺ Vista iniziale</button>
+<div id="pv"></div>
+<div id="qr"><button id="qrx" aria-label="Chiudi">×</button><h3>Carica dal telefono</h3><p>Inquadra il codice con la fotocamera del telefono, oppure scrivi l'indirizzo nel browser. Il telefono deve essere sulla stessa rete Wi-Fi di questo computer.</p><div class="code" id="qrcode"></div><div class="url" id="qrurl">…</div><div class="meta" id="qrmeta"></div></div>
+<div id="cron"><div class="hd"><button id="cronx" aria-label="Chiudi">×</button><h3>Cronologia</h3><div class="meta" id="cronC"></div></div><div id="cronL"></div></div>
+<div id="toasts"></div>
+<div id="inarr"></div>
+<div id="qrfisso"><div class="code" id="qrfc"></div><div><b>Aggiungi la tua foto<br>alla memoria</b><small>Inquadra il codice<br>con il telefono</small></div></div>
+<aside id="fuoco"><div class="k" id="fk"></div><div id="fl"></div><div id="fa"></div><div class="h">Trascina per girarle intorno · clicca una sorella per passare a lei · Esc o clic nel vuoto per tornare</div><button id="fx">← Torna alla nebulosa</button></aside>
+<div id="ventaglio"></div>
+<div id="manoCursore"></div>
+<div id="mano"><canvas id="manoCanvas" width="240" height="180"></canvas><video id="manoVideo" playsinline muted></video><div id="manoStato">Avvio della mano…</div><select id="manoCamera" aria-label="Telecamera"></select>
+<div class="legenda">✋ muovi la mano: la luce si aggancia alla foto più vicina<br>✋ tienila ferma: tra tante foto si apre un ventaglio; su una foto sola entri<br>↔ sposta la mano dal centro: la nebulosa gira<br>⬇ abbassa la mano: torni alla nebulosa<br>tasto V: nascondi questo riquadro</div></div>
+<div id="manoAiuto"></div>
+<div id="arrivo"><div class="k" id="arrK"></div><div class="w" id="arrW"></div><div class="q" id="arrQ"></div></div>
+<div id="sf" role="dialog" aria-label="Sfoglia le foto">
+  <button id="sfx" class="ui" aria-label="Chiudi">×</button>
+  <div class="sfh ui"><div class="l"><div id="sfk"></div><div id="sft"></div><div id="sfd"></div><div class="chips" id="sfp"></div></div><div id="sfc"></div></div>
+  <div id="sftrack"></div>
+  <button class="sfnav ui" id="sfprev" aria-label="Foto precedente">‹</button>
+  <button class="sfnav ui" id="sfnext" aria-label="Foto successiva">›</button>
+  <div id="sfstrip" class="ui"></div>
+</div>
+
+<script src="/dati.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const D = window.NEBULOSA;
+const $ = id => document.getElementById(id);
+if (!D) {
+  const m = document.createElement('div');
+  m.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;max-width:440px;padding:22px 24px;background:#131116;border:1px solid rgba(240,138,100,.5);color:#ece6e1;font:300 14px/1.6 Jost,sans-serif';
+  m.innerHTML = '<b style="font-weight:400;color:#f08a64">Mancano i dati della nebulosa.</b><br>Apri la nebulosa con <code>Apri la nebulosa.command</code>, oppure lancia <code>python3 programma/genera_dati.py</code>.';
+  document.body.appendChild(m);
+  throw new Error('dati mancanti');
+}
+const thumbSrc = id => '/foto/thumb/' + id + '.jpg';
+const fullSrc = id => '/foto/full/' + id + '.jpg';
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const TAU = Math.PI * 2;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const easeIO = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+const sstep = (a, b, x) => { const u = clamp((x - a) / (b - a), 0, 1); return u * u * (3 - 2 * u); };
+const seme = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)) >>> 0) / 4294967296; };
+const memo = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
+
+// ---------------- la scena ----------------
+const cv = $('c');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06050a);
+const camera = new THREE.PerspectiveCamera(52, 1, .1, 500);
+const CASA = new THREE.Vector3(0, 6, 34);
+camera.position.copy(CASA);
+const controls = new OrbitControls(camera, cv);
+Object.assign(controls, { enableDamping: true, dampingFactor: .06, autoRotate: !reduced, autoRotateSpeed: .35, minDistance: 1.2, maxDistance: 90, rotateSpeed: .6, zoomSpeed: .8 });
+let fermo = 0;
+const riprendiGiro = () => { clearTimeout(fermo); fermo = setTimeout(() => { if (!fuoco) controls.autoRotate = !reduced; }, 9000); };
+controls.addEventListener('start', () => { controls.autoRotate = false; clearTimeout(fermo); });
+controls.addEventListener('end', riprendiGiro);
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), .8, .45, .82);
+composer.addPass(bloom); composer.addPass(new OutputPass());
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+// le stelle lontane
+{
+  const n = 1800, a = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { const v = new THREE.Vector3().randomDirection().multiplyScalar(120 + Math.random() * 120); a.set([v.x, v.y, v.z], i * 3); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(a, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xece6e1, size: 1.1, sizeAttenuation: false, transparent: true, opacity: .55 })));
+}
+function texLuce(stops) {
+  const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d');
+  const g = x.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2); stops.forEach(([o, col]) => g.addColorStop(o, col));
+  x.fillStyle = g; x.fillRect(0, 0, S, S);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const TEX_PUNTO = texLuce([[0, 'rgba(255,255,255,1)'], [.25, 'rgba(255,255,255,.8)'], [1, 'rgba(255,255,255,0)']]);
+const TEX_ANELLO = (() => { const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'); x.strokeStyle = '#fff'; x.lineWidth = 5; x.beginPath(); x.arc(S / 2, S / 2, S / 2 - 6, 0, TAU); x.stroke(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+// il nucleo: il punto in cui tutti questi ricordi si toccano
+const nucleo = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLuce([[0, 'rgba(255,255,250,1)'], [.12, 'rgba(255,240,200,.95)'], [.35, 'rgba(255,170,80,.45)'], [1, 'rgba(255,90,30,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+const alone = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLuce([[0, 'rgba(255,170,90,.5)'], [.5, 'rgba(160,60,40,.15)'], [1, 'rgba(60,20,30,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+scene.add(alone, nucleo);
+
+// ---------------- le foto: ognuna e' una particella che parte dal nucleo ----------------
+const FUOCO = [[0, [70, 120, 255]], [.25, [150, 150, 235]], [.45, [230, 60, 40]], [.7, [255, 140, 30]], [.88, [255, 215, 90]], [1, [255, 250, 230]]];
+function temperatura(t) {
+  for (let k = 1; k < FUOCO.length; k++) if (t <= FUOCO[k][0] || k === FUOCO.length - 1) {
+    const [a, ca] = FUOCO[k - 1], [b, cb] = FUOCO[k], u = clamp((t - a) / (b - a), 0, 1);
+    return new THREE.Color().setRGB(...ca.map((v, i) => (v + (cb[i] - v) * u) / 255), THREE.SRGBColorSpace);
+  }
+}
+let palette = memo('nebulosa-colori') === 'spettro' ? 'spettro' : 'fuoco';
+function colore(f) {
+  const [vi, qu, , sc] = f.mv;
+  const c = palette === 'spettro' ? new THREE.Color().setHSL(f.h / 360, .78, clamp(f.l / 100, .45, .68), THREE.SRGBColorSpace) : temperatura(clamp(.5 + .55 * vi - .5 * qu + .1 * sc, 0, 1));
+  return f.provv ? c.lerp(new THREE.Color(.78, .77, .75), .65) : c;   // posto provvisorio: quasi grigia
+}
+const ASSE = new THREE.Vector3(0, 1, 0);   // il campo che curva le traiettorie (come in un rivelatore)
+function traccia(id, f) {
+  // la direzione nasce dal senso; la curva dal movimento; la lunghezza da quanto la foto e' unica
+  const [vi, qu, tr, sc] = f.mv, rnd = seme(id);
+  const dir = new THREE.Vector3(...f.p); const rr = dir.length();
+  if (rr < 1e-3) dir.randomDirection(); dir.normalize();
+  const L = (4.5 + 10 * (.35 * rr + .65 * (f.u ?? .5))) * (1 + .3 * qu);
+  const carica = Math.floor(f.h / 30) % 2 ? 1 : -1;
+  const k0 = carica * (.02 + .5 * vi + .12 * sc), g = 1 + 9 * vi * vi;
+  const v = dir.clone(), pos = new THREE.Vector3(), tmp = new THREE.Vector3(), ds = .07, pts = [0, 0, 0];
+  for (let s = 0; s < L; s += ds) {
+    const u = s / L;
+    tmp.crossVectors(v, ASSE).multiplyScalar(k0 * (1 + g * u * u) * ds); v.add(tmp);
+    if (tr) { v.x += (rnd() - .5) * .14 * tr; v.y += (rnd() - .5) * .14 * tr; v.z += (rnd() - .5) * .14 * tr; }
+    v.normalize(); pos.addScaledVector(v, ds); pts.push(pos.x, pos.y, pos.z);
+  }
+  return new Float32Array(pts);
+}
+// la sfera: la foto dentro, il vetro intorno; e' sempre rivolta verso chi guarda, da qualsiasi lato
+function disegnaSfera(c, S, col, im) {
+  c.width = c.height = S; const x = c.getContext('2d'), k = S / 160;
+  const [r, g, b] = col.toArray().map(v => Math.round(v * 255)), rgba = a => `rgba(${r},${g},${b},${a})`, R = S / 2 - 3 * k;
+  let gr = x.createRadialGradient(S * .42, S * .4, 0, S / 2, S / 2, R);
+  gr.addColorStop(0, rgba(.12)); gr.addColorStop(.7, rgba(.22)); gr.addColorStop(1, rgba(.7));
+  x.fillStyle = gr; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.fill();
+  const ri = R * .7;
+  if (im && im.complete && im.naturalWidth) {
+    const m = Math.min(im.naturalWidth, im.naturalHeight);
+    x.save(); x.beginPath(); x.arc(S / 2, S / 2, ri, 0, TAU); x.clip();
+    x.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, S / 2 - ri, S / 2 - ri, ri * 2, ri * 2);
+    gr = x.createRadialGradient(S / 2, S / 2, ri * .6, S / 2, S / 2, ri); gr.addColorStop(0, rgba(0)); gr.addColorStop(1, rgba(.55));
+    x.fillStyle = gr; x.fillRect(0, 0, S, S); x.restore();
+  }
+  gr = x.createRadialGradient(S / 2, S * .62, R * .3, S / 2, S / 2, R); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.35)');
+  x.fillStyle = gr; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.fill();
+  gr = x.createRadialGradient(S * .36, S * .3, 0, S * .36, S * .3, R * .62); gr.addColorStop(0, 'rgba(255,255,255,.32)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = gr; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.fill();
+  x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.ellipse(S * .33, S * .24, 8 * k, 4.5 * k, -.6, 0, TAU); x.fill();
+  x.strokeStyle = rgba(.95); x.lineWidth = 3 * k; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.stroke();
+  x.strokeStyle = 'rgba(255,255,255,.3)'; x.lineWidth = 2 * k; x.beginPath(); x.arc(S / 2, S / 2, R - 4 * k, .2, 1.6); x.stroke();
+}
+function ridisegna(p) { disegnaSfera(p.can, 160, p.col, p.img); p.tex.needsUpdate = true; if (p.hi) { disegnaSfera(p.hi.can, 640, p.col, p.hi.img); p.hi.tex.needsUpdate = true; } }
+const photos = [], photoById = {}, sprites = [];
+function makePhoto(id, f) {
+  const p = { id, f, ph: seme(id)() * TAU, uPrev: 0 };
+  p.col = colore(f); p.pts = traccia(id, f); p.n = p.pts.length / 3;
+  p.can = document.createElement('canvas'); disegnaSfera(p.can, 160, p.col, null);
+  p.tex = new THREE.CanvasTexture(p.can); p.tex.colorSpace = THREE.SRGBColorSpace;
+  p.sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: p.tex, transparent: true, depthWrite: false, color: 0xd8d8d8 }));   // un po' meno luminose: il bagliore resta alle scie
+  p.base = .62 * (f.s || .9); p.sprite.scale.setScalar(p.base); p.sprite.userData.p = p;
+  p.fine = new THREE.Vector3(p.pts[p.n * 3 - 3], p.pts[p.n * 3 - 2], p.pts[p.n * 3 - 1]);
+  p.sprite.position.copy(p.fine);
+  p.img = new Image(); p.img.onload = () => ridisegna(p); p.img.src = thumbSrc(id);
+  scene.add(p.sprite); photos.push(p); photoById[id] = p; sprites.push(p.sprite);
+  return p;
+}
+function aggiornaFoto(p, f) {   // la foto e' stata letta (o cambia colore): nuova traccia, nuovo colore
+  p.f = f; p.col = colore(f); p.pts = traccia(p.id, f); p.n = p.pts.length / 3;
+  p.fine.set(p.pts[p.n * 3 - 3], p.pts[p.n * 3 - 2], p.pts[p.n * 3 - 1]);
+  p.base = .62 * (f.s || .9); ridisegna(p); p.lampo = performance.now() + 2200;
+}
+D.tutte.forEach(id => { if (D.foto[id]) makePhoto(id, D.foto[id]); });
+
+// ---------------- le scie: tutte in un solo disegno, ordinate per passo (cosi' possono nascere insieme dal centro) ----------------
+const lineGeo = new THREE.BufferGeometry();
+const lines = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: .95, blending: THREE.AdditiveBlending, depthWrite: false }));
+scene.add(lines);
+let passi = [];
+let accese = null;   // le foto accese (passaggio del mouse o volo), oppure null = tutte
+function costruisciScie() {
+  const vis = photos.filter(p => !p.hold), max = Math.max(1, ...vis.map(p => p.n));
+  let tot = 0; for (const p of vis) tot += (p.n - 1) * 2;
+  const pos = new Float32Array(tot * 3), col = new Float32Array(tot * 3);
+  passi = []; let k = 0;
+  for (let j = 0; j < max - 1; j++) {
+    for (const p of vis) { if (j >= p.n - 1) continue; pos.set(p.pts.subarray(j * 3, j * 3 + 6), k * 3); k += 2; }
+    passi.push(k);
+  }
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  lineGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  lineGeo.computeBoundingSphere();
+  coloraScie();
+}
+function coloraScie() {
+  const vis = photos.filter(p => !p.hold), max = Math.max(1, ...vis.map(p => p.n)), col = lineGeo.getAttribute('color'); if (!col) return;
+  const a = col.array; let k = 0;
+  for (let j = 0; j < max - 1; j++) for (const p of vis) {
+    if (j >= p.n - 1) continue;
+    const on = !accese || accese.has(p.id), u = j / p.n;
+    const f = (on ? 1 : .05) * (.28 + .72 * Math.pow(1 - u, 1.4)) * (p.f.provv ? .6 : 1) * (accese && on ? 1.25 : 1);
+    a[k * 3] = a[k * 3 + 3] = p.col.r * f; a[k * 3 + 1] = a[k * 3 + 4] = p.col.g * f; a[k * 3 + 2] = a[k * 3 + 5] = p.col.b * f; k += 2;
+  }
+  col.needsUpdate = true;
+}
+costruisciScie();
+
+// gli impulsi: piccole luci che corrono lungo le scie, ognuna al ritmo della sua foto
+const impGeo = new THREE.BufferGeometry();
+scene.add(new THREE.Points(impGeo, new THREE.PointsMaterial({ size: .22, map: TEX_PUNTO, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })));
+function preparaImpulsi() { impGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(photos.length * 3), 3)); impGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(photos.length * 3), 3)); }
+preparaImpulsi();
+
+// i fili: dalla sfera accesa verso le sue sorelle
+const filiGeo = new THREE.BufferGeometry(); filiGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(60), 3));
+const fili = new THREE.LineSegments(filiGeo, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .35, blending: THREE.AdditiveBlending, depthWrite: false }));
+fili.visible = false; fili.frustumCulled = false; scene.add(fili);
+let filiDa = null, filiA = [];
+function aggiornaFili() {
+  if (!filiDa || !filiA.length) { fili.visible = false; return; }
+  const a = filiGeo.getAttribute('position').array, o = filiDa.sprite.position;
+  filiA.slice(0, 10).forEach((q, i) => { const v = q.sprite.position; a.set([o.x, o.y, o.z, v.x, v.y, v.z], i * 6); });
+  filiGeo.setDrawRange(0, Math.min(10, filiA.length) * 2); filiGeo.getAttribute('position').needsUpdate = true; fili.visible = true;
+}
+
+// ---------------- il suono: nasce dal senso ----------------
+// un ronzio grave dal nucleo; ogni impulso che arriva a una foto suona una nota: acuta se e' piena di vita,
+// grave se e' vuota; scivola se e' di passaggio, trema se e' ferita, risuona a lungo se e' quieta
+let suonoSi = memo('nebulosa-suono') !== 'no';
+let actx = null, master = null, riverbero = null, drone = null, rumore = null;
+function avviaAudio() {
+  if (!suonoSi) return;
+  try {
+    if (!actx) {
+      actx = new (window.AudioContext || window.webkitAudioContext)();
+      const comp = actx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 4;
+      master = actx.createGain(); master.gain.value = .0001; master.connect(comp); comp.connect(actx.destination);
+      const rev = actx.createConvolver(), len = Math.floor(actx.sampleRate * 3), ir = actx.createBuffer(2, len, actx.sampleRate);
+      for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+      rev.buffer = ir; riverbero = actx.createGain(); riverbero.gain.value = .45; riverbero.connect(rev); rev.connect(master);
+      const lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 240; lp.Q.value = .8;
+      const dg = actx.createGain(); dg.gain.value = .0001; lp.connect(dg); dg.connect(master); dg.connect(riverbero);
+      [[55, 'sine', 0, .5], [55, 'triangle', 7, .35], [82.41, 'sine', -5, .3], [110, 'sine', 4, .14]].forEach(([f, type, det, v]) => {
+        const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.value = f; o.detune.value = det; g.gain.value = v; o.connect(g); g.connect(lp); o.start();
+      });
+      const lfo = actx.createOscillator(), lg = actx.createGain(); lfo.frequency.value = .07; lg.gain.value = 90; lfo.connect(lg); lg.connect(lp.frequency); lfo.start();
+      drone = dg;
+      rumore = actx.createBuffer(1, actx.sampleRate * 2, actx.sampleRate); const d = rumore.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (actx.state === 'suspended') actx.resume();
+    master.gain.setTargetAtTime(.9, actx.currentTime, .6);
+  } catch (e) { actx = null; }
+}
+const pronto = () => suonoSi && actx && actx.state === 'running';
+['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev => addEventListener(ev, avviaAudio, { capture: true, passive: true }));
+avviaAudio();   // con «Apri la nebulosa.command» Chrome lo permette subito, senza clic
+const SCALA = [45, 48, 50, 52, 55, 57, 60, 62, 64, 67, 69, 72, 74, 76, 79, 81, 84];   // la minore pentatonica
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+const gradoDi = p => clamp(Math.round(4 + 10 * p.f.mv[0] - 4 * p.f.mv[1] + (p.ph / TAU) * 3), 0, SCALA.length - 1);
+function uscita(pan) {
+  let out = actx.createGain();
+  if (actx.createStereoPanner) { const pn = actx.createStereoPanner(); pn.pan.value = Number.isFinite(pan) ? clamp(pan, -1, 1) : 0; out.connect(pn); pn.connect(master); pn.connect(riverbero); }
+  else { out.connect(master); out.connect(riverbero); }
+  return out;
+}
+function nota(p, vol = 1, pan = 0) {
+  if (!Number.isFinite(vol)) vol = 1;
+  if (!pronto()) return;
+  const [vi, qu, tr, sc] = p.f.mv, t = actx.currentTime, f = mtof(SCALA[gradoDi(p)]);
+  const dur = 1.1 + 1.6 * qu, v = .045 * vol * (p.f.provv ? .6 : 1);
+  const g = uscita(pan);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  const o = actx.createOscillator(), o2 = actx.createOscillator(), g2 = actx.createGain();
+  o.frequency.value = f; o2.frequency.value = f * 2.76; g2.gain.value = .22;   // una campana: la nota e un armonico storto
+  if (sc > .2) { o.frequency.setValueAtTime(f * Math.pow(2, -3 * sc / 12), t); o.frequency.exponentialRampToValueAtTime(f, t + .4); }
+  if (tr > .2) { const l = actx.createOscillator(), lg = actx.createGain(); l.frequency.value = 7.5; lg.gain.value = f * .015 * tr; l.connect(lg); lg.connect(o.frequency); l.start(t); l.stop(t + dur); }
+  o.connect(g); o2.connect(g2); g2.connect(g);
+  o.start(t); o2.start(t); o.stop(t + dur + .05); o2.stop(t + dur + .05);
+}
+function accordo(p, vol = 1) {   // un accordo morbido: quando si vola verso una foto, quando una foto si posa
+  if (!pronto()) return;
+  const t = actx.currentTime, k = gradoDi(p), lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1300;
+  const g = uscita(0); lp.connect(g);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.05 * vol, t + .5); g.gain.exponentialRampToValueAtTime(.0001, t + 3.2);
+  [k, k + 2, k + 4].forEach(i => [-6, 6].forEach(det => { const o = actx.createOscillator(); o.type = 'triangle'; o.frequency.value = mtof(SCALA[clamp(i, 0, SCALA.length - 1)] - 12); o.detune.value = det; o.connect(lp); o.start(t); o.stop(t + 3.3); }));
+}
+function urto() {   // una foto arriva dal telefono: un colpo grave e un soffio che sale
+  if (!pronto()) return;
+  const t = actx.currentTime, o = actx.createOscillator(), g = uscita(0);
+  o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(34, t + .7);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.55, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + 1.4);
+  o.connect(g); o.start(t); o.stop(t + 1.5);
+  const n = actx.createBufferSource(), bp = actx.createBiquadFilter(), gn = uscita(0); n.buffer = rumore; n.loop = true;
+  bp.type = 'bandpass'; bp.Q.value = 1.4; bp.frequency.setValueAtTime(300, t); bp.frequency.exponentialRampToValueAtTime(4000, t + 1.6);
+  gn.gain.setValueAtTime(.0001, t); gn.gain.exponentialRampToValueAtTime(.12, t + .9); gn.gain.exponentialRampToValueAtTime(.0001, t + 2);
+  n.connect(bp); bp.connect(gn); n.start(t); n.stop(t + 2.1);
+}
+const scritteSuono = () => { $('sndbtn').textContent = 'Suono: ' + (suonoSi ? 'sì' : 'no'); };
+$('sndbtn').onclick = () => {
+  suonoSi = !suonoSi; memo('nebulosa-suono', suonoSi ? 'si' : 'no'); scritteSuono();
+  if (suonoSi) avviaAudio(); else if (actx) master.gain.setTargetAtTime(.0001, actx.currentTime, .3);
+};
+scritteSuono();
+
+// ---------------- nascita: all'apertura le foto escono tutte insieme dal nucleo ----------------
+let nascita = reduced ? -1e9 : performance.now();
+const DUR_NASCITA = 4200;
+
+// ---------------- il volo: cliccando una sfera ci si entra dentro, e le sue sorelle le girano intorno ----------------
+let fuoco = null;
+const DUR_VOLO = 1800;
+function vicineDi(p) { return p.f.vicine.filter(([id]) => photoById[id] && !photoById[id].hold).sort((a, b) => b[1] - a[1]).map(e => photoById[e[0]]); }
+function alta(p) {   // da vicino la foto si vede a piena risoluzione
+  if (p.hi) return;
+  const can = document.createElement('canvas'), img = new Image(), tex = new THREE.CanvasTexture(can);
+  tex.colorSpace = THREE.SRGBColorSpace; p.hi = { can, img, tex };
+  disegnaSfera(can, 640, p.col, p.img);
+  img.onload = () => { if (p.hi) { disegnaSfera(can, 640, p.col, img); tex.needsUpdate = true; } };
+  img.src = fullSrc(p.id);
+  p.sprite.material.map = tex; p.sprite.material.needsUpdate = true;
+}
+function bassa(p) { if (!p.hi) return; p.sprite.material.map = p.tex; p.sprite.material.needsUpdate = true; p.hi.tex.dispose(); p.hi = null; }
+function vola(p) {
+  if (!p || p.hold || arrivo) return;
+  if (fuoco && fuoco.p === p && !fuoco.uscita) return;
+  const back = fuoco ? fuoco.back : { pos: camera.position.clone(), target: controls.target.clone() };
+  if (fuoco) { if (fuoco.p !== p) bassa(fuoco.p); fuoco.p.fk = 0; }
+  const sorelle = vicineDi(p).slice(0, 10);
+  photos.forEach(q => { if (q.orbita && !sorelle.includes(q)) q.orbita.su = false; });
+  const centro = p.fine.clone();
+  sorelle.forEach((q, i) => { q.orbita = { i, n: sorelle.length, centro, k: q.orbita ? q.orbita.k : 0, su: true }; });
+  p.orbita && (p.orbita.su = false);
+  const out = p.fine.lengthSq() > 1e-6 ? p.fine.clone().normalize() : new THREE.Vector3(0, 0, 1);
+  const camDest = p.fine.clone().addScaledVector(out, 6.4).add(new THREE.Vector3(0, .9, 0));
+  fuoco = { p, sorelle, t0: performance.now(), cam0: camera.position.clone(), tgt0: controls.target.clone(), camDest, tgtDest: centro.clone(), back, uscita: false, arrivato: false };
+  controls.enabled = false; controls.autoRotate = false; clearTimeout(fermo);
+  accese = new Set([p.id, ...sorelle.map(q => q.id)]); coloraScie();
+  filiDa = p; filiA = sorelle;
+  alta(p);
+  document.body.classList.add('infuoco');
+  mostraPannello(p);
+  accordo(p);
+}
+function torna() {
+  if (!fuoco || fuoco.uscita) return;
+  Object.assign(fuoco, { uscita: true, arrivato: false, t0: performance.now(), cam0: camera.position.clone(), tgt0: controls.target.clone(), camDest: fuoco.back.pos, tgtDest: fuoco.back.target });
+  fuoco.sorelle.forEach(q => { if (q.orbita) q.orbita.su = false; });
+  controls.enabled = false;
+  accese = null; coloraScie(); filiDa = null; filiA = [];
+  $('fuoco').classList.remove('on'); document.body.classList.remove('infuoco');
+}
+function passoVolo(now) {
+  if (!fuoco) return;
+  const u = easeIO(clamp((now - fuoco.t0) / DUR_VOLO, 0, 1));
+  if (!fuoco.arrivato) { camera.position.lerpVectors(fuoco.cam0, fuoco.camDest, u); controls.target.lerpVectors(fuoco.tgt0, fuoco.tgtDest, u); }
+  fuoco.p.fk = fuoco.uscita ? 1 - u : u;
+  if (u >= 1 && !fuoco.arrivato) {
+    fuoco.arrivato = true; controls.enabled = true;
+    if (fuoco.uscita) {
+      bassa(fuoco.p); fuoco.p.fk = 0; fuoco = null; riprendiGiro();
+      const attese = photos.filter(q => q.pending);
+      if (attese.length) { attese.forEach(q => { aggiornaFoto(q, q.pending); q.pending = null; }); costruisciScie(); counts(); renderCron(); }
+    }
+  }
+}
+function mostraPannello(p) {
+  const a = cron.get(p.id), n = fuoco.sorelle.length, qui = ['localhost', '127.0.0.1'].includes(location.hostname);
+  $('fk').innerHTML = (p === ultimaArrivata ? '<span class="nuova">appena arrivata</span> · ' : 'una foto · ') + (n ? `e le sue ${n} sorelle, che le girano intorno` : '');
+  $('fl').textContent = p.f.lettura || '';
+  $('fa').innerHTML = a ? `<b>Arrivata dal telefono${a.nome ? ' · foto di ' + esc(a.nome) : ''} · ${quando(a.quando)}</b>${a.frase ? '«' + esc(a.frase) + '»' : ''}` +
+    (p.f.provv ? `<br><span class="nota">Non ancora letta: per ora sta vicino alle foto che le somigliano ${p.f.come === 'frase' ? 'per la sua frase' : 'nell\'aspetto'}.</span>` : '') +
+    (qui ? `<br><button data-elimina="${p.id}">Rimuovi questa foto</button>` : '') : '';
+  $('fa').style.display = a ? '' : 'none';
+  $('fuoco').style.setProperty('--c', css(p.col));
+  $('fuoco').classList.add('on');
+}
+$('fx').onclick = torna;
+
+// ---------------- la tua foto ti porta dentro ----------------
+// l'unica cosa che muove la nebulosa da sola: quando arriva una foto dal QR, dopo il suo urto la camera vola dentro di lei
+// (lettura, frase, sorelle in orbita), resta un po' e poi torna alla vista d'insieme che gira piano.
+// Se qualcuno sta usando il mouse, la lascia fare e non torna indietro da sola.
+const RIPOSO = 15000, SOSTA_NUOVA = 20000;
+const regia = { nuova: null, ritorno: 0 };
+let ultimoTocco = -1e9, ultimaArrivata = null;
+['pointermove', 'pointerdown', 'wheel', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, () => { ultimoTocco = performance.now(); }, { passive: true }));
+function passoRegia(now) {
+  if (regia.nuova && !arrivo) {
+    const p = regia.nuova; regia.nuova = null;
+    if (photoById[p.id] && !(fuoco && fuoco.uscita)) { ultimaArrivata = p; vola(p); regia.ritorno = now + DUR_VOLO + SOSTA_NUOVA; }
+    else regia.nuova = p;
+    return;
+  }
+  const libera = now - ultimoTocco > RIPOSO;
+  if (fuoco && fuoco.arrivato && !fuoco.uscita) { controls.autoRotate = libera && !reduced; controls.autoRotateSpeed = .9; }   // gira piano intorno alla foto
+  else if (!fuoco) controls.autoRotateSpeed = .35;
+  if (regia.ritorno && now > regia.ritorno && libera && fuoco && fuoco.arrivato && !fuoco.uscita) { regia.ritorno = 0; torna(); }
+}
+
+// ---------------- interazione ----------------
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), mpx = { x: -1, y: -1 };
+let hover = null, giu = null, mossoMouse = false;
+cv.addEventListener('pointermove', e => { mpx.x = e.clientX; mpx.y = e.clientY; mouse.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); mossoMouse = true; });
+cv.addEventListener('pointerleave', () => { mpx.x = -1; setHover(null); });
+cv.addEventListener('pointerdown', e => { giu = { x: e.clientX, y: e.clientY }; });
+cv.addEventListener('pointerup', e => {
+  if (giu && Math.hypot(e.clientX - giu.x, e.clientY - giu.y) < 5) { if (hover) vola(hover); else if (fuoco) torna(); }
+  giu = null;
+});
+function setHover(p) {
+  if (p === hover) return;
+  hover = p;
+  cv.style.cursor = p ? 'pointer' : 'grab';
+  if (fuoco) return;   // durante il volo restano accese la foto e le sue sorelle
+  accese = p ? new Set([p.id, ...vicineDi(p).map(q => q.id)]) : null;
+  coloraScie();
+  filiDa = p; filiA = p ? vicineDi(p) : [];
+}
+function pick() {
+  if (!mossoMouse || mpx.x < 0 || arrivo) return;
+  mossoMouse = false;
+  ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObjects(sprites, false).find(h => !h.object.userData.p.hold && h.object.material.opacity > .5);
+  setHover(hit ? hit.object.userData.p : null);
+}
+$('home').onclick = () => { if (fuoco) { torna(); return; } controls.target.set(0, 0, 0); camera.position.copy(CASA); controls.autoRotate = !reduced; };
+$('palbtn').onclick = () => {
+  palette = palette === 'fuoco' ? 'spettro' : 'fuoco'; memo('nebulosa-colori', palette); scritteColori();
+  for (const p of photos) { p.col = colore(p.f); ridisegna(p); }
+  coloraScie();
+};
+const scritteColori = () => { $('palbtn').textContent = 'Colori: ' + (palette === 'fuoco' ? 'temperatura' : 'spettro'); };
+scritteColori();
+addEventListener('keydown', e => { if (e.key === 'Escape') { if (fuoco) torna(); else $('home').click(); } });
+
+// ---------------- l'interfaccia si nasconde da sola, e torna appena ti muovi ----------------
+let calmaT = 0;
+function sveglia() {
+  document.body.classList.remove('calma'); clearTimeout(calmaT);
+  calmaT = setTimeout(() => { if (!$('cron').classList.contains('open') && !$('qr').classList.contains('open')) document.body.classList.add('calma'); }, 4000);
+}
+['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev => addEventListener(ev, sveglia, { passive: true }));
+sveglia();
+
+// ---------------- ogni fotogramma ----------------
+const orb = new THREE.Vector3(), dx = new THREE.Vector3(), dy = new THREE.Vector3();
+let ultimoDrone = 0;
+function frame(now) {
+  requestAnimationFrame(frame);
+  const t = now / 1000;
+  passoVolo(now);
+  passoMano(now);
+  controls.update();
+  // nascita
+  const nb = clamp((now - nascita) / DUR_NASCITA, 0, 1), eb = easeIO(nb);
+  if (passi.length) lineGeo.setDrawRange(0, nb < 1 ? passi[Math.min(passi.length - 1, Math.floor(eb * (passi.length - 1)))] : Infinity);
+  // il nucleo respira; quando arriva una foto si accende
+  const lampo = arrivo ? Math.max(0, 1 - Math.abs((now - arrivo.t0) - 500) / 900) : 0;
+  nucleo.scale.setScalar(5.5 * (1 + .05 * Math.sin(t * 2)) * (1 + 1.4 * lampo) * (nb < 1 ? .6 + .4 * eb + .8 * (1 - nb) : 1));
+  alone.scale.setScalar(22 * (1 + .6 * lampo)); alone.material.opacity = .55 + .3 * lampo;
+  // il ronzio: piu' forte vicino al nucleo
+  if (pronto() && drone && now - ultimoDrone > 200) { ultimoDrone = now; drone.gain.setTargetAtTime(.05 + .11 * clamp(1 - camera.position.length() / 50, 0, 1), actx.currentTime, .5); }
+  // le orbite delle sorelle, rivolte verso chi guarda
+  camera.matrixWorld.extractBasis(dx, dy, orb);
+  const pos = impGeo.getAttribute('position'), col = impGeo.getAttribute('color');
+  let note = 0;
+  photos.forEach((p, i) => {
+    if (p.hold) { pos.setXYZ(i, 0, 0, 0); col.setXYZ(i, 0, 0, 0); return; }
+    const [vi, qu, tr] = p.f.mv;
+    const j = nb < 1 ? Math.min(p.n - 1, Math.floor(eb * passi.length)) : p.n - 1;
+    const b = j * 3; p.sprite.position.set(p.pts[b], p.pts[b + 1], p.pts[b + 2]);
+    if (!reduced && nb >= 1) {
+      const a = .05 + .12 * vi;
+      p.sprite.position.x += Math.sin(t * (.4 + vi) + p.ph) * a + (tr ? Math.sin(t * 19 + p.ph * 5) * .02 * tr : 0);
+      p.sprite.position.y += Math.cos(t * (.33 + vi * .8) + p.ph * 1.3) * a;
+    }
+    let sc = p.base * (1 + .06 * vi * Math.sin(t * 2.4 + p.ph));
+    if (p.orbita) {   // sorella: si stacca dalla sua scia e gira intorno alla foto scelta
+      const o = p.orbita; o.k = clamp(o.k + (o.su ? .022 : -.03), 0, 1);
+      const e = easeIO(o.k), ang = o.i / o.n * TAU + t * .12, R = 2.35 + .25 * Math.sin(t * .7 + o.i);
+      orb.copy(o.centro).addScaledVector(dx, Math.cos(ang) * R).addScaledVector(dy, Math.sin(ang) * R * .82);
+      p.sprite.position.lerp(orb, e); sc *= 1 + .45 * e;
+      if (o.k <= 0 && !o.su) p.orbita = null;
+    }
+    if (p.fk) { p.sprite.position.lerp(p.fine, p.fk); sc = sc + (1.55 - sc) * easeIO(p.fk); }
+    if (accese && !fuoco) sc *= p === hover ? 1.9 : accese.has(p.id) ? 1.3 : .85;
+    if (fuoco && p === hover && p !== fuoco.p) sc *= 1.25;
+    if (p.lampo && now < p.lampo) sc *= 1 + .8 * Math.sin((p.lampo - now) / 2200 * Math.PI);
+    p.sprite.scale.setScalar(sc);
+    p.sprite.material.opacity = accese && !accese.has(p.id) ? .1 : 1;
+    // l'impulso, e la sua nota quando arriva alla foto
+    if (!reduced && nb >= 1) {
+      const sp = Math.max(.03, .07 + .25 * vi - .04 * qu), u = (t * sp + p.ph) % 1, k = Math.floor(u * (p.n - 1)) * 3;
+      pos.setXYZ(i, p.pts[k], p.pts[k + 1], p.pts[k + 2]);
+      const f = (accese && !accese.has(p.id) ? .05 : 1) * (1 - u * .6);
+      col.setXYZ(i, p.col.r * f, p.col.g * f, p.col.b * f);
+      if (u < p.uPrev && pronto() && note < 2) {
+        const acc = accese ? accese.has(p.id) : true, prob = accese ? (acc ? .5 : 0) : .03;
+        if (Math.random() < prob) {
+          const d = camera.position.distanceTo(p.sprite.position), q = p.sprite.position.clone().project(camera);
+          if (q.z < 1) { nota(p, clamp(14 / d, .25, 1.4), q.x * .8); note++; }
+        }
+      }
+      p.uPrev = u;
+    } else col.setXYZ(i, 0, 0, 0);
+  });
+  pos.needsUpdate = true; col.needsUpdate = true;
+  aggiornaFili();
+  pick();
+  passoArrivo(now);
+  passoRegia(now);
+  composer.render();
+  $('intro').classList.toggle('hide', camera.position.length() < 20 || !!fuoco);
+  updatePreview();
+}
+
+// ---------------- anteprima: solo per le foto arrivate dai telefoni ----------------
+let pvKey = null;
+function updatePreview() {
+  const pv = $('pv'), a = hover && cron.get(hover.id);
+  if (!a || (fuoco && hover === fuoco.p)) { pv.style.display = 'none'; pvKey = null; return; }
+  if (pvKey !== hover.id) {
+    pvKey = hover.id;
+    pv.innerHTML = `<div class="k" style="color:#f0c88c">dal telefono${a.nome ? ' di ' + esc(a.nome) : ''} · ${quando(a.quando)}</div>${a.frase ? `<q>«${esc(a.frase)}»</q>` : ''}${hover.f.provv ? '<div class="k">non ancora letta · posto provvisorio</div>' : ''}`;
+  }
+  pv.style.display = 'block';
+  pv.style.left = clamp(mpx.x + 30, 8, innerWidth - pv.offsetWidth - 8) + 'px'; pv.style.top = clamp(mpx.y + 16, 70, innerHeight - pv.offsetHeight - 8) + 'px';
+}
+const css = c => `rgb(${c.toArray().map(v => Math.round(v * 255)).join(',')})`;
+const cssA = (c, a) => `rgba(${c.toArray().map(v => Math.round(v * 255)).join(',')},${a})`;
+
+// ---------------- foto dai telefoni, in tempo reale: ogni arrivo e' un nuovo urto ----------------
+const LIVE = location.protocol.startsWith('http');
+const QUI = ['localhost', '127.0.0.1'].includes(location.hostname);
+const cron = new Map();
+let online = false, arrivate = 0;
+const arrQueue = [];
+let arrivo = null, fineUltimo = 0;
+const PAUSA = 1200;
+function counts() {
+  const n = photos.length, prov = photos.filter(p => p.f.provv).length;
+  $('st').textContent = n + ' foto';
+  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Al centro c'è il punto in cui tutti questi ricordi si toccano: da lì ogni foto parte come una particella. Le foto che raccontano la stessa cosa volano nella stessa direzione; chi è piena di vita si avvolge in spirali strette, chi è vuota va dritta e lontano, chi è ferita trema, chi è di passaggio disegna archi lunghi. Le più uniche arrivano più lontano.` +
+    (prov ? ` ${prov === 1 ? '1 foto, quasi grigia, ha' : prov + ' foto, quasi grigie, hanno'} ancora un posto provvisorio: aspetta${prov === 1 ? '' : 'no'} di essere lett${prov === 1 ? 'a' : 'e'}.` : '');
+  $('qrmeta').textContent = arrivate + ' foto arrivate dai telefoni';
+}
+function addArrival(a, animate) {
+  if (!a.dato || photoById[a.id] || arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id)) return;
+  if (animate) { arrQueue.push(a); return; }
+  makePhoto(a.id, a.dato); costruisciScie(); preparaImpulsi(); counts();
+}
+function nextArrival(now) {
+  if (arrivo || !arrQueue.length || now < fineUltimo + PAUSA) return;
+  if (fuoco) { torna(); return; }   // l'arrivo deve vedersi: prima si torna alla nebulosa
+  const a = arrQueue.shift(), p = makePhoto(a.id, a.dato); p.hold = true; preparaImpulsi(); counts();
+  setHover(null);
+  const coda = arrQueue.length, f = coda === 0 ? 1 : coda <= 2 ? .72 : .5;
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p.pts, 3)); g.setDrawRange(0, 0);
+  const linea = new THREE.Line(g, new THREE.LineBasicMaterial({ color: p.col, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const onda = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX_ANELLO, color: p.col, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 }));
+  scene.add(linea, onda);
+  arrivo = { a, p, linea, onda, t0: now, T1: 1700 * f + 300, T2: 1700 * f + 300 + 4800 * f, T3: 1700 * f + 300 + 4800 * f + 1300 };
+  $('arrK').textContent = 'Nuova foto' + (a.nome ? ' · da ' + a.nome : ' · dal telefono');
+  $('arrW').textContent = a.frase ? '«' + a.frase + '»' : '';
+  $('arrQ').textContent = arrQueue.length ? '+ ' + arrQueue.length + ' in arrivo' : '';
+  $('arrivo').style.top = 'auto'; $('arrivo').style.bottom = '110px';
+  $('arrivo').classList.add('on');
+  urto();
+  renderCron();
+}
+function passoArrivo(now) {
+  nextArrival(now);
+  if (!arrivo) return;
+  const { p, linea, onda, T1, T2, T3 } = arrivo, el = now - arrivo.t0, s = p.sprite;
+  s.material.opacity = 1;
+  if (el < T1) {                                            // 1. nasce nel nucleo, grande
+    s.position.set(0, 0, 0); s.scale.setScalar(p.base * 5.5 * sstep(0, T1 * .7, el));
+  } else if (el < T2) {                                     // 2. parte, lasciando la sua scia
+    if (!arrivo.partita) { arrivo.partita = true; $('arrivo').classList.remove('on'); }
+    const u = easeIO((el - T1) / (T2 - T1)), j = Math.floor(u * (p.n - 1));
+    s.position.set(p.pts[j * 3], p.pts[j * 3 + 1], p.pts[j * 3 + 2]);
+    s.scale.setScalar(p.base * (5.5 + (1.4 - 5.5) * sstep(0, .6, u)));
+    linea.geometry.setDrawRange(0, j + 1);
+  } else {                                                  // 3. si posa: un'onda
+    const v = clamp((el - T2) / (T3 - T2), 0, 1);
+    if (!arrivo.posata) { arrivo.posata = true; accordo(p, .8); }
+    s.position.copy(p.fine); s.scale.setScalar(p.base * (1.4 - .4 * v));
+    onda.position.copy(p.fine); onda.scale.setScalar(p.base * (1 + 5 * v)); onda.material.opacity = .9 * (1 - v);
+    if (el >= T3) {
+      p.hold = false; scene.remove(linea, onda); linea.geometry.dispose();
+      costruisciScie(); p.lampo = now + 2200; toast(arrivo.a); arrivo = null; fineUltimo = now; renderCron(); regia.nuova = p; return;
+    }
+  }
+}
+function removePhoto(id) {
+  const p = photoById[id]; if (!p) return;
+  if (fuoco && (fuoco.p === p || fuoco.sorelle.includes(p))) torna();
+  scene.remove(p.sprite); p.tex.dispose(); p.sprite.material.dispose(); if (p.hi) p.hi.tex.dispose();
+  photos.splice(photos.indexOf(p), 1); sprites.splice(sprites.indexOf(p.sprite), 1); delete photoById[id];
+  if (hover === p) setHover(null);
+  costruisciScie(); preparaImpulsi();
+}
+function removeArrival(id) {
+  cron.delete(id); const qi = arrQueue.findIndex(x => x.id === id); if (qi >= 0) arrQueue.splice(qi, 1);
+  if (arrivo && arrivo.a.id === id) { scene.remove(arrivo.linea, arrivo.onda); arrivo = null; $('arrivo').classList.remove('on'); }
+  if (photoById[id]) { removePhoto(id); arrivate--; }
+  renderCron(); counts();
+}
+function letta(id, dato) {   // il lettore ha letto una foto: prende il suo posto definitivo
+  const p = photoById[id]; if (!p || !dato) return;
+  const a = cron.get(id); if (a) a.dato = dato;
+  if (p.hold) { p.f = dato; return; }
+  if (fuoco && (fuoco.p === p || fuoco.sorelle.includes(p))) { p.pending = dato; return; }   // la applico quando si torna alla nebulosa
+  aggiornaFoto(p, dato); costruisciScie(); counts(); renderCron();
+}
+function toast(a) {
+  const p = photoById[a.id]; if (!p) return;
+  const el = document.createElement('div'); el.className = 'toast'; el.style.borderColor = cssA(p.col, .6);
+  el.innerHTML = `<img src="${thumbSrc(a.id)}" alt="" style="box-shadow:0 0 0 2px ${css(p.col)}"><div><div class="k">Nuova foto${a.nome ? ' · ' + esc(a.nome) : ''}</div><div class="w">${esc(a.frase || 'è entrata nella memoria')}</div></div>`;
+  el.onclick = () => vola(photoById[a.id]);
+  $('toasts').prepend(el);
+  while ($('toasts').children.length > 4) $('toasts').lastChild.remove();
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 700); }, 11000);
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-elimina]'); if (!b) return;
+  e.stopPropagation();
+  if (!confirm('Rimuovere questa foto dalla nebulosa? Verrà cancellata anche dal computer, insieme al suo originale.')) return;
+  await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.elimina }) });
+}, true);
+
+// ---------------- la cronologia ----------------
+function quando(q) {
+  if (!q) return '';
+  const [d, h] = q.split(' '), n = new Date(), oggi = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
+  return (d === oggi ? 'oggi' : d.slice(8, 10) + '/' + d.slice(5, 7)) + ' ' + h.slice(0, 5);
+}
+function renderCron() {
+  const list = [...cron.values()].reverse();
+  $('cronN').textContent = list.length ? '· ' + list.length : '';
+  if (!$('cron').classList.contains('open')) return;
+  $('cronC').innerHTML = (online ? '<span style="color:#7fd38a">● in diretta</span>' : '<span style="color:#e6a08c">○ mi sto ricollegando…</span>') + ' · ' +
+    (list.length === 1 ? '1 foto arrivata' : list.length + ' foto arrivate') + (QUI && list.length ? '<br><button id="cronAll">Rimuovi tutte</button>' : '');
+  $('cronL').innerHTML = list.length ? list.map(a => {
+    const p = photoById[a.id], c = p ? css(p.col) : '#999', att = arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id);
+    return `<div class="ci" data-apri="${a.id}"><img src="${thumbSrc(a.id)}" alt="" loading="lazy" style="box-shadow:0 0 0 2px ${c}"><div style="flex:1;min-width:0"><div class="k">${esc(a.nome || 'anonimo')} · ${quando(a.quando)}${att ? ' · <span class="att">sta entrando</span>' : ''}${p && p.f.provv ? ' · posto provvisorio' : p ? ' · letta' : ''}</div>` +
+      `<div class="w">${p && p.f.lettura ? esc(p.f.lettura) : a.frase ? '«' + esc(a.frase) + '»' : ''}</div>${QUI ? `<button data-elimina="${a.id}">Rimuovi</button>` : ''}</div></div>`;
+  }).join('') : '<div class="vuota">Ancora nessuna foto. Inquadra il QR code con un telefono: ogni foto che arriva comparirà qui, con chi l\'ha mandata e quando.</div>';
+}
+$('cronbtn').onclick = () => { $('qr').classList.remove('open'); $('cron').classList.toggle('open'); renderCron(); };
+$('cronx').onclick = () => $('cron').classList.remove('open');
+$('cronL').addEventListener('click', e => { if (e.target.closest('button')) return; const it = e.target.closest('[data-apri]'); if (!it) return; const p = photoById[it.dataset.apri]; if (p && !p.hold) { $('cron').classList.remove('open'); vola(p); } });
+$('cron').addEventListener('click', async e => {
+  if (e.target.id !== 'cronAll') return;
+  if (!confirm('Rimuovere tutte le ' + cron.size + ' foto arrivate dai telefoni? Verranno cancellate anche dal computer, insieme ai loro originali.')) return;
+  for (const id of [...cron.keys()]) await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }).catch(() => {});
+});
+let inViaggio = 0, chiViaggia = '';
+function viaggio(d, nome) {
+  inViaggio = Math.max(0, inViaggio + d); if (nome != null) chiViaggia = nome;
+  $('inarr').textContent = '● Una foto sta arrivando' + (chiViaggia ? ' da ' + chiViaggia : '') + (inViaggio > 1 ? ' (+' + (inViaggio - 1) + ')' : '') + '…';
+  $('inarr').classList.toggle('on', inViaggio > 0 && !arrivo);
+}
+setInterval(() => $('inarr').classList.toggle('on', inViaggio > 0 && !arrivo), 500);
+function arrivata(a, animate) { if (!cron.has(a.id)) { cron.set(a.id, a); arrivate++; } addArrival(a, animate); renderCron(); }
+if (LIVE) {
+  fetch('/api/arrivi', { cache: 'no-store' }).then(r => r.ok ? r.json() : []).then(list => {
+    // ?prova-arrivo nell'indirizzo: rifa' l'ingresso dell'ultima foto arrivata
+    const prova = /prova-arrivo/.test(location.search) && list.length ? list.pop() : null;
+    list.forEach(a => arrivata(a, false));
+    if (prova) { cron.set(prova.id, prova); arrivate++; removePhoto(prova.id); setTimeout(() => { addArrival(prova, true); renderCron(); }, 4800); }
+    counts();
+  }).catch(() => {});
+  const conn = () => {
+    const es = new EventSource('/api/eventi');
+    es.onopen = () => setOnline(true);
+    es.addEventListener('inarrivo', e => { viaggio(+1, JSON.parse(e.data).nome || ''); setTimeout(() => viaggio(-1), 30000); });
+    es.addEventListener('annullata', () => viaggio(-1));
+    es.addEventListener('foto', e => { viaggio(-1); arrivata(JSON.parse(e.data), true); });
+    es.addEventListener('letta', e => { const d = JSON.parse(e.data); letta(d.id, d.dato); });
+    es.addEventListener('rimossa', e => removeArrival(JSON.parse(e.data).id));
+    es.onerror = () => { setOnline(false); es.close(); setTimeout(conn, 2000); };
+  };
+  conn();
+  // per sicurezza ogni 5 secondi controllo l'elenco: se la diretta si e' persa qualcosa (un arrivo, una lettura), lo recupero
+  setInterval(() => fetch('/api/arrivi', { cache: 'no-store' }).then(r => r.json()).then(list => {
+    const ids = new Set(list.map(a => a.id));
+    list.forEach(a => {
+      if (!cron.has(a.id)) arrivata(a, true);
+      else if (a.dato && !a.dato.provv && photoById[a.id] && photoById[a.id].f.provv) letta(a.id, a.dato);
+    });
+    [...cron.keys()].forEach(id => { if (!ids.has(id)) removeArrival(id); });
+  }).catch(() => setOnline(false)), 5000);
+}
+function setOnline(v) { online = v; $('liveDot').classList.toggle('on', v); $('liveDot').title = v ? 'in diretta' : 'non collegata'; renderCron(); }
+$('qrbtn').onclick = async () => {
+  $('cron').classList.remove('open');
+  $('qr').classList.toggle('open');
+  if (!$('qr').classList.contains('open')) return;
+  if (!LIVE) { $('qrurl').textContent = 'Apri la nebulosa con «Apri la nebulosa.command» per ricevere foto dai telefoni.'; return; }
+  try {
+    const inf = await (await fetch('/api/info')).json();
+    $('qrurl').textContent = inf.carica; counts();
+    const drawQR = () => { $('qrcode').innerHTML = ''; new QRCode($('qrcode'), { text: inf.carica, width: 180, height: 180, colorDark: '#06050a', colorLight: '#ffffff' }); };
+    if (window.QRCode) drawQR();
+    else { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload = drawQR; sc.onerror = () => { $('qrcode').textContent = 'QR non disponibile senza internet: usa l’indirizzo qui sotto.'; $('qrcode').style.cssText += ';color:#06050a;font-size:12px;text-align:center'; }; document.head.appendChild(sc); }
+  } catch (e) { $('qrurl').textContent = 'Il server non risponde.'; }
+};
+$('qrx').onclick = () => $('qr').classList.remove('open');
+
+// il QR fisso nell'angolo
+if (LIVE) fetch('/api/info').then(r => r.json()).then(inf => {
+  const disegna = () => { $('qrfc').innerHTML = ''; new QRCode($('qrfc'), { text: inf.carica, width: 92, height: 92, colorDark: '#06050a', colorLight: '#ffffff' }); $('qrfisso').classList.add('on'); };
+  if (window.QRCode) disegna();
+  else { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload = disegna; document.head.appendChild(sc); }
+}).catch(() => {});
+
+counts();
+cv.style.cursor = 'grab';
+requestAnimationFrame(frame);
+
+// ---------------- la mano: si esplora la nebulosa senza segni con le dita, vista dalla webcam (MediaPipe) ----------------
+// conta solo dove sta la mano, e se resta ferma:
+// - la mano diventa una luce sullo schermo, attirata dalla foto piu' vicina (una calamita: non serve centrarla)
+// - foto isolata: tenendo ferma la mano un anello si riempie e si vola dentro
+// - zona fitta: tenendo ferma la mano le foto vicine si aprono a ventaglio, grandi e distanziate; si porta la mano
+//   su quella che si vuole e la si tiene ferma per entrarci; allontanando la mano il ventaglio si chiude
+// - dentro una foto: la luce si aggancia alle sorelle che le girano intorno
+// - basta spostare un po' la mano dal centro e la nebulosa gira da quella parte, sempre piu' veloce verso il bordo
+// - abbassando la mano (fuori dall'inquadratura) per due secondi si torna alla nebulosa
+// Le immagini della webcam restano dentro il browser: non vengono salvate ne' inviate.
+const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+const MODELLO_MANO = 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
+const OSSA_MANO = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]];
+const SOSTA_MANO = 1500;        // mano ferma su una foto isolata per entrarci (ms)
+const SOSTA_VENTAGLIO = 1000;   // mano ferma su una zona fitta per aprire il ventaglio (ms)
+const SOSTA_SCELTA = 1200;      // mano ferma su una foto del ventaglio per entrarci (ms)
+const VIA_MANO = 2000;          // tempo senza mano per tornare alla nebulosa (ms)
+const ZONA = { x: .26, y: .2, w: .48, h: .45 };   // la parte dell'inquadratura che copre tutto lo schermo: basta muovere poco la mano
+const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, entrataConMano: false, ventaglio: null };
+let rilevatore = null, ultimoVideo = -1, ultimoPasso = 0;
+const video = $('manoVideo'), anteprima = $('manoCanvas'), ctxAnte = anteprima.getContext('2d');
+
+async function avviaMano() {
+  try {
+    const { FilesetResolver, HandLandmarker } = await import(MP + '/vision_bundle.mjs');
+    const files = await FilesetResolver.forVisionTasks(MP + '/wasm');
+    rilevatore = await HandLandmarker.createFromOptions(files, {
+      baseOptions: { modelAssetPath: MODELLO_MANO, delegate: 'GPU' },
+      runningMode: 'VIDEO', numHands: 2, minHandDetectionConfidence: .55, minHandPresenceConfidence: .55, minTrackingConfidence: .5,
+    });
+    await apriCamera(memo('nebulosa-camera'));
+  } catch (e) {
+    $('manoStato').textContent = 'La mano non è disponibile: ' + (e.message || e);
+  }
+}
+async function apriCamera(id) {
+  if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+  const vincoli = { width: 640, height: 480, ...(id ? { deviceId: { exact: id } } : { facingMode: 'user' }) };
+  let flusso;
+  try { flusso = await navigator.mediaDevices.getUserMedia({ video: vincoli, audio: false }); }
+  catch (e) { if (id) return apriCamera(null); $('manoStato').textContent = 'Webcam non disponibile o permesso negato.'; return; }
+  video.srcObject = flusso; await video.play();
+  // l'elenco delle telecamere (i nomi si vedono solo dopo il permesso): se non ne ho scelta una, preferisco quella del Mac
+  const camere = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput');
+  const attuale = flusso.getVideoTracks()[0].getSettings().deviceId;
+  if (!id) { const mac = camere.find(c => /facetime|integrat|built/i.test(c.label)); if (mac && mac.deviceId !== attuale) return apriCamera(mac.deviceId); }
+  $('manoCamera').innerHTML = camere.map(c => `<option value="${c.deviceId}"${c.deviceId === attuale ? ' selected' : ''}>${esc(c.label || 'telecamera')}</option>`).join('');
+  $('manoStato').textContent = 'Alza una mano davanti allo schermo';
+}
+$('manoCamera').onchange = e => { memo('nebulosa-camera', e.target.value); apriCamera(e.target.value); };
+addEventListener('keydown', e => { if (e.key === 'v' || e.key === 'V') $('mano').classList.toggle('nascosta'); });
+
+// dove sta la mano: il centro del palmo (polso e nocche), che non cambia se le dita si muovono
+function palmo(L) {
+  const k = [0, 5, 9, 13, 17];
+  return { x: k.reduce((s, i) => s + L[i].x, 0) / 5, y: k.reduce((s, i) => s + L[i].y, 0) / 5 };
+}
+function leggiMano(now) {
+  if (window.__manoFinta !== undefined) return { L: window.__manoFinta };   // per provare senza webcam: una mano finta messa dalla console (null = nessuna mano)
+  if (!rilevatore || video.readyState < 2 || video.currentTime === ultimoVideo) return null;
+  ultimoVideo = video.currentTime;
+  const r = rilevatore.detectForVideo(video, now);
+  // la mano che comanda: la piu' grande, cioe' la piu' vicina
+  let L = null, best = 0;
+  (r.landmarks || []).forEach(m => { const s = Math.hypot(m[0].x - m[9].x, m[0].y - m[9].y); if (s > best) { best = s; L = m; } });
+  disegnaAnteprima(r.landmarks || [], L);
+  return { L };
+}
+
+// la calamita: le foto (visibili) vicine al punto della mano, sullo schermo, dalla piu' vicina
+const proiezione = new THREE.Vector3();
+const schermoDi = p => { proiezione.copy(p.sprite.position).project(camera); return { x: (proiezione.x + 1) / 2 * innerWidth, y: (1 - proiezione.y) / 2 * innerHeight, z: proiezione.z }; };
+function vicineAllaMano(x, y) {
+  const R = Math.max(70, innerWidth * .06);
+  const candidate = fuoco && fuoco.arrivato && !fuoco.uscita ? fuoco.sorelle : photos;
+  const out = [];
+  for (const p of candidate) {
+    if (p.hold || p.sprite.material.opacity < .5) continue;
+    const s = schermoDi(p); if (s.z > 1) continue;   // dietro la camera
+    const d = Math.hypot(s.x - x, s.y - y);
+    if (d < R) out.push({ p, d, s });
+  }
+  return out.sort((a, b) => a.d - b.d);
+}
+
+const sferica = new THREE.Spherical(), scarto = new THREE.Vector3();
+function giraVersoLaMano(dt) {
+  if (fuoco || mano.ventaglio) return;                 // dentro una foto o col ventaglio aperto la mano serve a scegliere
+  const ox = mano.x - .5, oy = mano.y - .5, d = Math.hypot(ox, oy);
+  const forza = sstep(.12, .42, d) * (mano.carica > 0 ? .3 : 1);   // comincia gia' a meta' strada; piu' piano mentre si sta scegliendo
+  if (forza <= 0) return;
+  scarto.copy(camera.position).sub(controls.target); sferica.setFromVector3(scarto);
+  sferica.theta -= ox / d * forza * .55 * dt;          // mano a destra: la nebulosa gira verso destra
+  sferica.phi = clamp(sferica.phi - oy / d * forza * .3 * dt, .35, Math.PI - .35);
+  scarto.setFromSpherical(sferica); camera.position.copy(controls.target).add(scarto);
+}
+
+// ---------------- il ventaglio: le foto vicine si aprono intorno alla mano, grandi e distanziate ----------------
+function apriVentaglio(lista, cx, cy) {
+  const size = clamp(innerWidth * .07, 72, 124), n = lista.length;
+  const r = Math.max(size * 1.75, n * size * 1.25 / TAU);
+  cx = clamp(cx, r + size, innerWidth - r - size); cy = clamp(cy, r + size, innerHeight - r - size);
+  const box = $('ventaglio'); box.innerHTML = ''; box.style.setProperty('--cx', cx + 'px'); box.style.setProperty('--cy', cy + 'px'); box.style.setProperty('--r', (r + size) + 'px');
+  const items = lista.map((p, i) => {
+    const a = -Math.PI / 2 + i / n * TAU, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r, da = schermoDi(p);
+    const el = document.createElement('div'); el.className = 'vf';
+    el.style.cssText = `width:${size}px;height:${size}px;background-image:url(${thumbSrc(p.id)});border-color:${css(p.col)};box-shadow:0 0 24px ${cssA(p.col, .5)};transform:translate(${da.x - size / 2}px,${da.y - size / 2}px) scale(.2)`;
+    box.appendChild(el);
+    return { p, x, y, el, size };
+  });
+  box.classList.add('on');
+  requestAnimationFrame(() => items.forEach(it => { it.el.style.transform = `translate(${it.x - it.size / 2}px,${it.y - it.size / 2}px) scale(1)`; }));
+  mano.ventaglio = { items, cx, cy, r, size, scelto: null, da: 0, fuori: 0 };
+  mano.bersaglio = null; mano.carica = 0; setHover(null);
+  accese = new Set(lista.map(p => p.id)); coloraScie();   // si accendono solo le foto del ventaglio
+  accordo(lista[0], .6);
+}
+function chiudiVentaglio() {
+  if (!mano.ventaglio) return;
+  const box = $('ventaglio'); box.classList.remove('on');
+  mano.ventaglio = null; mano.carica = 0;
+  setTimeout(() => { if (!mano.ventaglio) box.innerHTML = ''; }, 350);
+  if (!fuoco) { accese = null; coloraScie(); }
+}
+function sceltaNelVentaglio(now, hx, hy) {
+  const v = mano.ventaglio;
+  let best = null, bd = v.size * .95;
+  for (const it of v.items) { const d = Math.hypot(it.x - hx, it.y - hy); if (d < bd) { bd = d; best = it; } }
+  if (best !== v.scelto) {
+    if (v.scelto) v.scelto.el.classList.remove('su');
+    v.scelto = best; v.da = now; mano.carica = 0;
+    if (best) { best.el.classList.add('su'); nota(best.p, .8, 0); }
+  }
+  if (best) {
+    fermaOppureRicomincia(now, hx, hy, () => { v.da = now; });
+    mano.carica = clamp((now - v.da) / SOSTA_SCELTA, 0, 1);
+    if (mano.carica >= 1) { const p = best.p; chiudiVentaglio(); mano.entrataConMano = true; vola(p); }
+    v.fuori = 0;
+  } else {
+    mano.carica = 0;
+    // la mano si e' allontanata dal ventaglio: si chiude
+    if (Math.hypot(hx - v.cx, hy - v.cy) > v.r + v.size * 1.2) { if (!v.fuori) v.fuori = now; else if (now - v.fuori > 400) chiudiVentaglio(); }
+    else v.fuori = 0;
+  }
+}
+// la mano deve restare piu' o meno ferma: se si sposta molto, l'anello ricomincia
+function fermaOppureRicomincia(now, hx, hy, ricomincia) {
+  if (Math.hypot(hx - mano.vx * innerWidth, hy - mano.vy * innerHeight) > Math.max(40, innerWidth * .035)) { mano.vx = mano.x; mano.vy = mano.y; ricomincia(); }
+}
+
+function passoMano(now) {
+  const dt = Math.min(.1, (now - (ultimoPasso || now)) / 1000); ultimoPasso = now;
+  const r = leggiMano(now);
+  if (r) {
+    if (r.L) {
+      const pt = palmo(r.L);
+      // la webcam e' a specchio; una zona piccola dell'inquadratura copre tutto lo schermo
+      const tx = clamp((1 - pt.x - ZONA.x) / ZONA.w, 0, 1), ty = clamp((pt.y - ZONA.y) / ZONA.h, 0, 1);
+      if (!mano.vista) { mano.x = tx; mano.y = ty; }
+      // morbido quando la mano e' quasi ferma (niente tremolio), pronto quando si muove davvero
+      const a = clamp(.12 + Math.hypot(tx - mano.x, ty - mano.y) * 6, .12, .55);
+      mano.x += (tx - mano.x) * a; mano.y += (ty - mano.y) * a;
+      mano.vista = true; mano.ultima = now; ultimoTocco = now;
+      controls.autoRotate = false; clearTimeout(fermo);
+    } else if (mano.vista && now - mano.ultima > 350) {
+      mano.vista = false; mano.bersaglio = null; mano.carica = 0; chiudiVentaglio(); setHover(null); riprendiGiro();
+    }
+  }
+  if (arrivo && mano.ventaglio) chiudiVentaglio();
+  // senza mano per un po': si torna alla nebulosa (solo se ci si era entrati con la mano)
+  if (!mano.vista && fuoco && !fuoco.uscita && fuoco.arrivato && mano.entrataConMano && fuoco.p !== ultimaArrivata && now - mano.ultima > VIA_MANO) { mano.entrataConMano = false; torna(); }
+  if (mano.vista && !arrivo) {
+    const hx = mano.x * innerWidth, hy = mano.y * innerHeight;
+    if (mano.ventaglio) sceltaNelVentaglio(now, hx, hy);
+    else {
+      giraVersoLaMano(dt);
+      const volo = fuoco && (!fuoco.arrivato || fuoco.uscita);
+      const vicine = volo ? [] : vicineAllaMano(hx, hy);
+      // la foto agganciata resta presa finche' un'altra non e' nettamente piu' vicina (le sfere galleggiano: niente sfarfallio)
+      const tiene = mano.bersaglio && vicine.find(v => v.p === mano.bersaglio);
+      const b = tiene && tiene.d < vicine[0].d + 25 ? mano.bersaglio : vicine.length ? vicine[0].p : null, fitta = !fuoco && vicine.length >= 2;
+      if (b !== mano.bersaglio) {
+        // in una zona fitta l'attesa per il ventaglio conta finche' la mano resta ferma, anche se la foto agganciata cambia
+        if (!fitta || !mano.bersaglio || !b) { mano.da = now; mano.carica = 0; }
+        mano.bersaglio = b; setHover(b);
+      }
+      fermaOppureRicomincia(now, hx, hy, () => { mano.da = now; });
+      if (b) {
+        mano.carica = clamp((now - mano.da) / (fitta ? SOSTA_VENTAGLIO : SOSTA_MANO), 0, 1);
+        if (mano.carica >= 1) {
+          if (fitta) apriVentaglio(vicine.slice(0, 8).map(v => v.p), hx, hy);
+          else { mano.entrataConMano = true; mano.bersaglio = null; mano.carica = 0; vola(b); setHover(null); }
+        }
+      } else mano.carica = 0;
+    }
+  }
+  aggiornaCursore(now);
+}
+function aggiornaCursore(now) {
+  const c = $('manoCursore'), v = mano.ventaglio;
+  const preso = v ? v.scelto : mano.bersaglio;
+  c.classList.toggle('on', mano.vista && !arrivo);
+  c.classList.toggle('aggancio', !!preso);
+  c.classList.toggle('grande', !!(v && v.scelto));
+  // la luce va verso la foto agganciata (si vede che la calamita l'ha presa)
+  let x = mano.x * innerWidth, y = mano.y * innerHeight;
+  if (v && v.scelto) { x = v.scelto.x; y = v.scelto.y; }
+  else if (mano.bersaglio) { const s = schermoDi(mano.bersaglio); x += (s.x - x) * .85; y += (s.y - y) * .85; }
+  c.style.transform = `translate(${x}px, ${y}px)`;
+  c.style.setProperty('--p', (mano.carica * 100).toFixed(1) + '%');
+  c.style.setProperty('--s', (v && v.scelto ? v.size : 60) + 'px');
+  // la frase di aiuto: cambia secondo quello che si puo' fare adesso
+  let aiuto = '';
+  if (mano.vista && !arrivo) {
+    if (v) aiuto = v.scelto ? 'Tieni ferma la mano: entri in questa foto' : 'Porta la mano sulla foto che vuoi · allontanala per chiudere';
+    else if (fuoco && !fuoco.uscita) aiuto = mano.bersaglio ? 'Tieni ferma la mano per passare a questa foto' : 'Porta la mano su una sorella · abbassala per tornare';
+    else if (mano.bersaglio) aiuto = 'Tieni ferma la mano: ' + (vicineAllaMano(x, y).length >= 2 ? 'le foto vicine si aprono' : 'entri in questa foto');
+    else aiuto = 'Muovi la mano: la luce si aggancia alle foto · spostala dal centro e la nebulosa gira';
+  }
+  if ($('manoAiuto').textContent !== aiuto) $('manoAiuto').textContent = aiuto;
+  $('manoAiuto').classList.toggle('on', !!aiuto);
+  if (rilevatore || window.__manoFinta !== undefined) $('manoStato').textContent = !mano.vista ? 'nessuna mano' : v ? 'ventaglio aperto' : mano.bersaglio ? 'mano agganciata a una foto' : 'mano vista';
+}
+function disegnaAnteprima(mani, principale) {
+  const W2 = anteprima.width, H2 = anteprima.height;
+  ctxAnte.save(); ctxAnte.translate(W2, 0); ctxAnte.scale(-1, 1);   // a specchio, come uno specchio vero
+  ctxAnte.drawImage(video, 0, 0, W2, H2);
+  // la zona dell'inquadratura che copre tutto lo schermo
+  ctxAnte.strokeStyle = 'rgba(255,255,255,.3)'; ctxAnte.setLineDash([4, 4]); ctxAnte.strokeRect((1 - ZONA.x - ZONA.w) * W2, ZONA.y * H2, ZONA.w * W2, ZONA.h * H2); ctxAnte.setLineDash([]);
+  for (const m of mani) {
+    const on = m === principale;
+    ctxAnte.strokeStyle = on ? 'rgba(160,210,255,.95)' : 'rgba(255,255,255,.35)'; ctxAnte.lineWidth = 2;
+    for (const [a, b] of OSSA_MANO) { ctxAnte.beginPath(); ctxAnte.moveTo(m[a].x * W2, m[a].y * H2); ctxAnte.lineTo(m[b].x * W2, m[b].y * H2); ctxAnte.stroke(); }
+    if (on) { const p = palmo(m); ctxAnte.fillStyle = '#ffd9a0'; ctxAnte.beginPath(); ctxAnte.arc(p.x * W2, p.y * H2, 5, 0, TAU); ctxAnte.fill(); }
+  }
+  ctxAnte.restore();
+}
+avviaMano();
+
+window.__mano = { mano, vicineAllaMano, palmo, chiudiVentaglio, passoMano };   // per provare dalla console
+window.__nebulosa = { photos, photoById, camera, controls, setHover, vola, torna, regia, get fuoco() { return fuoco; } };   // per provare dalla console
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Nebulosa — Leggimi</title>
+<style>
+:root{--bg:#0b0a10;--card:#14121a;--ink:#ece6e1;--dim:#9a929a;--acc:#f08a64;--oro:#d9a566;--line:rgba(236,230,225,.13)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f7f4f0;--card:#fff;--ink:#1d1a1f;--dim:#6d666e;--acc:#c4552f;--oro:#9a6a2c;--line:rgba(29,26,31,.12)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif}
+main{max-width:760px;margin:0 auto;padding:40px 16px 80px}
+h1{font:italic 400 40px/1.1 Georgia,serif;color:var(--acc);margin:0 0 6px}
+.sub{color:var(--dim);margin:0 0 32px}
+h2{font:600 13px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--oro);margin:40px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+p{margin:0 0 12px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:12px 0}
+.box b{color:var(--acc)}
+code{font:14px ui-monospace,Menlo,monospace;background:rgba(127,127,127,.14);padding:1px 6px;border-radius:4px;word-break:break-word}
+pre{font:13px/1.55 ui-monospace,Menlo,monospace;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;margin:12px 0}
+table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:15px}
+td,th{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 12px ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+td:first-child{white-space:nowrap}
+a{color:var(--acc)}
+.nota{color:var(--dim);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<h1>La Nebulosa</h1>
+<p class="sub">Una memoria collettiva di foto. Questa pagina spiega cosa c'è nella cartella e come si usa.</p>
+
+<h2>Accendere</h2>
+<div class="box">
+<p><b>Doppio clic su «Apri la nebulosa.command».</b> Si apre una finestra del Terminale (è il server: lasciala aperta) e poco dopo la nebulosa in Chrome, con il suono già attivo.</p>
+<p><b>«Apri la nebulosa con la mano.command»</b> fa lo stesso ma apre la versione che si esplora con la mano (webcam). Se la nebulosa è già accesa, tutti e due aprono solo la pagina, senza accendere un secondo server.</p>
+<p>Per lo schermo intero: <code>Ctrl + Cmd + F</code>. Per spegnere: chiudi la finestra del Terminale.</p>
+<p class="nota">Il Terminale scrive anche l'indirizzo per i telefoni e se la lettura delle foto nuove è automatica o a mano.</p>
+</div>
+
+<h2>Gli indirizzi</h2>
+<p>Funzionano solo mentre la nebulosa è accesa.</p>
+<table>
+<tr><th>Indirizzo</th><th>Cosa si vede</th></tr>
+<tr><td><a href="http://localhost:8766/">localhost:8766</a></td><td>La nebulosa per l'installazione (gira piano; si muove da sola solo quando arriva una foto dal QR)</td></tr>
+<tr><td><a href="http://localhost:8766/carica">localhost:8766/carica</a></td><td>La pagina che si apre sui telefoni inquadrando il QR</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/mano">…/versioni/mano</a></td><td><b>In prova:</b> si esplora con la mano davanti alla webcam, senza segni con le dita. La luce si aggancia alla foto più vicina; tenendo ferma la mano un secondo e mezzo si entra e la foto si apre intera; la mano verso i bordi fa girare la nebulosa; con due mani alzate, allargarle avvicina e stringerle allontana; abbassando la mano si torna. Va aperta in Chrome (o con «Apri la nebulosa con la mano.command»); il tasto V nasconde il riquadro della webcam</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/mano-una-mano">…/versioni/mano-una-mano</a></td><td>Prova scartata: zoom con una mano sola (mano in alto avvicina, in basso allontana)</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/mano-foto-intera">…/versioni/mano-foto-intera</a></td><td>Con la mano e la foto intera, senza zoom</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/mano-pugno">…/versioni/mano-pugno</a></td><td>Prova scartata: zoom con il pugno su e giù</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/mano-ventaglio">…/versioni/mano-ventaglio</a></td><td>Prova scartata: tra tante foto vicine si apriva un ventaglio</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/mano-gesti">…/versioni/mano-gesti</a></td><td>La prima prova con la mano, a gesti (mano aperta, indice, pinch, pugno): conservata per confronto</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/3d-regia">…/versioni/3d-regia</a></td><td>Versione con il viaggio guidato automatico</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/3d-volo">…/versioni/3d-volo</a></td><td>3D con volo dentro le foto e suono, senza installazione</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/3d-carosello">…/versioni/3d-carosello</a></td><td>La prima versione 3D: il clic apre un carosello</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/2d">…/versioni/2d</a></td><td>La nebulosa piatta, senza nomi</td></tr>
+<tr><td><a href="http://localhost:8766/versioni/archi">…/versioni/archi</a></td><td>Il cerchio diviso in 12 archi con i nomi dei nuclei</td></tr>
+</table>
+<p class="nota">I telefoni usano lo stesso indirizzo ma con il numero del computer al posto di «localhost» (lo scrive il Terminale, ed è nel QR).</p>
+
+<h2>Le cartelle</h2>
+<pre>nebulosa-memoria/
+  Apri la nebulosa.command   ← l'unica cosa da toccare
+  LEGGIMI.html               ← questa pagina
+  pagine/        la nebulosa (index.html) e la pagina del QR (carica.html)
+    versioni/    le versioni precedenti, conservate
+  foto/
+    full/        tutte le foto, ridotte per lo schermo
+    thumb/       le miniature
+    originali/   i file originali arrivati dai telefoni, a piena risoluzione
+  dati/
+    analisi.json la lettura di ogni foto (cosa rappresenta + i suoi tag)
+    mappa.json   il posto e il colore di ogni foto nella nebulosa
+    arrivi.json  le foto arrivate dai telefoni: chi, quando, con quale frase
+    dati.js      tutto questo pronto per la pagina (si rigenera da solo)
+  programma/
+    server.py       il server: pagine, QR, foto in arrivo, cronologia
+    genera_dati.py  calcola posti, colori e movimenti dalle letture
+    lettore.py      legge le foto nuove con Claude (se c'è la chiave)
+  archivio/      backup e materiali di prova: non servono per funzionare</pre>
+
+<h2>Le foto dai telefoni</h2>
+<p>Chi inquadra il QR può mandare una o più foto, con il proprio nome e una frase (facoltativi). Ogni foto:</p>
+<p>1. entra subito nella nebulosa, con un posto <b>provvisorio</b> vicino alle foto che le somigliano per la frase (o per l'aspetto); è quasi grigia finché non viene letta;<br>
+2. viene salvata in <code>foto/full</code> e <code>foto/thumb</code>, e il suo originale intatto in <code>foto/originali</code>;<br>
+3. compare nella <b>Cronologia</b>; dal computer della nebulosa si può rimuovere (viene cancellata davvero, originale compreso).</p>
+<p class="nota">In rete il server mostra solo le pagine, le foto ridotte e dati.js. Gli originali (che possono contenere la posizione GPS), i programmi e i file di dati restano sul computer.</p>
+
+<h2>La lettura delle foto nuove</h2>
+<p><b>Automatica</b>, se sul Mac ci sono il pacchetto <code>anthropic</code> e la chiave: la foto viene letta pochi secondi dopo l'arrivo e prende il suo posto definitivo. Per attivarla, nel Terminale:</p>
+<pre>pip3 install anthropic
+echo 'export ANTHROPIC_API_KEY="sk-ant-..."' >> ~/.zshrc</pre>
+<p><b>A mano</b>, altrimenti: chiedi a Claude di leggere le foto in attesa. Per vedere quali sono, dalla cartella <code>nebulosa-memoria</code>:</p>
+<pre>python3 programma/genera_dati.py --da-leggere</pre>
+
+<h2>Salvare tutto</h2>
+<p>Basta copiare l'intera cartella <code>nebulosa-memoria</code> (per esempio su una chiavetta). I backup fatti finora sono in <code>archivio/backup</code>.</p>
+</main>
+</body>
+</html>

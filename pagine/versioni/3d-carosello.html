@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Nebulosa</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06050a;--ink:#ece6e1;--dim:#8c8590;--amber:#d9a566;--trace:#f08a64;--line:rgba(236,230,225,.12)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Jost',sans-serif;font-weight:300;overflow:hidden}
+button{font:inherit}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab;transition:filter .6s}
+canvas.drag{cursor:grabbing}
+canvas.blur{filter:blur(6px) brightness(.8)}
+.top,.intro,.hintbar,#home{transition:opacity .4s}
+body.ov .top,body.ov .intro,body.ov .hintbar,body.ov #home{opacity:0!important;pointer-events:none!important}
+header.top{position:fixed;top:0;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);background:linear-gradient(#06050a,rgba(6,5,10,.5));z-index:5}
+.brand small{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.brand b{font-weight:400;letter-spacing:.22em;font-size:15px;white-space:nowrap}
+.status{display:flex;align-items:center;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;white-space:nowrap}
+.status > *+*{margin-left:14px;padding-left:14px;border-left:1px solid var(--line)}
+.intro{position:fixed;left:40px;top:92px;width:220px;z-index:4;pointer-events:none;transition:opacity .5s}
+.intro.hide{opacity:0}
+.intro h1{font:300 22px/1.2 'Jost',sans-serif}
+.intro h1 em{font-family:'Playfair Display',serif;color:var(--trace);font-size:24px}
+.intro p{margin-top:14px;font-size:11px;line-height:1.7;color:var(--dim)}
+.hintbar{position:fixed;right:28px;top:84px;z-index:4;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;text-align:right;line-height:1.9;pointer-events:none}
+#qrbtn{background:none;border:0;border-left:1px solid var(--line);color:#aaa1f2;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#qrbtn:hover,#palbtn:hover{color:var(--ink)}
+#palbtn{background:none;border:0;border-left:1px solid var(--line);color:var(--amber);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#cronbtn{background:none;border:0;border-left:1px solid var(--line);color:#f0c88c;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#cronbtn:hover{color:var(--ink)}
+#cronN{font-style:normal;color:var(--ink);margin-left:4px}
+#liveDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#5a5560;margin-right:8px;vertical-align:1px}
+#liveDot.on{background:#7fd38a;box-shadow:0 0 8px #7fd38a}
+#cron{position:fixed;top:76px;right:24px;bottom:110px;z-index:9;width:350px;background:rgba(10,9,13,.97);border:1px solid rgba(240,200,140,.4);display:none;flex-direction:column;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#cron.open{display:flex}
+#cron .hd{padding:16px 18px 12px;border-bottom:1px solid var(--line);position:relative}
+#cron h3{font:italic 400 20px 'Playfair Display',serif;color:#f0c88c}
+#cron .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:6px;line-height:1.7}
+#cronx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
+#cronL{overflow:auto;padding:4px 10px 14px;flex:1}
+#cronL .vuota{font-size:12px;line-height:1.6;color:#c9c1bb;padding:16px 8px}
+.ci{display:flex;gap:12px;padding:12px 8px;border-bottom:1px solid rgba(236,230,225,.07);cursor:pointer}
+.ci:hover{background:rgba(240,200,140,.06)}
+.ci img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;background:#222}
+.ci .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.ci .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
+.ci .w{font-size:11px;line-height:1.45;color:#d6cfc9}
+.ci .att{color:#7fd38a}
+.ci button,#cronAll{margin-top:6px;background:none;border:1px solid rgba(240,138,138,.45);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;cursor:pointer}
+#cronAll{margin-top:10px}
+#cron.open ~ #toasts{right:390px}
+body.ov #cron{opacity:0;pointer-events:none}
+#inarr{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:9;background:rgba(10,9,13,.9);border:1px solid rgba(127,211,138,.5);color:#a9e6b1;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;display:none;pointer-events:none}
+#inarr.on{display:block;animation:pulsa 1.4s ease-in-out infinite}
+@keyframes pulsa{50%{opacity:.55}}
+#qr{position:fixed;top:76px;right:24px;z-index:9;width:280px;padding:18px;background:rgba(10,9,13,.97);border:1px solid rgba(170,161,242,.45);display:none;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#qr.open{display:block}
+#qr h3{font:italic 400 20px 'Playfair Display',serif;color:#aaa1f2}
+#qr p{font-size:12px;line-height:1.55;color:#c9c1bb;margin-top:8px}
+#qr .code{margin:14px auto 10px;width:200px;height:200px;background:#fff;padding:10px;display:flex;align-items:center;justify-content:center}
+#qr .code img,#qr .code canvas{width:180px!important;height:180px!important}
+#qr .url{font:400 13px 'JetBrains Mono',monospace;color:var(--ink);word-break:break-all;text-align:center;user-select:all}
+#qr .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:10px;line-height:1.7}
+#qrx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
+#toasts{position:fixed;right:24px;top:150px;z-index:7;width:300px;display:grid;gap:10px;pointer-events:none}
+.toast{pointer-events:auto;display:flex;gap:12px;padding:10px 12px;background:rgba(10,9,13,.94);border:1px solid rgba(240,200,140,.45);box-shadow:0 10px 40px rgba(0,0,0,.6);cursor:pointer;animation:tin .5s ease-out;transition:opacity .6s}
+.toast.out{opacity:0}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.toast img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none}
+.toast .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.toast .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
+.toast .w{font-size:11px;line-height:1.45;color:#d6cfc9}
+body.ov #toasts,body.ov #qr{opacity:0;pointer-events:none}
+.why{margin:12px auto 0;max-width:560px;padding:10px 14px;border:1px solid rgba(240,200,140,.35);background:rgba(10,9,13,.7);text-align:left;font-size:13px;line-height:1.5;color:#e2dbd5}
+.why b{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#f0c88c;text-transform:uppercase;margin-bottom:3px}
+.why button{margin-top:8px;background:none;border:1px solid rgba(240,138,138,.5);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;cursor:pointer}
+#arrivo{position:fixed;left:50%;z-index:8;width:min(560px,90vw);transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .5s;padding:14px 18px 16px;background:rgba(6,5,10,.86);border:1px solid rgba(240,200,140,.25);box-shadow:0 18px 60px rgba(0,0,0,.6)}
+#arrivo.on{opacity:1}
+#arrivo .k{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#f0c88c;text-transform:uppercase;text-shadow:0 2px 12px #000}
+#arrivo .e{font:300 13px 'Jost',sans-serif;color:#c9c1bb;margin-top:10px;text-shadow:0 2px 12px #000}
+#arrivo .t{font:italic 400 40px/1.1 'Playfair Display',serif;margin-top:2px;text-shadow:0 2px 24px #000}
+#arrivo .w{font:300 14px/1.5 'Jost',sans-serif;color:#e6dfd9;margin:10px auto 0;max-width:480px}
+#arrivo .q{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#8c8590;text-transform:uppercase;margin-top:8px}
+#home{position:fixed;right:28px;bottom:44px;z-index:5;background:rgba(10,9,13,.8);border:1px solid var(--line);color:var(--dim);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:0 14px;height:46px;cursor:pointer}
+#home:hover{color:var(--amber)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:11px;padding:4px 10px;border:1px solid var(--line);cursor:pointer;border-radius:20px;color:var(--ink);background:rgba(10,9,13,.5)}
+.chip:hover,.chip.on{border-color:currentColor}
+.chip small{font:300 9px 'JetBrains Mono',monospace;color:var(--dim);margin-left:6px}
+.chip.theme{font-family:'Playfair Display',serif;font-style:italic;font-size:12px}
+#pv{position:fixed;z-index:8;pointer-events:none;background:rgba(9,8,12,.94);border:1px solid rgba(236,230,225,.18);padding:9px 12px;display:none;box-shadow:0 8px 40px rgba(0,0,0,.6);max-width:300px}
+#pv .t{font:italic 400 15px/1.3 'Playfair Display',serif}
+#pv .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:4px;line-height:1.7}
+#pv q{display:block;font:italic 400 13px/1.4 'Playfair Display',serif;color:var(--amber);margin-top:6px;quotes:none}
+#pv .h{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--amber);text-transform:uppercase;margin-top:7px}
+.fly{position:fixed;z-index:13;border-radius:50%;background:#151219 center/cover no-repeat;pointer-events:none;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 30px 90px rgba(0,0,0,.7);transition:left .65s cubic-bezier(.2,.8,.2,1),top .65s cubic-bezier(.2,.8,.2,1),width .65s cubic-bezier(.2,.8,.2,1),height .65s cubic-bezier(.2,.8,.2,1)}
+/* sfoglia */
+#sf{position:fixed;inset:0;z-index:12;background:radial-gradient(ellipse at center,rgba(6,5,9,.55),rgba(6,5,9,.2) 70%);display:none;flex-direction:column}
+#sf.open{display:flex}
+#sf .ui{transition:opacity .45s .25s;opacity:0}
+#sf.shown .ui{opacity:1}
+.sfh{display:flex;align-items:flex-start;gap:24px;padding:22px 80px 8px 32px;flex:none}
+.sfh .l{flex:1;min-width:0}
+#sfk{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#b3abb4;text-transform:uppercase}
+#sft{font:italic 400 30px/1.15 'Playfair Display',serif;margin-top:6px;text-shadow:0 2px 20px rgba(0,0,0,.8)}
+#sfd{font:italic 400 14px/1.5 'Playfair Display',serif;opacity:.88;margin-top:6px;max-width:760px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+#sfp{margin-top:10px;max-height:62px;overflow:auto}
+#sfc{font:300 12px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3abb4;white-space:nowrap;padding-top:4px}
+#sfx{position:absolute;top:16px;right:24px;background:none;border:0;color:#b3abb4;font-size:30px;cursor:pointer;z-index:2}
+#sfx:hover{color:var(--ink)}
+#sftrack{--D:min(46vh,58vw);flex:1;min-height:0;display:flex;align-items:center;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;padding-inline:calc(50% - var(--D) / 2 - 40px)}
+#sftrack::-webkit-scrollbar{display:none}
+.slide{flex:0 0 auto;width:calc(var(--D) + 80px);scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;--k:1}
+.disc{width:var(--D);height:var(--D);border-radius:50%;overflow:hidden;background:#151219 center/cover no-repeat;transform:scale(calc(1 - var(--k) * .3));opacity:calc(1 - var(--k) * .5);transition:transform .15s,opacity .15s;cursor:pointer;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 24px 90px rgba(0,0,0,.7)}
+.disc img{width:100%;height:100%;object-fit:cover;display:block}
+.cap{margin-top:16px;width:min(calc(var(--D) + 260px),92vw);text-align:center;opacity:calc(1 - var(--k) * 2.2);transition:opacity .15s;min-height:90px}
+.cap .lettura{display:block;font:italic 400 16px/1.5 'Playfair Display',serif;color:var(--ink);margin-bottom:12px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+.cap .frase{display:block;font:300 13px/1.5 'Jost',sans-serif;color:var(--amber);margin-bottom:10px}
+.cap .chips{justify-content:center}
+.sfnav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:rgba(10,9,13,.6);border:1px solid var(--line);color:var(--ink);font-size:26px;cursor:pointer;z-index:2}
+.sfnav:hover{border-color:var(--amber);color:var(--amber)}
+.sfnav:disabled{opacity:.2;cursor:default}
+#sfprev{left:24px}#sfnext{right:24px}
+#sfstrip{flex:none;display:flex;gap:8px;overflow-x:auto;padding:12px 32px 22px;scrollbar-width:thin;scrollbar-color:#333 transparent}
+#sfstrip img{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover;opacity:.45;cursor:pointer;transition:opacity .2s,transform .2s;outline:2px solid transparent;outline-offset:2px}
+#sfstrip img:hover{opacity:.85}
+#sfstrip img.on{opacity:1;outline-color:var(--amber);transform:scale(1.08)}
+@media(max-width:900px){.intro,.hintbar{display:none}.status > span{display:none}.status > button{border-left:0}#home{top:76px;bottom:auto;right:12px;height:34px}.sfh{padding:18px 56px 8px 18px}#sft{font-size:22px}#sfd{display:none}#sftrack{--D:min(74vw,40vh)}.sfnav{display:none}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<header class="top">
+  <div class="brand"><small>Memoria collettiva</small><b>LA NEBULOSA</b></div>
+  <div class="status"><span id="luogo"></span><span id="st"></span><button id="palbtn">Colori</button><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
+</header>
+<div class="intro" id="intro">
+  <h1>Una memoria<br><em>che esplode.</em></h1>
+  <p id="introp"></p>
+</div>
+<div class="hintbar" id="hintbar">Trascina per girarle intorno · rotella per entrare<br>Passa sopra una sfera: si accendono<br>quelle che le somigliano · clicca per aprirla</div>
+<button id="home">↺ Vista iniziale</button>
+<div id="pv"></div>
+<div id="qr"><button id="qrx" aria-label="Chiudi">×</button><h3>Carica dal telefono</h3><p>Inquadra il codice con la fotocamera del telefono, oppure scrivi l'indirizzo nel browser. Il telefono deve essere sulla stessa rete Wi-Fi di questo computer.</p><div class="code" id="qrcode"></div><div class="url" id="qrurl">…</div><div class="meta" id="qrmeta"></div></div>
+<div id="cron"><div class="hd"><button id="cronx" aria-label="Chiudi">×</button><h3>Cronologia</h3><div class="meta" id="cronC"></div></div><div id="cronL"></div></div>
+<div id="toasts"></div>
+<div id="inarr"></div>
+<div id="arrivo"><div class="k" id="arrK"></div><div class="w" id="arrW"></div><div class="q" id="arrQ"></div></div>
+<div id="sf" role="dialog" aria-label="Sfoglia le foto">
+  <button id="sfx" class="ui" aria-label="Chiudi">×</button>
+  <div class="sfh ui"><div class="l"><div id="sfk"></div><div id="sft"></div><div id="sfd"></div><div class="chips" id="sfp"></div></div><div id="sfc"></div></div>
+  <div id="sftrack"></div>
+  <button class="sfnav ui" id="sfprev" aria-label="Foto precedente">‹</button>
+  <button class="sfnav ui" id="sfnext" aria-label="Foto successiva">›</button>
+  <div id="sfstrip" class="ui"></div>
+</div>
+
+<script src="/dati.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const D = window.NEBULOSA;
+const $ = id => document.getElementById(id);
+if (!D) {
+  const m = document.createElement('div');
+  m.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;max-width:440px;padding:22px 24px;background:#131116;border:1px solid rgba(240,138,100,.5);color:#ece6e1;font:300 14px/1.6 Jost,sans-serif';
+  m.innerHTML = '<b style="font-weight:400;color:#f08a64">Mancano i dati della nebulosa.</b><br>Apri la nebulosa con <code>Apri la nebulosa.command</code>, oppure lancia <code>python3 programma/genera_dati.py</code>.';
+  document.body.appendChild(m);
+  throw new Error('dati mancanti');
+}
+const thumbSrc = id => '/foto/thumb/' + id + '.jpg';
+const fullSrc = id => '/foto/full/' + id + '.jpg';
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const TAU = Math.PI * 2;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const easeIO = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+const sstep = (a, b, x) => { const u = clamp((x - a) / (b - a), 0, 1); return u * u * (3 - 2 * u); };
+const seme = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)) >>> 0) / 4294967296; };
+const memo = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
+
+// ---------------- la scena ----------------
+const cv = $('c');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06050a);
+const camera = new THREE.PerspectiveCamera(52, 1, .1, 500);
+const CASA = new THREE.Vector3(0, 6, 34);
+camera.position.copy(CASA);
+const controls = new OrbitControls(camera, cv);
+Object.assign(controls, { enableDamping: true, dampingFactor: .06, autoRotate: !reduced, autoRotateSpeed: .35, minDistance: 2.5, maxDistance: 90, rotateSpeed: .6, zoomSpeed: .8 });
+let fermo = 0;
+controls.addEventListener('start', () => { controls.autoRotate = false; clearTimeout(fermo); });
+controls.addEventListener('end', () => { clearTimeout(fermo); fermo = setTimeout(() => { controls.autoRotate = !reduced; }, 9000); });
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), .8, .45, .82);
+composer.addPass(bloom); composer.addPass(new OutputPass());
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+// le stelle lontane
+{
+  const n = 1800, a = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { const v = new THREE.Vector3().randomDirection().multiplyScalar(120 + Math.random() * 120); a.set([v.x, v.y, v.z], i * 3); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(a, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xece6e1, size: 1.1, sizeAttenuation: false, transparent: true, opacity: .55 })));
+}
+// un punto di luce rotondo (per il nucleo, gli impulsi, le onde)
+function texLuce(stops) {
+  const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d');
+  const g = x.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2); stops.forEach(([o, col]) => g.addColorStop(o, col));
+  x.fillStyle = g; x.fillRect(0, 0, S, S);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const TEX_PUNTO = texLuce([[0, 'rgba(255,255,255,1)'], [.25, 'rgba(255,255,255,.8)'], [1, 'rgba(255,255,255,0)']]);
+const TEX_ANELLO = (() => { const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'); x.strokeStyle = '#fff'; x.lineWidth = 5; x.beginPath(); x.arc(S / 2, S / 2, S / 2 - 6, 0, TAU); x.stroke(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+// il nucleo: il punto in cui tutti questi ricordi si toccano
+const nucleo = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLuce([[0, 'rgba(255,255,250,1)'], [.12, 'rgba(255,240,200,.95)'], [.35, 'rgba(255,170,80,.45)'], [1, 'rgba(255,90,30,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+const alone = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLuce([[0, 'rgba(255,170,90,.5)'], [.5, 'rgba(160,60,40,.15)'], [1, 'rgba(60,20,30,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+scene.add(alone, nucleo);
+
+// ---------------- le foto: ognuna e' una particella che parte dal nucleo ----------------
+const FUOCO = [[0, [70, 120, 255]], [.25, [150, 150, 235]], [.45, [230, 60, 40]], [.7, [255, 140, 30]], [.88, [255, 215, 90]], [1, [255, 250, 230]]];
+function fuoco(t) {
+  for (let k = 1; k < FUOCO.length; k++) if (t <= FUOCO[k][0] || k === FUOCO.length - 1) {
+    const [a, ca] = FUOCO[k - 1], [b, cb] = FUOCO[k], u = clamp((t - a) / (b - a), 0, 1);
+    return new THREE.Color().setRGB(...ca.map((v, i) => (v + (cb[i] - v) * u) / 255), THREE.SRGBColorSpace);
+  }
+}
+let palette = memo('nebulosa-colori') === 'spettro' ? 'spettro' : 'fuoco';
+function colore(f) {
+  const [vi, qu, , sc] = f.mv;
+  const c = palette === 'spettro' ? new THREE.Color().setHSL(f.h / 360, .78, clamp(f.l / 100, .45, .68), THREE.SRGBColorSpace) : fuoco(clamp(.5 + .55 * vi - .5 * qu + .1 * sc, 0, 1));
+  return f.provv ? c.lerp(new THREE.Color(.78, .77, .75), .65) : c;   // posto provvisorio: quasi grigia
+}
+const ASSE = new THREE.Vector3(0, 1, 0);   // il campo che curva le traiettorie (come in un rivelatore)
+function traccia(id, f) {
+  // la direzione nasce dal senso; la curva dal movimento; la lunghezza da quanto la foto e' unica
+  const [vi, qu, tr, sc] = f.mv, rnd = seme(id);
+  const dir = new THREE.Vector3(...f.p); const rr = dir.length();
+  if (rr < 1e-3) dir.randomDirection(); dir.normalize();
+  const L = (4.5 + 10 * (.35 * rr + .65 * (f.u ?? .5))) * (1 + .3 * qu);
+  const carica = Math.floor(f.h / 30) % 2 ? 1 : -1;
+  const k0 = carica * (.02 + .5 * vi + .12 * sc), g = 1 + 9 * vi * vi;
+  const v = dir.clone(), pos = new THREE.Vector3(), tmp = new THREE.Vector3(), ds = .07, pts = [0, 0, 0];
+  for (let s = 0; s < L; s += ds) {
+    const u = s / L;
+    tmp.crossVectors(v, ASSE).multiplyScalar(k0 * (1 + g * u * u) * ds); v.add(tmp);
+    if (tr) { v.x += (rnd() - .5) * .14 * tr; v.y += (rnd() - .5) * .14 * tr; v.z += (rnd() - .5) * .14 * tr; }
+    v.normalize(); pos.addScaledVector(v, ds); pts.push(pos.x, pos.y, pos.z);
+  }
+  return new Float32Array(pts);
+}
+// la sfera: la foto dentro, il vetro intorno; e' sempre rivolta verso chi guarda, da qualsiasi lato
+function disegnaSfera(p) {
+  const S = 160, c = p.can || (p.can = document.createElement('canvas')); c.width = c.height = S; const x = c.getContext('2d');
+  const [r, g, b] = p.col.toArray().map(v => Math.round(v * 255)), rgba = a => `rgba(${r},${g},${b},${a})`, R = S / 2 - 3;
+  x.clearRect(0, 0, S, S);
+  let gr = x.createRadialGradient(S * .42, S * .4, 0, S / 2, S / 2, R);
+  gr.addColorStop(0, rgba(.12)); gr.addColorStop(.7, rgba(.22)); gr.addColorStop(1, rgba(.7));
+  x.fillStyle = gr; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.fill();
+  const im = p.img, ri = R * .7;
+  if (im && im.complete && im.naturalWidth) {
+    const m = Math.min(im.naturalWidth, im.naturalHeight);
+    x.save(); x.beginPath(); x.arc(S / 2, S / 2, ri, 0, TAU); x.clip();
+    x.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, S / 2 - ri, S / 2 - ri, ri * 2, ri * 2);
+    gr = x.createRadialGradient(S / 2, S / 2, ri * .6, S / 2, S / 2, ri); gr.addColorStop(0, rgba(0)); gr.addColorStop(1, rgba(.55));
+    x.fillStyle = gr; x.fillRect(0, 0, S, S); x.restore();
+  }
+  gr = x.createRadialGradient(S / 2, S * .62, R * .3, S / 2, S / 2, R); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.35)');
+  x.fillStyle = gr; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.fill();
+  gr = x.createRadialGradient(S * .36, S * .3, 0, S * .36, S * .3, R * .62); gr.addColorStop(0, 'rgba(255,255,255,.32)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = gr; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.fill();
+  x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.ellipse(S * .33, S * .24, 8, 4.5, -.6, 0, TAU); x.fill();
+  x.strokeStyle = rgba(.95); x.lineWidth = 3; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.stroke();
+  x.strokeStyle = 'rgba(255,255,255,.3)'; x.lineWidth = 2; x.beginPath(); x.arc(S / 2, S / 2, R - 4, .2, 1.6); x.stroke();
+  if (p.tex) p.tex.needsUpdate = true;
+}
+const photos = [], photoById = {}, sprites = [];
+function makePhoto(id, f) {
+  const p = { id, f, ph: seme(id)() * TAU };
+  p.col = colore(f); p.pts = traccia(id, f); p.n = p.pts.length / 3;
+  disegnaSfera(p);
+  p.tex = new THREE.CanvasTexture(p.can); p.tex.colorSpace = THREE.SRGBColorSpace;
+  p.sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: p.tex, transparent: true, depthWrite: false, color: 0xd8d8d8 }));   // un po' meno luminose: il bagliore resta alle scie
+  p.base = .62 * (f.s || .9); p.sprite.scale.setScalar(p.base); p.sprite.userData.p = p;
+  p.fine = new THREE.Vector3(p.pts[p.n * 3 - 3], p.pts[p.n * 3 - 2], p.pts[p.n * 3 - 1]);
+  p.sprite.position.copy(p.fine);
+  p.img = new Image(); p.img.onload = () => disegnaSfera(p); p.img.src = thumbSrc(id);
+  scene.add(p.sprite); photos.push(p); photoById[id] = p; sprites.push(p.sprite);
+  return p;
+}
+function aggiornaFoto(p, f) {   // la foto e' stata letta (o cambia colore): nuova traccia, nuovo colore
+  p.f = f; p.col = colore(f); p.pts = traccia(p.id, f); p.n = p.pts.length / 3;
+  p.fine.set(p.pts[p.n * 3 - 3], p.pts[p.n * 3 - 2], p.pts[p.n * 3 - 1]);
+  p.base = .62 * (f.s || .9); disegnaSfera(p); p.lampo = performance.now() + 2200;
+}
+D.tutte.forEach(id => { if (D.foto[id]) makePhoto(id, D.foto[id]); });
+
+// ---------------- le scie: tutte in un solo disegno, ordinate per passo (cosi' possono nascere insieme dal centro) ----------------
+const lineGeo = new THREE.BufferGeometry();
+const lines = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: .95, blending: THREE.AdditiveBlending, depthWrite: false }));
+scene.add(lines);
+let passi = [];   // per ogni passo, quanti vertici ci sono fino a li'
+let accese = null;   // le foto accese (passaggio del mouse), oppure null = tutte
+function costruisciScie() {
+  const vis = photos.filter(p => !p.hold), max = Math.max(1, ...vis.map(p => p.n));
+  let tot = 0; for (const p of vis) tot += (p.n - 1) * 2;
+  const pos = new Float32Array(tot * 3), col = new Float32Array(tot * 3);
+  passi = []; let k = 0;
+  for (let j = 0; j < max - 1; j++) {
+    for (const p of vis) { if (j >= p.n - 1) continue; pos.set(p.pts.subarray(j * 3, j * 3 + 6), k * 3); k += 2; }
+    passi.push(k);
+  }
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  lineGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  lineGeo.computeBoundingSphere();
+  coloraScie();
+}
+function coloraScie() {
+  const vis = photos.filter(p => !p.hold), max = Math.max(1, ...vis.map(p => p.n)), col = lineGeo.getAttribute('color'); if (!col) return;
+  const a = col.array; let k = 0;
+  for (let j = 0; j < max - 1; j++) for (const p of vis) {
+    if (j >= p.n - 1) continue;
+    const on = !accese || accese.has(p.id), u = j / p.n;
+    const f = (on ? 1 : .05) * (.28 + .72 * Math.pow(1 - u, 1.4)) * (p.f.provv ? .6 : 1) * (accese && on ? 1.25 : 1);
+    a[k * 3] = a[k * 3 + 3] = p.col.r * f; a[k * 3 + 1] = a[k * 3 + 4] = p.col.g * f; a[k * 3 + 2] = a[k * 3 + 5] = p.col.b * f; k += 2;
+  }
+  col.needsUpdate = true;
+}
+costruisciScie();
+
+// gli impulsi: piccole luci che corrono lungo le scie, ognuna al ritmo della sua foto
+const impGeo = new THREE.BufferGeometry();
+const impulsi = new THREE.Points(impGeo, new THREE.PointsMaterial({ size: .22, map: TEX_PUNTO, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+scene.add(impulsi);
+function preparaImpulsi() { impGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(photos.length * 3), 3)); impGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(photos.length * 3), 3)); }
+preparaImpulsi();
+
+// i fili: dalla sfera sotto il mouse verso le sue sorelle
+const filiGeo = new THREE.BufferGeometry();
+const fili = new THREE.LineSegments(filiGeo, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .35, blending: THREE.AdditiveBlending, depthWrite: false }));
+scene.add(fili);
+
+// ---------------- nascita: all'apertura le foto escono tutte insieme dal nucleo ----------------
+let nascita = reduced ? -1e9 : performance.now();
+const DUR_NASCITA = 4200;
+
+// ---------------- interazione ----------------
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), mpx = { x: -1, y: -1 };
+let hover = null, giu = null, mossoMouse = false;
+cv.addEventListener('pointermove', e => { mpx.x = e.clientX; mpx.y = e.clientY; mouse.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); mossoMouse = true; });
+cv.addEventListener('pointerleave', () => { mpx.x = -1; setHover(null); });
+cv.addEventListener('pointerdown', e => { giu = { x: e.clientX, y: e.clientY }; });
+cv.addEventListener('pointerup', e => {
+  if (giu && Math.hypot(e.clientX - giu.x, e.clientY - giu.y) < 5 && hover) { const s = schermo(hover.sprite.position); openPhoto(hover, { x: s.x, y: s.y, r: 24 }); }
+  giu = null;
+});
+const schermo = v => { const q = v.clone().project(camera); return { x: (q.x + 1) / 2 * innerWidth, y: (1 - q.y) / 2 * innerHeight }; };
+function setHover(p) {
+  if (p === hover) return;
+  hover = p;
+  accese = p ? new Set([p.id, ...p.f.vicine.map(v => v[0]).filter(id => photoById[id])]) : null;
+  coloraScie();
+  if (p) {
+    const vic = [...accese].filter(id => id !== p.id).map(id => photoById[id]), a = new Float32Array(vic.length * 6);
+    vic.forEach((q, i) => { a.set([p.sprite.position.x, p.sprite.position.y, p.sprite.position.z, q.sprite.position.x, q.sprite.position.y, q.sprite.position.z], i * 6); });
+    filiGeo.setAttribute('position', new THREE.BufferAttribute(a, 3)); filiGeo.computeBoundingSphere(); fili.visible = true;
+  } else fili.visible = false;
+  cv.style.cursor = p ? 'pointer' : 'grab';
+}
+function pick() {
+  if (!mossoMouse || mpx.x < 0 || overlayOpen() || arrivo) return;
+  mossoMouse = false;
+  ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObjects(sprites, false).find(h => !h.object.userData.p.hold);
+  setHover(hit ? hit.object.userData.p : null);
+}
+$('home').onclick = () => { controls.target.set(0, 0, 0); camera.position.copy(CASA); controls.autoRotate = !reduced; };
+$('palbtn').onclick = () => {
+  palette = palette === 'fuoco' ? 'spettro' : 'fuoco'; memo('nebulosa-colori', palette); scritteColori();
+  for (const p of photos) { p.col = colore(p.f); disegnaSfera(p); }
+  coloraScie();
+};
+const scritteColori = () => { $('palbtn').textContent = 'Colori: ' + (palette === 'fuoco' ? 'temperatura' : 'spettro'); };
+scritteColori();
+
+// ---------------- ogni fotogramma ----------------
+const overlayOpen = () => $('sf').classList.contains('open');
+function frame(now) {
+  requestAnimationFrame(frame);
+  const t = now / 1000;
+  controls.update();
+  // nascita
+  const nb = clamp((now - nascita) / DUR_NASCITA, 0, 1), eb = easeIO(nb);
+  if (passi.length) lineGeo.setDrawRange(0, nb < 1 ? passi[Math.min(passi.length - 1, Math.floor(eb * (passi.length - 1)))] : Infinity);
+  // il nucleo respira; quando arriva una foto si accende
+  const lampo = arrivo ? Math.max(0, 1 - Math.abs((now - arrivo.t0) - 500) / 900) : 0;
+  nucleo.scale.setScalar(5.5 * (1 + .05 * Math.sin(t * 2)) * (1 + 1.4 * lampo) * (nb < 1 ? .6 + .4 * eb + .8 * (1 - nb) : 1));
+  alone.scale.setScalar(22 * (1 + .6 * lampo)); alone.material.opacity = .55 + .3 * lampo;
+  // le sfere: arrivano in fondo alla loro scia, poi galleggiano secondo il loro carattere
+  const pos = impGeo.getAttribute('position'), col = impGeo.getAttribute('color');
+  photos.forEach((p, i) => {
+    if (p.hold) { pos.setXYZ(i, 0, 0, 0); col.setXYZ(i, 0, 0, 0); return; }
+    const [vi, qu, tr] = p.f.mv;
+    const j = nb < 1 ? Math.min(p.n - 1, Math.floor(eb * (p.n - 1) * (passi.length ? (passi.length) / p.n : 1))) : p.n - 1;
+    const b = j * 3; p.sprite.position.set(p.pts[b], p.pts[b + 1], p.pts[b + 2]);
+    if (!reduced && nb >= 1) {
+      const a = .05 + .12 * vi;
+      p.sprite.position.x += Math.sin(t * (.4 + vi) + p.ph) * a + (tr ? Math.sin(t * 19 + p.ph * 5) * .02 * tr : 0);
+      p.sprite.position.y += Math.cos(t * (.33 + vi * .8) + p.ph * 1.3) * a;
+    }
+    let sc = p.base * (1 + .06 * vi * Math.sin(t * 2.4 + p.ph));
+    if (accese) sc *= p === hover ? 1.9 : accese.has(p.id) ? 1.3 : .85;
+    if (p.lampo && now < p.lampo) sc *= 1 + .8 * Math.sin((p.lampo - now) / 2200 * Math.PI);
+    p.sprite.scale.setScalar(sc);
+    p.sprite.material.opacity = accese && !accese.has(p.id) ? .13 : 1;
+    // l'impulso
+    if (!reduced && nb >= 1) {
+      const sp = Math.max(.03, .07 + .25 * vi - .04 * qu), u = (t * sp + p.ph) % 1, k = Math.floor(u * (p.n - 1)) * 3;
+      pos.setXYZ(i, p.pts[k], p.pts[k + 1], p.pts[k + 2]);
+      const f = (accese && !accese.has(p.id) ? .05 : 1) * (1 - u * .6);
+      col.setXYZ(i, p.col.r * f, p.col.g * f, p.col.b * f);
+    } else col.setXYZ(i, 0, 0, 0);
+  });
+  pos.needsUpdate = true; col.needsUpdate = true;
+  pick();
+  passoArrivo(now);
+  composer.render();
+  $('intro').classList.toggle('hide', camera.position.length() < 20 || overlayOpen());
+  updatePreview();
+}
+
+// ---------------- anteprima: solo per le foto arrivate dai telefoni ----------------
+let pvKey = null;
+function updatePreview() {
+  const pv = $('pv'), a = hover && cron.get(hover.id);
+  if (!a || overlayOpen()) { pv.style.display = 'none'; pvKey = null; return; }
+  if (pvKey !== hover.id) {
+    pvKey = hover.id;
+    pv.innerHTML = `<div class="k" style="color:#f0c88c">dal telefono${a.nome ? ' di ' + esc(a.nome) : ''} · ${quando(a.quando)}</div>${a.frase ? `<q>«${esc(a.frase)}»</q>` : ''}${hover.f.provv ? '<div class="k">non ancora letta · posto provvisorio</div>' : ''}`;
+  }
+  pv.style.display = 'block';
+  pv.style.left = clamp(mpx.x + 30, 8, innerWidth - pv.offsetWidth - 8) + 'px'; pv.style.top = clamp(mpx.y + 16, 70, innerHeight - pv.offsetHeight - 8) + 'px';
+}
+
+// ---------------- aprire una foto: lei, e poi le foto che le somigliano, dalla piu' vicina ----------------
+const css = c => `rgb(${c.toArray().map(v => Math.round(v * 255)).join(',')})`;
+const cssA = (c, a) => `rgba(${c.toArray().map(v => Math.round(v * 255)).join(',')},${a})`;
+function vicineDi(p) { return p.f.vicine.filter(([id]) => photoById[id]).sort((a, b) => b[1] - a[1]).map(e => e[0]); }
+function openPhoto(p, from = null) { openSf([p.id, ...vicineDi(p)], 0, from); }
+const sf = { ids: [], cur: 0, slides: [], pos: [] };
+const track = $('sftrack'), strip = $('sfstrip');
+function whyHTML(id, a) {
+  const qui = ['localhost', '127.0.0.1'].includes(location.hostname), p = photoById[id];
+  const provv = p && p.f.provv ? `<br><span style="color:#8c8590;font-size:11px">Non ancora letta: per ora sta vicino alle foto che le somigliano ${p.f.come === 'frase' ? 'per la sua frase' : 'nell\'aspetto'}. Quando sarà letta troverà il suo posto definitivo.</span>` : '';
+  return `<div class="why"><b>Arrivata dal telefono${a.nome ? ' · foto di ' + esc(a.nome) : ''} · ${quando(a.quando)}</b>${a.frase ? '«' + esc(a.frase) + '»' : '<span style="color:#8c8590">nessuna frase</span>'}${provv}${qui ? `<br><button data-elimina="${id}">Rimuovi questa foto</button>` : ''}</div>`;
+}
+function openSf(ids, start = 0, from = null) {
+  sf.ids = ids; sf.cur = -1;
+  $('sfk').textContent = ids.length > 1 ? 'una foto, e le ' + (ids.length - 1) + ' che le somigliano di più' : 'una foto';
+  $('sft').textContent = ''; $('sfd').textContent = ''; $('sfp').innerHTML = '';
+  track.innerHTML = ids.map((id, i) => {
+    const p = photoById[id], a = cron.get(id), c = p.col;
+    return `<div class="slide" data-i="${i}"><div class="disc" style="background-image:url(${thumbSrc(id)});box-shadow:0 0 0 2px ${css(c)},0 0 70px ${cssA(c, .35)},0 24px 90px rgba(0,0,0,.7)"><img loading="lazy" data-full="${fullSrc(id)}" src="${thumbSrc(id)}" alt=""></div>` +
+      `<div class="cap">${p.f.lettura ? `<span class="lettura">${esc(p.f.lettura)}</span>` : ''}${i > 0 && p.f.vicine.length ? `<button class="chip" data-centra="${id}" style="color:${css(c)}">parti da questa →</button>` : ''}${a ? whyHTML(id, a) : ''}</div></div>`;
+  }).join('');
+  strip.innerHTML = ids.map((id, i) => `<img loading="lazy" data-go="${i}" src="${thumbSrc(id)}" alt="" style="box-shadow:0 0 0 2px ${css(photoById[id].col)}">`).join('');
+  strip.style.display = ids.length > 1 ? '' : 'none';
+  sf.slides = [...track.children];
+  const wasOpen = $('sf').classList.contains('open');
+  $('sf').classList.add('open'); cv.classList.add('blur'); document.body.classList.add('ov'); $('pv').style.display = 'none'; setHover(null);
+  setTimeout(() => {
+    measure(); jump(start, false); sfRaf = 0; onScroll();
+    const disc = sf.slides[start] && sf.slides[start].querySelector('.disc');
+    if (from && disc && !reduced && !wasOpen) {
+      const b = disc.getBoundingClientRect();
+      const fly = document.createElement('div'); fly.className = 'fly';
+      fly.style.cssText = `left:${from.x - from.r}px;top:${from.y - from.r}px;width:${2 * from.r}px;height:${2 * from.r}px;background-image:url(${fullSrc(ids[start])}),url(${thumbSrc(ids[start])})`;
+      document.body.appendChild(fly); disc.style.visibility = 'hidden';
+      fly.getBoundingClientRect();
+      Object.assign(fly.style, { left: b.left + 'px', top: b.top + 'px', width: b.width + 'px', height: b.height + 'px' });
+      setTimeout(() => { disc.style.visibility = ''; fly.remove(); }, 680);
+    }
+    $('sf').classList.add('shown');
+  }, 30);
+}
+function measure() { sf.pos = sf.slides.map(s => s.offsetLeft + s.offsetWidth / 2); }
+function jump(i, smooth = true) {
+  i = clamp(i, 0, sf.ids.length - 1); const s = sf.slides[i]; if (!s) return;
+  track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: smooth && !reduced ? 'smooth' : 'auto' });
+}
+let sfRaf = 0;
+function onScroll() {
+  if (sfRaf) return;
+  sfRaf = requestAnimationFrame(() => {
+    sfRaf = 0; if (!sf.slides.length) return;
+    const c = track.scrollLeft + track.clientWidth / 2, w = sf.slides[0].offsetWidth;
+    let best = 0, bd = 1e9;
+    sf.pos.forEach((p, i) => { const d = Math.abs(p - c) / w; if (d < 2.5) sf.slides[i].style.setProperty('--k', Math.min(d, 1.5).toFixed(3)); if (d < bd) { bd = d; best = i; } });
+    setCur(best);
+  });
+}
+function setCur(i) {
+  if (i === sf.cur) return;
+  const prev = sf.cur; sf.cur = i;
+  if (prev >= 0 && sf.slides[prev]) sf.slides[prev].style.setProperty('--k', 1);
+  $('sfc').textContent = (i + 1) + ' / ' + sf.ids.length;
+  $('sfprev').disabled = i === 0; $('sfnext').disabled = i === sf.ids.length - 1;
+  for (let k = i - 2; k <= i + 2; k++) { const s = sf.slides[k]; if (!s) continue; const im = s.querySelector('img'); if (im.dataset.full) { im.src = im.dataset.full; delete im.dataset.full; } }
+  [...strip.children].forEach((el, k) => el.classList.toggle('on', k === i));
+  const el = strip.children[i]; if (el) strip.scrollTo({ left: el.offsetLeft - strip.clientWidth / 2 + el.offsetWidth / 2, behavior: reduced ? 'auto' : 'smooth' });
+}
+track.addEventListener('scroll', onScroll, { passive: true });
+let wheelT = 0;
+track.addEventListener('wheel', e => {
+  if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+  e.preventDefault();
+  const t = performance.now(); if (t - wheelT < 380 || Math.abs(e.deltaY) < 4) return;
+  wheelT = t; jump(sf.cur + Math.sign(e.deltaY));
+}, { passive: false });
+track.addEventListener('click', e => { const d = e.target.closest('.disc'); if (d) { const i = +d.parentNode.dataset.i; if (i !== sf.cur) jump(i); return; } if (e.target === track) closeSf(); });
+strip.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) jump(+g.dataset.go); });
+$('sfprev').onclick = () => jump(sf.cur - 1);
+$('sfnext').onclick = () => jump(sf.cur + 1);
+function closeSf() { $('sf').classList.remove('open', 'shown'); track.innerHTML = ''; strip.innerHTML = ''; sf.slides = []; cv.classList.remove('blur'); document.body.classList.remove('ov'); }
+$('sfx').onclick = closeSf;
+addEventListener('resize', () => { if ($('sf').classList.contains('open')) { measure(); jump(sf.cur, false); } });
+document.addEventListener('click', e => { const c = e.target.closest('[data-centra]'); if (c) { const p = photoById[c.dataset.centra]; if (p) openSf([p.id, ...vicineDi(p)], 0); } });
+addEventListener('keydown', e => {
+  const sfOpen = $('sf').classList.contains('open');
+  if (sfOpen && e.key === 'ArrowRight') { e.preventDefault(); jump(sf.cur + 1); return; }
+  if (sfOpen && e.key === 'ArrowLeft') { e.preventDefault(); jump(sf.cur - 1); return; }
+  if (e.key !== 'Escape') return;
+  if (sfOpen) closeSf(); else $('home').click();
+});
+
+// ---------------- foto dai telefoni, in tempo reale: ogni arrivo e' un nuovo urto ----------------
+const LIVE = location.protocol.startsWith('http');
+const QUI = ['localhost', '127.0.0.1'].includes(location.hostname);
+const cron = new Map();
+let online = false, arrivate = 0;
+const arrQueue = [];
+let arrivo = null, fineUltimo = 0;
+const PAUSA = 1200;
+function counts() {
+  const n = photos.length, prov = photos.filter(p => p.f.provv).length;
+  $('st').textContent = n + ' foto';
+  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Al centro c'è il punto in cui tutti questi ricordi si toccano: da lì ogni foto parte come una particella. Le foto che raccontano la stessa cosa volano nella stessa direzione; chi è piena di vita si avvolge in spirali strette, chi è vuota va dritta e lontano, chi è ferita trema, chi è di passaggio disegna archi lunghi. Le più uniche arrivano più lontano.` +
+    (prov ? ` ${prov === 1 ? '1 foto, quasi grigia, ha' : prov + ' foto, quasi grigie, hanno'} ancora un posto provvisorio: aspetta${prov === 1 ? '' : 'no'} di essere lett${prov === 1 ? 'a' : 'e'}.` : '');
+  $('qrmeta').textContent = arrivate + ' foto arrivate dai telefoni';
+}
+function addArrival(a, animate) {
+  if (!a.dato || photoById[a.id] || arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id)) return;
+  if (animate) { arrQueue.push(a); return; }
+  makePhoto(a.id, a.dato); costruisciScie(); preparaImpulsi(); counts();
+}
+function nextArrival(now) {
+  if (arrivo || !arrQueue.length || now < fineUltimo + PAUSA) return;
+  const a = arrQueue.shift(), p = makePhoto(a.id, a.dato); p.hold = true; preparaImpulsi(); counts();
+  if (overlayOpen()) closeSf();
+  setHover(null);
+  const coda = arrQueue.length, f = coda === 0 ? 1 : coda <= 2 ? .72 : .5;
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p.pts, 3)); g.setDrawRange(0, 0);
+  const linea = new THREE.Line(g, new THREE.LineBasicMaterial({ color: p.col, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const onda = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX_ANELLO, color: p.col, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 }));
+  scene.add(linea, onda);
+  arrivo = { a, p, linea, onda, t0: now, T1: 1700 * f + 300, T2: 1700 * f + 300 + 4800 * f, T3: 1700 * f + 300 + 4800 * f + 1300 };
+  $('arrK').textContent = 'Nuova foto' + (a.nome ? ' · da ' + a.nome : ' · dal telefono');
+  $('arrW').textContent = a.frase ? '«' + a.frase + '»' : '';
+  $('arrQ').textContent = arrQueue.length ? '+ ' + arrQueue.length + ' in arrivo' : '';
+  $('arrivo').style.top = 'auto'; $('arrivo').style.bottom = '110px';
+  $('arrivo').classList.add('on');
+  renderCron();
+}
+function passoArrivo(now) {
+  nextArrival(now);
+  if (!arrivo) return;
+  const { p, linea, onda, T1, T2, T3 } = arrivo, el = now - arrivo.t0, s = p.sprite;
+  s.material.opacity = 1;
+  if (el < T1) {                                            // 1. nasce nel nucleo, grande
+    s.position.set(0, 0, 0); s.scale.setScalar(p.base * 5.5 * sstep(0, T1 * .7, el));
+  } else if (el < T2) {                                     // 2. parte, lasciando la sua scia
+    if (!arrivo.partita) { arrivo.partita = true; $('arrivo').classList.remove('on'); }
+    const u = easeIO((el - T1) / (T2 - T1)), j = Math.floor(u * (p.n - 1));
+    s.position.set(p.pts[j * 3], p.pts[j * 3 + 1], p.pts[j * 3 + 2]);
+    s.scale.setScalar(p.base * (5.5 + (1.4 - 5.5) * sstep(0, .6, u)));
+    linea.geometry.setDrawRange(0, j + 1);
+  } else {                                                  // 3. si posa: un'onda
+    const v = clamp((el - T2) / (T3 - T2), 0, 1);
+    s.position.copy(p.fine); s.scale.setScalar(p.base * (1.4 - .4 * v));
+    onda.position.copy(p.fine); onda.scale.setScalar(p.base * (1 + 5 * v)); onda.material.opacity = .9 * (1 - v);
+    if (el >= T3) {
+      p.hold = false; scene.remove(linea, onda); linea.geometry.dispose();
+      costruisciScie(); p.lampo = now + 2200; toast(arrivo.a); arrivo = null; fineUltimo = now; renderCron(); return;
+    }
+  }
+}
+function removePhoto(id) {
+  const p = photoById[id]; if (!p) return;
+  scene.remove(p.sprite); p.tex.dispose(); p.sprite.material.dispose();
+  photos.splice(photos.indexOf(p), 1); sprites.splice(sprites.indexOf(p.sprite), 1); delete photoById[id];
+  if (hover === p) setHover(null);
+  costruisciScie(); preparaImpulsi();
+}
+function removeArrival(id) {
+  cron.delete(id); const qi = arrQueue.findIndex(x => x.id === id); if (qi >= 0) arrQueue.splice(qi, 1);
+  if (arrivo && arrivo.a.id === id) { scene.remove(arrivo.linea, arrivo.onda); arrivo = null; $('arrivo').classList.remove('on'); }
+  if (photoById[id]) { removePhoto(id); arrivate--; }
+  renderCron(); counts();
+}
+function letta(id, dato) {   // il lettore ha letto una foto: prende il suo posto definitivo
+  const p = photoById[id]; if (!p || !dato) return;
+  const a = cron.get(id); if (a) a.dato = dato;
+  if (p.hold) { p.f = dato; return; }
+  aggiornaFoto(p, dato); costruisciScie(); counts(); renderCron();
+}
+function toast(a) {
+  const p = photoById[a.id]; if (!p) return;
+  const el = document.createElement('div'); el.className = 'toast'; el.style.borderColor = cssA(p.col, .6);
+  el.innerHTML = `<img src="${thumbSrc(a.id)}" alt="" style="box-shadow:0 0 0 2px ${css(p.col)}"><div><div class="k">Nuova foto${a.nome ? ' · ' + esc(a.nome) : ''}</div><div class="w">${esc(a.frase || 'è entrata nella memoria')}</div></div>`;
+  el.onclick = () => { const q = photoById[a.id]; if (q) openPhoto(q); };
+  $('toasts').prepend(el);
+  while ($('toasts').children.length > 4) $('toasts').lastChild.remove();
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 700); }, 11000);
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-elimina]'); if (!b) return;
+  e.stopPropagation();
+  if (!confirm('Rimuovere questa foto dalla nebulosa? Verrà cancellata anche dal computer.')) return;
+  const r = await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.elimina }) });
+  if (r.ok) closeSf();
+}, true);
+
+// ---------------- la cronologia ----------------
+function quando(q) {
+  if (!q) return '';
+  const [d, h] = q.split(' '), n = new Date(), oggi = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
+  return (d === oggi ? 'oggi' : d.slice(8, 10) + '/' + d.slice(5, 7)) + ' ' + h.slice(0, 5);
+}
+function renderCron() {
+  const list = [...cron.values()].reverse();
+  $('cronN').textContent = list.length ? '· ' + list.length : '';
+  if (!$('cron').classList.contains('open')) return;
+  $('cronC').innerHTML = (online ? '<span style="color:#7fd38a">● in diretta</span>' : '<span style="color:#e6a08c">○ mi sto ricollegando…</span>') + ' · ' +
+    (list.length === 1 ? '1 foto arrivata' : list.length + ' foto arrivate') + (QUI && list.length ? '<br><button id="cronAll">Rimuovi tutte</button>' : '');
+  $('cronL').innerHTML = list.length ? list.map(a => {
+    const p = photoById[a.id], c = p ? css(p.col) : '#999', att = arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id);
+    return `<div class="ci" data-apri="${a.id}"><img src="${thumbSrc(a.id)}" alt="" loading="lazy" style="box-shadow:0 0 0 2px ${c}"><div style="flex:1;min-width:0"><div class="k">${esc(a.nome || 'anonimo')} · ${quando(a.quando)}${att ? ' · <span class="att">sta entrando</span>' : ''}${p && p.f.provv ? ' · posto provvisorio' : p ? ' · letta' : ''}</div>` +
+      `<div class="w">${p && p.f.lettura ? esc(p.f.lettura) : a.frase ? '«' + esc(a.frase) + '»' : ''}</div>${QUI ? `<button data-elimina="${a.id}">Rimuovi</button>` : ''}</div></div>`;
+  }).join('') : '<div class="vuota">Ancora nessuna foto. Inquadra il QR code con un telefono: ogni foto che arriva comparirà qui, con chi l\'ha mandata e quando.</div>';
+}
+$('cronbtn').onclick = () => { $('qr').classList.remove('open'); $('cron').classList.toggle('open'); renderCron(); };
+$('cronx').onclick = () => $('cron').classList.remove('open');
+$('cronL').addEventListener('click', e => { const it = e.target.closest('[data-apri]'); if (!it) return; const p = photoById[it.dataset.apri]; if (p && !p.hold) openPhoto(p); });
+$('cron').addEventListener('click', async e => {
+  if (e.target.id !== 'cronAll') return;
+  if (!confirm('Rimuovere tutte le ' + cron.size + ' foto arrivate dai telefoni? Verranno cancellate anche dal computer.')) return;
+  for (const id of [...cron.keys()]) await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }).catch(() => {});
+});
+let inViaggio = 0, chiViaggia = '';
+function viaggio(d, nome) {
+  inViaggio = Math.max(0, inViaggio + d); if (nome != null) chiViaggia = nome;
+  $('inarr').textContent = '● Una foto sta arrivando' + (chiViaggia ? ' da ' + chiViaggia : '') + (inViaggio > 1 ? ' (+' + (inViaggio - 1) + ')' : '') + '…';
+  $('inarr').classList.toggle('on', inViaggio > 0 && !arrivo);
+}
+setInterval(() => $('inarr').classList.toggle('on', inViaggio > 0 && !arrivo), 500);
+function arrivata(a, animate) { if (!cron.has(a.id)) { cron.set(a.id, a); arrivate++; } addArrival(a, animate); renderCron(); }
+if (LIVE) {
+  fetch('/api/arrivi', { cache: 'no-store' }).then(r => r.ok ? r.json() : []).then(list => {
+    // ?prova-arrivo nell'indirizzo: rifa' l'ingresso dell'ultima foto arrivata
+    const prova = /prova-arrivo/.test(location.search) && list.length ? list.pop() : null;
+    list.forEach(a => arrivata(a, false));
+    if (prova) { cron.set(prova.id, prova); arrivate++; removePhoto(prova.id); setTimeout(() => { addArrival(prova, true); renderCron(); }, 4800); }
+    counts();
+  }).catch(() => {});
+  const conn = () => {
+    const es = new EventSource('/api/eventi');
+    es.onopen = () => setOnline(true);
+    es.addEventListener('inarrivo', e => { if (overlayOpen()) closeSf(); viaggio(+1, JSON.parse(e.data).nome || ''); setTimeout(() => viaggio(-1), 30000); });
+    es.addEventListener('annullata', () => viaggio(-1));
+    es.addEventListener('foto', e => { viaggio(-1); arrivata(JSON.parse(e.data), true); });
+    es.addEventListener('letta', e => { const d = JSON.parse(e.data); letta(d.id, d.dato); });
+    es.addEventListener('rimossa', e => removeArrival(JSON.parse(e.data).id));
+    es.onerror = () => { setOnline(false); es.close(); setTimeout(conn, 2000); };
+  };
+  conn();
+  // per sicurezza ogni 5 secondi controllo l'elenco: se la diretta si e' persa qualcosa (un arrivo, una lettura), lo recupero
+  setInterval(() => fetch('/api/arrivi', { cache: 'no-store' }).then(r => r.json()).then(list => {
+    const ids = new Set(list.map(a => a.id));
+    list.forEach(a => {
+      if (!cron.has(a.id)) arrivata(a, true);
+      else if (a.dato && !a.dato.provv && photoById[a.id] && photoById[a.id].f.provv) letta(a.id, a.dato);
+    });
+    [...cron.keys()].forEach(id => { if (!ids.has(id)) removeArrival(id); });
+  }).catch(() => setOnline(false)), 5000);
+}
+function setOnline(v) { online = v; $('liveDot').classList.toggle('on', v); $('liveDot').title = v ? 'in diretta' : 'non collegata'; renderCron(); }
+$('qrbtn').onclick = async () => {
+  $('cron').classList.remove('open');
+  $('qr').classList.toggle('open');
+  if (!$('qr').classList.contains('open')) return;
+  if (!LIVE) { $('qrurl').textContent = 'Apri la nebulosa con «Apri la nebulosa.command» per ricevere foto dai telefoni.'; return; }
+  try {
+    const inf = await (await fetch('/api/info')).json();
+    $('qrurl').textContent = inf.carica; counts();
+    const drawQR = () => { $('qrcode').innerHTML = ''; new QRCode($('qrcode'), { text: inf.carica, width: 180, height: 180, colorDark: '#06050a', colorLight: '#ffffff' }); };
+    if (window.QRCode) drawQR();
+    else { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload = drawQR; sc.onerror = () => { $('qrcode').textContent = 'QR non disponibile senza internet: usa l’indirizzo qui sotto.'; $('qrcode').style.cssText += ';color:#06050a;font-size:12px;text-align:center'; }; document.head.appendChild(sc); }
+  } catch (e) { $('qrurl').textContent = 'Il server non risponde.'; }
+};
+$('qrx').onclick = () => $('qr').classList.remove('open');
+
+counts();
+cv.style.cursor = 'grab';
+requestAnimationFrame(frame);
+window.__nebulosa = { photos, camera, controls, setHover, openPhoto };   // per provare dalla console
+</script>
+</body>
+</html>

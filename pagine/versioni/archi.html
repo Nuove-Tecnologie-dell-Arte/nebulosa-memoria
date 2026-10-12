@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Nebulosa — Memoria collettiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06050a;--ink:#ece6e1;--dim:#8c8590;--amber:#d9a566;--trace:#f08a64;--line:rgba(236,230,225,.12)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Jost',sans-serif;font-weight:300;overflow:hidden}
+button{font:inherit}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab;transition:filter .6s}
+canvas.drag{cursor:grabbing}
+canvas.blur{filter:blur(6px) brightness(.8)}
+.top,.intro,.hintbar,#home{transition:opacity .4s}
+body.ov .top,body.ov .intro,body.ov .hintbar,body.ov #home{opacity:0!important;pointer-events:none!important}
+header.top{position:fixed;top:0;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);background:linear-gradient(#06050a,rgba(6,5,10,.5));z-index:5}
+.brand small{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.brand b{font-weight:400;letter-spacing:.22em;font-size:15px;white-space:nowrap}
+.status{display:flex;align-items:center;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;white-space:nowrap}
+.status > *+*{margin-left:14px;padding-left:14px;border-left:1px solid var(--line)}
+.intro{position:fixed;left:40px;top:92px;width:220px;z-index:4;pointer-events:none;transition:opacity .5s}
+.intro.hide{opacity:0}
+.intro h1{font:300 22px/1.2 'Jost',sans-serif}
+.intro h1 em{font-family:'Playfair Display',serif;color:var(--trace);font-size:24px}
+.intro p{margin-top:14px;font-size:11px;line-height:1.7;color:var(--dim)}
+.hintbar{position:fixed;right:28px;top:84px;z-index:4;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;text-align:right;line-height:1.9;pointer-events:none}
+#qrbtn{background:none;border:0;border-left:1px solid var(--line);color:#aaa1f2;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#qrbtn:hover{color:var(--ink)}
+#cronbtn{background:none;border:0;border-left:1px solid var(--line);color:#f0c88c;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#cronbtn:hover{color:var(--ink)}
+#cronN{font-style:normal;color:var(--ink);margin-left:4px}
+#liveDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#5a5560;margin-right:8px;vertical-align:1px}
+#liveDot.on{background:#7fd38a;box-shadow:0 0 8px #7fd38a}
+#cron{position:fixed;top:76px;right:24px;bottom:110px;z-index:9;width:350px;background:rgba(10,9,13,.97);border:1px solid rgba(240,200,140,.4);display:none;flex-direction:column;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#cron.open{display:flex}
+#cron .hd{padding:16px 18px 12px;border-bottom:1px solid var(--line);position:relative}
+#cron h3{font:italic 400 20px 'Playfair Display',serif;color:#f0c88c}
+#cron .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:6px;line-height:1.7}
+#cronx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
+#cronL{overflow:auto;padding:4px 10px 14px;flex:1}
+#cronL .vuota{font-size:12px;line-height:1.6;color:#c9c1bb;padding:16px 8px}
+.ci{display:flex;gap:12px;padding:12px 8px;border-bottom:1px solid rgba(236,230,225,.07);cursor:pointer}
+.ci:hover{background:rgba(240,200,140,.06)}
+.ci img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;background:#222}
+.ci .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.ci .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
+.ci .w{font-size:11px;line-height:1.45;color:#d6cfc9}
+.ci .att{color:#7fd38a}
+.ci button,#cronAll{margin-top:6px;background:none;border:1px solid rgba(240,138,138,.45);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;cursor:pointer}
+#cronAll{margin-top:10px}
+#cron.open ~ #toasts{right:390px}
+body.ov #cron{opacity:0;pointer-events:none}
+#inarr{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:9;background:rgba(10,9,13,.9);border:1px solid rgba(127,211,138,.5);color:#a9e6b1;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;display:none;pointer-events:none}
+#inarr.on{display:block;animation:pulsa 1.4s ease-in-out infinite}
+@keyframes pulsa{50%{opacity:.55}}
+#qr{position:fixed;top:76px;right:24px;z-index:9;width:280px;padding:18px;background:rgba(10,9,13,.97);border:1px solid rgba(170,161,242,.45);display:none;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#qr.open{display:block}
+#qr h3{font:italic 400 20px 'Playfair Display',serif;color:#aaa1f2}
+#qr p{font-size:12px;line-height:1.55;color:#c9c1bb;margin-top:8px}
+#qr .code{margin:14px auto 10px;width:200px;height:200px;background:#fff;padding:10px;display:flex;align-items:center;justify-content:center}
+#qr .code img,#qr .code canvas{width:180px!important;height:180px!important}
+#qr .url{font:400 13px 'JetBrains Mono',monospace;color:var(--ink);word-break:break-all;text-align:center;user-select:all}
+#qr .meta{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:10px;line-height:1.7}
+#qrx{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--dim);font-size:20px;cursor:pointer}
+#toasts{position:fixed;right:24px;top:150px;z-index:7;width:300px;display:grid;gap:10px;pointer-events:none}
+.toast{pointer-events:auto;display:flex;gap:12px;padding:10px 12px;background:rgba(10,9,13,.94);border:1px solid rgba(240,200,140,.45);box-shadow:0 10px 40px rgba(0,0,0,.6);cursor:pointer;animation:tin .5s ease-out;transition:opacity .6s}
+.toast.out{opacity:0}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.toast img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none}
+.toast .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.toast .t{font:italic 400 16px 'Playfair Display',serif;margin:2px 0}
+.toast .w{font-size:11px;line-height:1.45;color:#d6cfc9}
+body.ov #toasts,body.ov #qr{opacity:0;pointer-events:none}
+.why{margin:12px auto 0;max-width:560px;padding:10px 14px;border:1px solid rgba(240,200,140,.35);background:rgba(10,9,13,.7);text-align:left;font-size:13px;line-height:1.5;color:#e2dbd5}
+.why b{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#f0c88c;text-transform:uppercase;margin-bottom:3px}
+.why button{margin-top:8px;background:none;border:1px solid rgba(240,138,138,.5);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;cursor:pointer}
+#arrivo{position:fixed;left:50%;z-index:8;width:min(560px,90vw);transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .5s;padding:14px 18px 16px;background:rgba(6,5,10,.86);border:1px solid rgba(240,200,140,.25);box-shadow:0 18px 60px rgba(0,0,0,.6)}
+#arrivo.on{opacity:1}
+#arrivo .k{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#f0c88c;text-transform:uppercase;text-shadow:0 2px 12px #000}
+#arrivo .e{font:300 13px 'Jost',sans-serif;color:#c9c1bb;margin-top:10px;text-shadow:0 2px 12px #000}
+#arrivo .t{font:italic 400 40px/1.1 'Playfair Display',serif;margin-top:2px;text-shadow:0 2px 24px #000}
+#arrivo .w{font:300 14px/1.5 'Jost',sans-serif;color:#e6dfd9;margin:10px auto 0;max-width:480px}
+#arrivo .q{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#8c8590;text-transform:uppercase;margin-top:8px}
+#home{position:fixed;right:28px;bottom:44px;z-index:5;background:rgba(10,9,13,.8);border:1px solid var(--line);color:var(--dim);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:0 14px;height:46px;cursor:pointer}
+#home:hover{color:var(--amber)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:11px;padding:4px 10px;border:1px solid var(--line);cursor:pointer;border-radius:20px;color:var(--ink);background:rgba(10,9,13,.5)}
+.chip:hover,.chip.on{border-color:currentColor}
+.chip small{font:300 9px 'JetBrains Mono',monospace;color:var(--dim);margin-left:6px}
+.chip.theme{font-family:'Playfair Display',serif;font-style:italic;font-size:12px}
+#pv{position:fixed;z-index:8;pointer-events:none;background:rgba(9,8,12,.94);border:1px solid rgba(236,230,225,.18);padding:9px 12px;display:none;box-shadow:0 8px 40px rgba(0,0,0,.6);max-width:300px}
+#pv .t{font:italic 400 15px/1.3 'Playfair Display',serif}
+#pv .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-top:4px;line-height:1.7}
+#pv q{display:block;font:italic 400 13px/1.4 'Playfair Display',serif;color:var(--amber);margin-top:6px;quotes:none}
+#pv .h{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--amber);text-transform:uppercase;margin-top:7px}
+.fly{position:fixed;z-index:13;border-radius:50%;background:#151219 center/cover no-repeat;pointer-events:none;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 30px 90px rgba(0,0,0,.7);transition:left .65s cubic-bezier(.2,.8,.2,1),top .65s cubic-bezier(.2,.8,.2,1),width .65s cubic-bezier(.2,.8,.2,1),height .65s cubic-bezier(.2,.8,.2,1)}
+/* sfoglia */
+#sf{position:fixed;inset:0;z-index:12;background:radial-gradient(ellipse at center,rgba(6,5,9,.55),rgba(6,5,9,.2) 70%);display:none;flex-direction:column}
+#sf.open{display:flex}
+#sf .ui{transition:opacity .45s .25s;opacity:0}
+#sf.shown .ui{opacity:1}
+.sfh{display:flex;align-items:flex-start;gap:24px;padding:22px 80px 8px 32px;flex:none}
+.sfh .l{flex:1;min-width:0}
+#sfk{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#b3abb4;text-transform:uppercase}
+#sft{font:italic 400 30px/1.15 'Playfair Display',serif;margin-top:6px;text-shadow:0 2px 20px rgba(0,0,0,.8)}
+#sfd{font:italic 400 14px/1.5 'Playfair Display',serif;opacity:.88;margin-top:6px;max-width:760px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+#sfp{margin-top:10px;max-height:62px;overflow:auto}
+#sfc{font:300 12px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3abb4;white-space:nowrap;padding-top:4px}
+#sfx{position:absolute;top:16px;right:24px;background:none;border:0;color:#b3abb4;font-size:30px;cursor:pointer;z-index:2}
+#sfx:hover{color:var(--ink)}
+#sftrack{--D:min(46vh,58vw);flex:1;min-height:0;display:flex;align-items:center;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;padding-inline:calc(50% - var(--D) / 2 - 40px)}
+#sftrack::-webkit-scrollbar{display:none}
+.slide{flex:0 0 auto;width:calc(var(--D) + 80px);scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;--k:1}
+.disc{width:var(--D);height:var(--D);border-radius:50%;overflow:hidden;background:#151219 center/cover no-repeat;transform:scale(calc(1 - var(--k) * .3));opacity:calc(1 - var(--k) * .5);transition:transform .15s,opacity .15s;cursor:pointer;box-shadow:0 0 0 1px rgba(236,230,225,.1),0 24px 90px rgba(0,0,0,.7)}
+.disc img{width:100%;height:100%;object-fit:cover;display:block}
+.cap{margin-top:16px;width:min(calc(var(--D) + 260px),92vw);text-align:center;opacity:calc(1 - var(--k) * 2.2);transition:opacity .15s;min-height:90px}
+.cap .lettura{display:block;font:italic 400 16px/1.5 'Playfair Display',serif;color:var(--ink);margin-bottom:12px;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+.cap .frase{display:block;font:300 13px/1.5 'Jost',sans-serif;color:var(--amber);margin-bottom:10px}
+.cap .chips{justify-content:center}
+.sfnav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:rgba(10,9,13,.6);border:1px solid var(--line);color:var(--ink);font-size:26px;cursor:pointer;z-index:2}
+.sfnav:hover{border-color:var(--amber);color:var(--amber)}
+.sfnav:disabled{opacity:.2;cursor:default}
+#sfprev{left:24px}#sfnext{right:24px}
+#sfstrip{flex:none;display:flex;gap:8px;overflow-x:auto;padding:12px 32px 22px;scrollbar-width:thin;scrollbar-color:#333 transparent}
+#sfstrip img{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover;opacity:.45;cursor:pointer;transition:opacity .2s,transform .2s;outline:2px solid transparent;outline-offset:2px}
+#sfstrip img:hover{opacity:.85}
+#sfstrip img.on{opacity:1;outline-color:var(--amber);transform:scale(1.08)}
+@media(max-width:900px){.intro,.hintbar{display:none}.status > span{display:none}.status > button{border-left:0}#home{top:76px;bottom:auto;right:12px;height:34px}.sfh{padding:18px 56px 8px 18px}#sft{font-size:22px}#sfd{display:none}#sftrack{--D:min(74vw,40vh)}.sfnav{display:none}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<header class="top">
+  <div class="brand"><small>Memoria collettiva</small><b>LA NEBULOSA</b></div>
+  <div class="status"><span id="luogo"></span><span id="st"></span><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
+</header>
+<div class="intro" id="intro">
+  <h1>Una memoria<br><em>che si legge.</em></h1>
+  <p id="introp"></p>
+</div>
+<div class="hintbar" id="hintbar">Passa sopra una foto: si accendono<br>quelle che le somigliano nel senso<br>Clicca per aprirla · clicca un nucleo</div>
+<button id="home">↺ Vista iniziale</button>
+<div id="pv"></div>
+<div id="qr"><button id="qrx" aria-label="Chiudi">×</button><h3>Carica dal telefono</h3><p>Inquadra il codice con la fotocamera del telefono, oppure scrivi l'indirizzo nel browser. Il telefono deve essere sulla stessa rete Wi-Fi di questo computer.</p><div class="code" id="qrcode"></div><div class="url" id="qrurl">…</div><div class="meta" id="qrmeta"></div></div>
+<div id="cron"><div class="hd"><button id="cronx" aria-label="Chiudi">×</button><h3>Cronologia</h3><div class="meta" id="cronC"></div></div><div id="cronL"></div></div>
+<div id="toasts"></div>
+<div id="inarr"></div>
+<div id="arrivo"><div class="k" id="arrK"></div><div class="e">sta entrando in</div><div class="t" id="arrT"></div><div class="w" id="arrW"></div><div class="q" id="arrQ"></div></div>
+<div id="sf" role="dialog" aria-label="Sfoglia le foto">
+  <button id="sfx" class="ui" aria-label="Chiudi">×</button>
+  <div class="sfh ui"><div class="l"><div id="sfk"></div><div id="sft"></div><div id="sfd"></div><div class="chips" id="sfp"></div></div><div id="sfc"></div></div>
+  <div id="sftrack"></div>
+  <button class="sfnav ui" id="sfprev" aria-label="Foto precedente">‹</button>
+  <button class="sfnav ui" id="sfnext" aria-label="Foto successiva">›</button>
+  <div id="sfstrip" class="ui"></div>
+</div>
+
+<script src="/dati.js"></script>
+<script>
+(() => {
+const D = window.NEBULOSA;
+if (!D) {
+  const m = document.createElement('div');
+  m.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;max-width:440px;padding:22px 24px;background:#131116;border:1px solid rgba(240,138,100,.5);color:#ece6e1;font:300 14px/1.6 Jost,sans-serif';
+  m.innerHTML = '<b style="font-weight:400;color:#f08a64">Mancano i dati della nebulosa.</b><br>Apri la nebulosa con <code>Apri la nebulosa.command</code>, oppure lancia <code>python3 programma/genera_dati.py</code>.';
+  document.body.appendChild(m);
+  return;
+}
+const $ = id => document.getElementById(id);
+const cv = $('c'), ctx = cv.getContext('2d');
+let W, H, DPR = Math.min(devicePixelRatio || 1, 2);
+const thumbSrc = id => '/foto/thumb/' + id + '.jpg';
+const fullSrc = id => '/foto/full/' + id + '.jpg';
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const TAU = Math.PI * 2;
+const hexA = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------------- dati: i nuclei sono gli archi, i tag legano le foto attraverso gli archi ----------------
+const PAL = ['#ee8f82', '#e0b36e', '#b9e07e', '#8fb2d6', '#e8a07a', '#aaa1f2', '#8fd3b6', '#e8dc8f', '#d79ad8', '#7fc4d9', '#f2a7b8', '#c8b48a'];
+const themes = D.nuclei.map((t, i) => ({ id: t.id, testo: t.testo, idx: i, col: PAL[i % PAL.length], photos: [], ids: [] }));
+// le foto non ancora lette (per esempio appena arrivate dal telefono) aspettano in un arco tutto loro
+const ATTESA = { id: 'In attesa di lettura', testo: 'Foto arrivate da poco: non sono ancora state lette. Quando lo saranno, troveranno il loro nucleo.', idx: themes.length, col: '#9a929a', attesa: true, photos: [], ids: [] };
+themes.push(ATTESA);
+const themeById = Object.fromEntries(themes.map(t => [t.id, t]));
+const info = id => D.foto[id] || null;
+const tagIdx = new Map();   // tag -> foto
+const addTags = id => { const f = info(id); if (f) f.tag.forEach(t => { if (!tagIdx.has(t)) tagIdx.set(t, []); if (!tagIdx.get(t).includes(id)) tagIdx.get(t).push(id); }); };
+const photos = [], photoById = {};
+function makePhoto(id) {
+  const f = info(id), th = (f && themeById[f.nucleo]) || ATTESA;
+  const p = { id, theme: th, tags: new Set(f ? f.tag : []) };
+  photos.push(p); photoById[id] = p; th.photos.push(p); th.ids.push(id); addTags(id);
+  return p;
+}
+D.tutte.forEach(makePhoto);
+const visibili = () => themes.filter(t => t.photos.length);
+
+$('luogo').textContent = D.luogo ? '● ' + D.luogo : '';
+function counts() {
+  const n = photos.length, k = themes.filter(t => !t.attesa && t.photos.length).length;
+  $('st').textContent = k + ' nuclei · ' + n + ' foto';
+  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Ognuna è stata guardata a fondo, per capire che cosa racconta, e non solo che cosa mostra. Così si sono formati ${k} nuclei di senso: gli archi del cerchio. I tag attraversano gli archi e legano foto lontane che dicono la stessa cosa.` +
+    (ATTESA.photos.length ? ` ${ATTESA.photos.length} foto aspettano ancora di essere lette.` : '');
+  $('qrmeta').textContent = arrivate + ' foto arrivate dai telefoni';
+}
+
+// miniature rotonde gia' pronte
+const SPR = 72;
+function loadSprite(p) {
+  const im = new Image(); p.im = im;
+  im.onload = () => {
+    const c = document.createElement('canvas'); c.width = c.height = SPR; const x = c.getContext('2d');
+    const m = Math.min(im.naturalWidth, im.naturalHeight);
+    x.beginPath(); x.arc(SPR / 2, SPR / 2, SPR / 2, 0, TAU); x.clip();
+    x.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, 0, 0, SPR, SPR);
+    p.spr = c;
+  };
+  im.src = thumbSrc(p.id);
+}
+photos.forEach(loadSprite);
+
+// ---------------- il cerchio: le foto sparse dentro un anello, il centro vuoto ----------------
+let seed = 20261009; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+let EW, RP0, Dp, CX, CY;
+const inEye = (x, y) => Math.hypot(x, y) < EW;
+const keyOf = th => ((th + Math.PI / 2) % TAU + TAU) % TAU;   // angolo misurato dall'alto, in senso orario
+function layout() {
+  EW = Math.max(120, Math.min(W * .3, (W - 520) / 2, (H - 280) / 2)); RP0 = EW * .3;
+  CX = W / 2; CY = 64 + (H - 64 - 90) / 2;
+  const area = Math.PI * (EW * EW - (RP0 * 1.3) ** 2);
+  Dp = Math.sqrt(area / Math.max(1, photos.length)) * .98;
+  seed = 20261009;
+  const pts = [], cell = Dp, grid = new Map(), gk = (x, y) => Math.floor(x / cell) + ',' + Math.floor(y / cell);
+  let minF = .9, tries = 0;
+  while (pts.length < photos.length) {
+    if (++tries > 6000) { minF *= .95; tries = 0; }
+    const x = (rnd() * 2 - 1) * EW, y = (rnd() * 2 - 1) * EW;
+    const sz = .72 + rnd() * .62, d = Dp * .9 * sz;
+    if (!inEye(x, y)) continue;
+    const rr = Math.hypot(x, y); if (rr < RP0 * 1.3 + d / 2) continue;
+    if (!inEye(x * (1 + d / 2 / Math.max(rr, 1)), y * (1 + d / 2 / Math.max(rr, 1)))) continue;
+    let ok = true; const cx = Math.floor(x / cell), cy = Math.floor(y / cell);
+    for (let i = -2; i <= 2 && ok; i++) for (let j = -2; j <= 2 && ok; j++) for (const q of grid.get((cx + i) + ',' + (cy + j)) || []) if (Math.hypot(q.x - x, q.y - y) < (q.d + d) / 2 * minF) { ok = false; break; }
+    if (!ok) continue;
+    const p = { x, y, d, rr, th: Math.atan2(y, x) }; pts.push(p);
+    (grid.get(gk(x, y)) || grid.set(gk(x, y), []).get(gk(x, y))).push(p); tries = 0;
+  }
+  // gli archi: le foto ordinate per angolo, divise tra i nuclei
+  pts.sort((a, b) => keyOf(a.th) - keyOf(b.th));
+  const vis = visibili();
+  let k = 0;
+  vis.forEach(t => {
+    const mine = pts.slice(k, k + t.photos.length); k += t.photos.length;
+    t.k0 = keyOf(mine[0].th); t.k1 = keyOf(mine[mine.length - 1].th);
+    const sh = [...t.photos]; for (let i = sh.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [sh[i], sh[j]] = [sh[j], sh[i]]; }
+    sh.forEach((p, i) => { const q = mine[i]; p.tx = q.x; p.ty = q.y; p.td = q.d; if (p.ph == null) p.ph = rnd() * TAU; if (p.X == null) { p.X = q.x; p.Y = q.y; p.D = q.d; } });
+  });
+  vis.forEach((t, i) => { const nx = vis[(i + 1) % vis.length]; t.tkEnd = i === vis.length - 1 ? TAU : (t.k1 + nx.k0) / 2; });
+  vis.forEach((t, i) => { t.tkStart = i ? vis[i - 1].tkEnd : 0; if (t.kStart == null) { t.kStart = t.tkStart; t.kEnd = t.tkEnd; } });
+}
+// ogni fotogramma le foto si avvicinano un po' alla loro nuova posizione: la struttura cambia piano
+function glide(k) {
+  for (const p of photos) {
+    if (p.X == null) { p.X = p.tx; p.Y = p.ty; p.D = p.td; }
+    p.X += (p.tx - p.X) * k; p.Y += (p.ty - p.Y) * k; p.D += (p.td - p.D) * k;
+    p.rr = Math.hypot(p.X, p.Y); p.th = Math.atan2(p.Y, p.X); p.rn = p.rr / EW; p.d0 = p.D;
+  }
+  for (const t of visibili()) { t.kStart += (t.tkStart - t.kStart) * k; t.kEnd += (t.tkEnd - t.kEnd) * k; }
+}
+function resize() { W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; layout(); }
+addEventListener('resize', resize); resize();
+const view = { s: 1, x: 0, y: 0 }, viewT = { s: 1, x: 0, y: 0 };
+const toS = (x, y) => [CX + view.x + x * view.s, CY + view.y + y * view.s];
+
+// ---------------- interazione ----------------
+let mouse = { x: -1, y: -1 }, hover = null, hoverTheme = null, drag = null, labelBoxes = [];
+cv.addEventListener('wheel', e => {
+  e.preventDefault();
+  const s0 = viewT.s, s1 = clamp(s0 * Math.exp(-e.deltaY * .0013), 1, 5);
+  const wx = (e.clientX - CX - viewT.x) / s0, wy = (e.clientY - CY - viewT.y) / s0;
+  viewT.s = s1; viewT.x = e.clientX - CX - wx * s1; viewT.y = e.clientY - CY - wy * s1;
+  if (s1 === 1) { viewT.x = 0; viewT.y = 0; }
+}, { passive: false });
+cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, vx: viewT.x, vy: viewT.y, moved: 0 }; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointermove', e => {
+  mouse.x = e.clientX; mouse.y = e.clientY;
+  if (drag) { const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.moved = Math.max(drag.moved, Math.hypot(dx, dy)); if (drag.moved > 5 && viewT.s > 1) { cv.classList.add('drag'); viewT.x = drag.vx + dx; viewT.y = drag.vy + dy; view.x = viewT.x; view.y = viewT.y; } }
+});
+cv.addEventListener('pointerleave', () => { mouse.x = mouse.y = -1; });
+document.addEventListener('pointermove', e => { if (e.target !== cv && !drag) mouse.x = mouse.y = -1; });
+cv.addEventListener('pointerup', () => {
+  cv.classList.remove('drag');
+  if (drag && drag.moved < 5) { if (hover) openPhoto(hover); else if (hoverTheme) openTheme(hoverTheme); }
+  drag = null;
+});
+$('home').onclick = () => { viewT.s = 1; viewT.x = 0; viewT.y = 0; };
+
+// quanto due foto si somigliano nel senso: i tag rari contano di piu' di quelli che hanno quasi tutte
+// (sotto 1 non sono affini: serve un tag raro in comune, oppure almeno due tag comuni)
+const shared = (a, b) => { let n = 0; for (const t of a.tags) if (b.tags.has(t)) n += (tagIdx.get(t) || []).length <= 15 ? 1 : .5; return n >= 1 ? n : 0; };
+
+// ---------------- disegno ----------------
+const stars = Array.from({ length: 220 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.2 + .2, a: Math.random() * .45 + .06 }));
+let last = performance.now(), phase = 0;
+const AMP = () => EW * .022;
+const wave = th => Math.sin(5 * th - phase) + .3 * Math.sin(10 * th + phase * 1.7);
+const overlayOpen = () => $('sf').classList.contains('open');
+let echo = null;   // la foto sotto il mouse e le sue affini (calcolate una volta per foto)
+function draw(now) {
+  const dt = Math.min((now - last) / 1000, .1); last = now;
+  phase += dt * (reduced ? .2 : .9);
+  view.s += (viewT.s - view.s) * .15; view.x += (viewT.x - view.x) * .15; view.y += (viewT.y - view.y) * .15;
+  const t = now / 1000, s = view.s, Rp = RP0 * 1.3, amp = AMP();
+
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = '#06050a'; ctx.fillRect(0, 0, W, H);
+  const [cx, cy] = toS(0, 0);
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * .7);
+  g.addColorStop(0, 'rgba(40,24,34,.5)'); g.addColorStop(.6, 'rgba(14,11,24,.3)'); g.addColorStop(1, 'rgba(6,5,10,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  for (const st of stars) { ctx.fillStyle = `rgba(236,230,225,${st.a})`; ctx.fillRect(st.x * W, st.y * H, st.r, st.r); }
+
+  if (!drag && !overlayOpen()) pick(); else if (overlayOpen()) { hover = null; hoverTheme = null; }
+  const ht = arrivo ? (arrivo.cerca || arrivo.p.theme) : hover ? hover.theme : hoverTheme;
+  if (hover && (!echo || echo.p !== hover)) { echo = { p: hover, m: new Map(photos.map(q => [q, shared(hover, q)])) }; }
+  if (!hover) echo = null;
+
+  // gli archi dei nuclei
+  visibili().forEach(th => {
+    const a0 = th.kStart - Math.PI / 2 + .012, a1 = th.kEnd - Math.PI / 2 - .012, on = !ht || ht === th;
+    ctx.fillStyle = hexA(th.col, ht === th ? .13 : .04);
+    ctx.beginPath(); ctx.arc(cx, cy, (EW + Dp * .6) * s, a0, a1); ctx.arc(cx, cy, Math.max(1, Rp - Dp * .6) * s, a1, a0, true); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = hexA(th.col, on ? .55 : .2); ctx.lineWidth = ht === th ? 2.5 : 1.2;
+    ctx.beginPath(); ctx.arc(cx, cy, Math.max(1, Rp - Dp * 1.1) * s, a0, a1); ctx.stroke();
+  });
+
+  glide(reduced ? 1 : .012);
+  // i fili: dalla foto sotto il mouse partono fili verso le foto che condividono i suoi tag
+  if (echo) {
+    for (const [q, n] of echo.m) {
+      if (!n || q === hover || q.sx == null) continue;
+      ctx.strokeStyle = hexA(q.theme.col, Math.min(.5, .12 * n)); ctx.lineWidth = .6 + .4 * n;
+      ctx.beginPath(); ctx.moveTo(hover.sx, hover.sy); ctx.lineTo(q.sx, q.sy); ctx.stroke();
+    }
+  }
+  // le foto: l'onda le muove appena, galleggiano
+  for (const p of photos) {
+    if (p.hold) continue;
+    const w = wave(p.th);
+    let r = p.rr + amp * w * (.2 + .8 * p.rn);
+    const d0 = p.d0;
+    if (r - d0 / 2 < Rp + 3) r = Rp + 3 + d0 / 2;
+    const fx = Math.sin(t * .4 + p.ph) * Dp * .1, fy = Math.cos(t * .33 + p.ph * 1.3) * Dp * .1;
+    p.x = Math.cos(p.th) * r + fx; p.y = Math.sin(p.th) * r + fy;
+    const [x, y] = toS(p.x, p.y), d = d0 * s;
+    p.sx = x; p.sy = y; p.sd = d;
+    if (x < -d || x > W + d || y < -d || y > H + d) continue;
+    let a = 1;
+    if (echo) { const n = echo.m.get(p) || 0; a = p === hover ? 1 : n ? Math.min(1, .55 + .2 * n) : .12; }
+    else if (ht && ht !== p.theme) a = .35;
+    ctx.globalAlpha = a;
+    if (p.spr) ctx.drawImage(p.spr, x - d / 2, y - d / 2, d, d);
+    else { ctx.fillStyle = hexA(p.theme.col, .5); ctx.beginPath(); ctx.arc(x, y, d / 2, 0, TAU); ctx.fill(); }
+    if (echo && p !== hover && (echo.m.get(p) || 0) > 0) { ctx.globalAlpha = 1; ctx.strokeStyle = hexA(p.theme.col, .9); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, y, d / 2 + 1.5, 0, TAU); ctx.stroke(); }
+    if (p.nuova && now < p.nuova) { const k = (p.nuova - now) / 9000; ctx.globalAlpha = 1; ctx.strokeStyle = `rgba(240,200,140,${.4 + .6 * k})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, d / 2 + 3 + 3 * Math.sin(now / 160), 0, TAU); ctx.stroke(); }
+  }
+  ctx.globalAlpha = 1;
+
+  // il centro: un vuoto
+  ctx.strokeStyle = 'rgba(240,138,100,.1)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, Math.max(1, Rp - Dp * 1.6) * s, 0, TAU); ctx.stroke();
+  if (inViaggio > 0 && !arrivo) {                          // una foto e' partita da un telefono: il vuoto al centro pulsa, in attesa
+    const R0 = Math.max(1, Rp - Dp * 1.6) * s;
+    for (let k = 0; k < 3; k++) { const u = ((t * .6 + k / 3) % 1); ctx.strokeStyle = `rgba(169,230,177,${.5 * (1 - u)})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, R0 * (.25 + .75 * u), 0, TAU); ctx.stroke(); }
+    ctx.font = "300 10px 'JetBrains Mono', monospace"; ctx.textAlign = 'center'; ctx.fillStyle = `rgba(169,230,177,${.6 + .4 * Math.sin(t * 4)})`; ctx.fillText('IN ARRIVO', cx, cy + 4);
+  }
+
+  // la linea dell'onda corre lungo il bordo del cerchio
+  for (let L = 0; L < 3; L++) {
+    ctx.beginPath();
+    for (let k = 0; k <= 360; k++) {
+      const th = k / 360 * TAU - Math.PI / 2;
+      const r = EW + Dp * .9 + L * 7 + amp * wave(th) * (1 - L * .2);
+      const x = cx + Math.cos(th) * r * s, y = cy + Math.sin(th) * r * s;
+      k ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    const a = .2 * (1 - L * .3);
+    ctx.strokeStyle = L === 0 ? `rgba(240,150,110,${a + .15})` : `rgba(217,165,102,${a})`;
+    ctx.lineWidth = L === 0 ? 1.6 : 1;
+    if (L === 0) { ctx.shadowColor = 'rgba(240,138,100,.8)'; ctx.shadowBlur = 8; }
+    ctx.stroke(); ctx.shadowBlur = 0;
+  }
+  // nomi dei nuclei, fuori dal cerchio, all'arco giusto
+  labelBoxes = [];
+  visibili().forEach(th => {
+    const am = (th.kStart + th.kEnd) / 2 - Math.PI / 2, R = (EW + Dp * .9 + 44) * s;
+    const x = cx + Math.cos(am) * R, y = cy + Math.sin(am) * R, on = !ht || ht === th;
+    ctx.font = `italic 400 ${ht === th ? 18 : 16}px 'Playfair Display', serif`;
+    ctx.textAlign = Math.cos(am) > .25 ? 'left' : Math.cos(am) < -.25 ? 'right' : 'center';
+    ctx.shadowColor = 'rgba(6,5,10,.95)'; ctx.shadowBlur = 8;
+    ctx.fillStyle = hexA(th.col, on ? 1 : .4); ctx.fillText(th.id, x, y);
+    ctx.font = "300 9px 'JetBrains Mono', monospace"; ctx.fillStyle = `rgba(236,230,225,${on ? .55 : .25})`; ctx.fillText(th.photos.length + ' FOTO', x, y + 15);
+    ctx.shadowBlur = 0;
+    ctx.font = "italic 400 16px 'Playfair Display', serif"; const w = ctx.measureText(th.id).width;
+    const x0 = ctx.textAlign === 'left' ? x : ctx.textAlign === 'right' ? x - w : x - w / 2;
+    labelBoxes.push({ t: th, x0: x0 - 6, x1: x0 + w + 6, y0: y - 18, y1: y + 20 }); th.lx = x; th.ly = y; th.la = ctx.textAlign;
+    if (arrivo && arrivo.p.theme === th) { ctx.font = "400 10px 'JetBrains Mono', monospace"; ctx.fillStyle = hexA(th.col, .6 + .4 * Math.sin(now / 180)); ctx.fillText('● STA ENTRANDO', x, y + 30); }
+  });
+
+  drawArrival(now);
+  // la foto sotto il mouse, ingrandita
+  if (hover) {
+    const big = Math.max(78, hover.sd * 3.2), x = hover.sx, y = hover.sy, im = hover.im;
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 24; ctx.fillStyle = '#151219'; ctx.beginPath(); ctx.arc(x, y, big / 2, 0, TAU); ctx.fill(); ctx.restore();
+    if (im.complete && im.naturalWidth) { const m = Math.min(im.naturalWidth, im.naturalHeight); ctx.save(); ctx.beginPath(); ctx.arc(x, y, big / 2, 0, TAU); ctx.clip(); ctx.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, x - big / 2, y - big / 2, big, big); ctx.restore(); }
+    ctx.strokeStyle = hover.theme.col; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, big / 2, 0, TAU); ctx.stroke();
+  }
+
+  $('intro').classList.toggle('hide', view.s > 1.25 || overlayOpen());
+  cv.style.cursor = hover || hoverTheme ? 'pointer' : (drag && drag.moved > 5 ? 'grabbing' : (view.s > 1 ? 'grab' : 'default'));
+  updatePreview();
+  requestAnimationFrame(draw);
+}
+function pick() {
+  hover = null; hoverTheme = null; if (mouse.x < 0) return;
+  let bd = 1e9;
+  for (const p of photos) { if (p.hold || p.sd == null) continue; const d = Math.hypot(mouse.x - p.sx, mouse.y - p.sy); if (d < Math.max(p.sd * .6, 5) && d < bd) { bd = d; hover = p; } }
+  if (hover) return;
+  for (const b of labelBoxes) if (mouse.x > b.x0 && mouse.x < b.x1 && mouse.y > b.y0 && mouse.y < b.y1) { hoverTheme = b.t; return; }
+  const dx = (mouse.x - CX - view.x) / view.s, dy = (mouse.y - CY - view.y) / view.s;
+  if (inEye(dx, dy)) { const k = keyOf(Math.atan2(dy, dx)); hoverTheme = visibili().find(th => k >= th.kStart && k < th.kEnd) || null; }
+}
+
+// ---------------- anteprima ----------------
+let pvKey = null;
+function updatePreview() {
+  const pv = $('pv');
+  const key = hover ? 'p' + hover.id : hoverTheme ? 't' + hoverTheme.id : null;
+  if (!key || (drag && drag.moved > 5) || overlayOpen()) { pv.style.display = 'none'; pvKey = null; return; }
+  if (key !== pvKey) {
+    pvKey = key;
+    if (hover) {
+      const f = info(hover.id), a = cron.get(hover.id), aff = echo ? [...echo.m.values()].filter(n => n > 0).length - 1 : 0;
+      pv.innerHTML = `<div class="t" style="color:${hover.theme.col}">${esc(hover.theme.id)}</div>` +
+        (a ? `<div class="k" style="color:#f0c88c">dal telefono${a.nome ? ' di ' + esc(a.nome) : ''}</div>` : '') +
+        (f ? `<q>${esc(f.lettura.length > 150 ? f.lettura.slice(0, 150) + '…' : f.lettura)}</q><div class="k">${f.tag.map(esc).join(' · ')}</div>` : (a && a.frase ? `<q>«${esc(a.frase)}»</q>` : '')) +
+        `<div class="h">${aff > 0 ? aff + ' foto affini accese · ' : ''}clicca per aprirla →</div>`;
+    }
+    else pv.innerHTML = `<div class="t" style="color:${hoverTheme.col}">${esc(hoverTheme.id)}</div><div class="k" style="text-transform:none;letter-spacing:.02em;font-family:Jost,sans-serif;font-size:12px;color:#c9c1bb">${esc(hoverTheme.testo)}</div><div class="h">${hoverTheme.photos.length} foto · clicca per sfogliarle →</div>`;
+  }
+  pv.style.display = 'block';
+  const off = hover ? Math.max(44, hover.sd * 1.7) : 18;
+  const w = pv.offsetWidth, h = pv.offsetHeight;
+  pv.style.left = clamp(mouse.x + off, 8, W - w - 8) + 'px'; pv.style.top = clamp(mouse.y + off * .4, 70, H - h - 8) + 'px';
+}
+
+// ---------------- aprire: la foto vola al centro e si ingrandisce ----------------
+function openPhoto(p) {
+  const t = p.theme;
+  openSf({ kind: 'theme', node: t, ids: t.ids }, t.ids.indexOf(p.id), { x: p.sx, y: p.sy, r: Math.max(p.sd / 2, 10) });
+}
+function openTheme(t) { openSf({ kind: 'theme', node: t, ids: t.ids }, 0); }
+function openTag(tag) {
+  const ids = tagIdx.get(tag) || []; if (!ids.length) return;
+  const per = new Map(); ids.forEach(id => { const th = photoById[id].theme; per.set(th, (per.get(th) || 0) + 1); });
+  openSf({ kind: 'tag', tag, ids, nuclei: [...per.entries()].sort((a, b) => b[1] - a[1]).map(e => e[0]) }, 0);
+}
+
+// ---------------- sfoglia ----------------
+const sf = { ids: [], cur: 0, slides: [], pos: [] };
+const track = $('sftrack'), strip = $('sfstrip');
+const tagChip = (t, on) => `<button class="chip${on ? ' on' : ''}" data-tag="${esc(t)}" style="color:${on ? 'var(--amber)' : 'var(--ink)'}">${esc(t)}<small>${(tagIdx.get(t) || []).length}</small></button>`;
+const themeChip = t => `<button class="chip theme" data-theme="${esc(t.id)}" style="border-color:${hexA(t.col, .6)};color:${t.col}">${esc(t.id)}</button>`;
+function whyHTML(id, a) {
+  const qui = ['localhost', '127.0.0.1'].includes(location.hostname);
+  return `<div class="why"><b>Arrivata dal telefono${a.nome ? ' · foto di ' + esc(a.nome) : ''} · ${quando(a.quando)}</b>${a.frase ? '«' + esc(a.frase) + '»' : '<span style="color:#8c8590">nessuna frase</span>'}${info(id) ? '' : '<br><span style="color:#8c8590;font-size:11px">Non ancora letta: per ora è in attesa.</span>'}${qui ? `<br><button data-elimina="${id}">Rimuovi questa foto</button>` : ''}</div>`;
+}
+function openSf(c, start = 0, from = null) {
+  sf.ids = c.ids; sf.cur = -1; start = Math.max(0, start);
+  const n = c.node;
+  if (c.kind === 'theme') {
+    $('sfk').textContent = 'nucleo · ' + n.photos.length + ' foto';
+    $('sft').textContent = n.id; $('sft').style.color = n.col; $('sfd').textContent = n.testo;
+    $('sfp').innerHTML = visibili().filter(t => t !== n).map(themeChip).join('');
+  } else {
+    $('sfk').textContent = 'tag · ' + c.ids.length + ' foto · in ' + c.nuclei.length + (c.nuclei.length === 1 ? ' nucleo' : ' nuclei');
+    $('sft').textContent = c.tag; $('sft').style.color = 'var(--amber)'; $('sfd').textContent = '';
+    $('sfp').innerHTML = c.nuclei.map(themeChip).join('');
+  }
+  track.innerHTML = sf.ids.map((id, i) => {
+    const f = info(id), a = cron.get(id);
+    return `<div class="slide" data-i="${i}"><div class="disc" style="background-image:url(${thumbSrc(id)})"><img loading="lazy" data-full="${fullSrc(id)}" src="${thumbSrc(id)}" alt=""></div>` +
+      `<div class="cap">${f ? `<span class="lettura">${esc(f.lettura)}</span><div class="chips">${c.kind === 'tag' ? themeChip(photoById[id].theme) : ''}${f.tag.map(t => tagChip(t, c.tag === t)).join('')}</div>` : ''}${a ? whyHTML(id, a) : ''}</div></div>`;
+  }).join('');
+  strip.innerHTML = sf.ids.map((id, i) => `<img loading="lazy" data-go="${i}" src="${thumbSrc(id)}" alt="">`).join('');
+  strip.style.display = sf.ids.length > 1 ? '' : 'none';
+  sf.slides = [...track.children];
+  const wasOpen = $('sf').classList.contains('open');
+  $('sf').classList.add('open'); cv.classList.add('blur'); document.body.classList.add('ov'); $('pv').style.display = 'none';
+  setTimeout(() => {
+    measure(); jump(start, false); sfRaf = 0; onScroll();
+    const disc = sf.slides[start] && sf.slides[start].querySelector('.disc');
+    if (from && disc && !reduced && !wasOpen) {
+      const b = disc.getBoundingClientRect();
+      const fly = document.createElement('div'); fly.className = 'fly';
+      fly.style.cssText = `left:${from.x - from.r}px;top:${from.y - from.r}px;width:${2 * from.r}px;height:${2 * from.r}px;background-image:url(${fullSrc(sf.ids[start])}),url(${thumbSrc(sf.ids[start])})`;
+      document.body.appendChild(fly); disc.style.visibility = 'hidden';
+      fly.getBoundingClientRect();
+      Object.assign(fly.style, { left: b.left + 'px', top: b.top + 'px', width: b.width + 'px', height: b.height + 'px' });
+      setTimeout(() => { disc.style.visibility = ''; fly.remove(); }, 680);
+    }
+    $('sf').classList.add('shown');
+  }, 30);
+}
+function measure() { sf.pos = sf.slides.map(s => s.offsetLeft + s.offsetWidth / 2); }
+function jump(i, smooth = true) {
+  i = clamp(i, 0, sf.ids.length - 1); const s = sf.slides[i]; if (!s) return;
+  track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: smooth && !reduced ? 'smooth' : 'auto' });
+}
+let sfRaf = 0;
+function onScroll() {
+  if (sfRaf) return;
+  sfRaf = requestAnimationFrame(() => {
+    sfRaf = 0; if (!sf.slides.length) return;
+    const c = track.scrollLeft + track.clientWidth / 2, w = sf.slides[0].offsetWidth;
+    let best = 0, bd = 1e9;
+    sf.pos.forEach((p, i) => { const d = Math.abs(p - c) / w; if (d < 2.5) sf.slides[i].style.setProperty('--k', Math.min(d, 1.5).toFixed(3)); if (d < bd) { bd = d; best = i; } });
+    setCur(best);
+  });
+}
+function setCur(i) {
+  if (i === sf.cur) return;
+  const prev = sf.cur; sf.cur = i;
+  if (prev >= 0 && sf.slides[prev]) sf.slides[prev].style.setProperty('--k', 1);
+  $('sfc').textContent = (i + 1) + ' / ' + sf.ids.length;
+  $('sfprev').disabled = i === 0; $('sfnext').disabled = i === sf.ids.length - 1;
+  for (let k = i - 2; k <= i + 2; k++) { const s = sf.slides[k]; if (!s) continue; const im = s.querySelector('img'); if (im.dataset.full) { im.src = im.dataset.full; delete im.dataset.full; } }
+  [...strip.children].forEach((el, k) => el.classList.toggle('on', k === i));
+  const el = strip.children[i]; if (el) strip.scrollTo({ left: el.offsetLeft - strip.clientWidth / 2 + el.offsetWidth / 2, behavior: reduced ? 'auto' : 'smooth' });
+}
+track.addEventListener('scroll', onScroll, { passive: true });
+let wheelT = 0;
+track.addEventListener('wheel', e => {
+  if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+  e.preventDefault();
+  const t = performance.now(); if (t - wheelT < 380 || Math.abs(e.deltaY) < 4) return;
+  wheelT = t; jump(sf.cur + Math.sign(e.deltaY));
+}, { passive: false });
+track.addEventListener('click', e => { const d = e.target.closest('.disc'); if (d) { const i = +d.parentNode.dataset.i; if (i !== sf.cur) jump(i); return; } if (e.target === track) closeSf(); });
+strip.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) jump(+g.dataset.go); });
+$('sfprev').onclick = () => jump(sf.cur - 1);
+$('sfnext').onclick = () => jump(sf.cur + 1);
+function closeSf() { $('sf').classList.remove('open', 'shown'); track.innerHTML = ''; strip.innerHTML = ''; sf.slides = []; cv.classList.remove('blur'); document.body.classList.remove('ov'); }
+$('sfx').onclick = closeSf;
+addEventListener('resize', () => { if ($('sf').classList.contains('open')) { measure(); jump(sf.cur, false); } });
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-tag]'); if (c) { openTag(c.dataset.tag); return; }
+  const th = e.target.closest('[data-theme]'); if (th) { openTheme(themeById[th.dataset.theme]); return; }
+});
+addEventListener('keydown', e => {
+  const sfOpen = $('sf').classList.contains('open');
+  if (sfOpen && e.key === 'ArrowRight') { e.preventDefault(); jump(sf.cur + 1); return; }
+  if (sfOpen && e.key === 'ArrowLeft') { e.preventDefault(); jump(sf.cur - 1); return; }
+  if (e.key !== 'Escape') return;
+  if (sfOpen) closeSf(); else $('home').click();
+});
+
+// ---------------- foto dai telefoni, in tempo reale ----------------
+const LIVE = location.protocol.startsWith('http');
+const QUI = ['localhost', '127.0.0.1'].includes(location.hostname);
+const cron = new Map();   // le foto arrivate dai telefoni, in ordine di arrivo
+let online = false, arrivate = 0;
+let relayoutT = null;
+const relayoutSoon = () => { clearTimeout(relayoutT); relayoutT = setTimeout(() => { layout(); counts(); }, 700); };
+const arrQueue = [];
+let arrivo = null;
+function addArrival(a, animate) {
+  if (photoById[a.id] || arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id)) return;
+  if (animate) { arrQueue.push(a); return; }   // aspetta il suo turno: entrano una alla volta
+  insertPhoto(a);
+}
+function insertPhoto(a) {
+  const p = makePhoto(a.id);
+  loadSprite(p);
+  layout();   // trova il suo posto (e sposta piano tutte le altre)
+  counts();
+  return p;
+}
+// tre momenti: si materializza · vaga intorno al cerchio · si posa. Con altre foto in coda il viaggio si accorcia.
+const PAUSA = 1200;
+let fineUltimo = 0;
+function nextArrival(now) {
+  if (arrivo || !arrQueue.length || now < fineUltimo + PAUSA) return;
+  const a = arrQueue.shift(), p = insertPhoto(a); p.hold = true;
+  const coda = arrQueue.length, f = coda === 0 ? 1 : coda <= 2 ? .72 : .5;
+  const T1 = Math.max(2000, 3200 * f), T2 = T1 + 6600 * f, T3 = T2 + 1400 * Math.min(1, f + .25);
+  if ($('sf').classList.contains('open')) closeSf();   // l'arrivo deve vedersi
+  const big = new Image(); big.src = fullSrc(a.id);
+  const parts = Array.from({ length: 80 }, () => ({ ang: Math.random() * TAU, r0: EW * (.75 + Math.random() * .5), del: Math.random() * 1000, sz: 1 + Math.random() * 2.2, w: Math.random() < .3 }));
+  arrivo = { a, p, big, t0: now, step: 0, parts, trail: [], T1, T2, T3, aStart: Math.atan2(p.ty, p.tx) - TAU * (1.05 + Math.random() * .2) };
+  $('arrK').textContent = 'Nuova foto' + (a.nome ? ' · da ' + a.nome : ' · dal telefono');
+  $('arrT').textContent = p.theme.id; $('arrT').style.color = p.theme.col;
+  const f0 = info(a.id);
+  $('arrW').textContent = f0 ? f0.lettura : (a.frase ? '«' + a.frase + '»' : 'Entra nella memoria. La leggerò con attenzione, poi troverà il suo nucleo.');
+  $('arrQ').textContent = arrQueue.length ? '+ ' + arrQueue.length + ' in arrivo' : '';
+  $('arrivo').classList.add('on');
+  renderCron();
+}
+const easeIO = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+const easeBack = u => { const c = 1.6; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); };
+const sstep = (a, b, x) => { const u = clamp((x - a) / (b - a), 0, 1); return u * u * (3 - 2 * u); };
+const themeAt = ang => { const k = keyOf(ang); return visibili().find(t => k >= t.kStart && k < t.kEnd) || null; };
+function drawArrival(now) {
+  nextArrival(now);
+  if (!arrivo) return;
+  const { p, big, T1: T_GRANDE, T2: T_VIAGGIO, T3: T_POSA } = arrivo, el = now - arrivo.t0, th = p.theme, s = view.s;
+  const [cx, cy] = toS(0, 0), BIG = Math.min(W, H) * .3;
+  const [tx, ty] = toS(p.tx, p.ty), dT = p.td * s;
+  let x, y, d, glow = 1, alpha = 1;
+  arrivo.cerca = null;
+  if (el < T_GRANDE) {                                     // 1. si materializza nel vuoto al centro
+    const u = Math.min(1, el / 1700);
+    x = cx; y = cy; d = BIG * (.5 + .5 * easeBack(u)); alpha = sstep(150, 1500, el);
+    $('arrivo').style.top = Math.min(H - 200, cy + BIG / 2 + 14) + 'px';
+  } else if (el < T_VIAGGIO) {                             // 2. vaga intorno al cerchio, cercando il suo posto
+    if (arrivo.step < 1) { arrivo.step = 1; $('arrivo').classList.remove('on'); }
+    const u = (el - T_GRANDE) / (T_VIAGGIO - T_GRANDE), aEnd = Math.atan2(p.ty, p.tx);
+    const ang = arrivo.aStart + (aEnd - arrivo.aStart) * (easeIO(u) + .03 * Math.sin(u * TAU * 2.5) * Math.sin(u * Math.PI));
+    const out = sstep(0, .16, u), dive = sstep(.84, 1, u);
+    const rr = (EW + Dp * 2.2) * out + Dp * .7 * Math.sin(u * TAU * 4) * out * (1 - u);
+    const wx = Math.cos(ang) * rr * (1 - dive) + p.tx * dive, wy = Math.sin(ang) * rr * (1 - dive) + p.ty * dive;
+    [x, y] = toS(wx, wy);
+    const dOrb = Math.max(Dp * 2.8 * s, 52);
+    d = BIG + (dOrb - BIG) * sstep(0, .2, u); d = d + (dT * 1.3 - d) * dive;
+    arrivo.cerca = dive > 0 ? th : themeAt(ang);
+    arrivo.trail.push([wx, wy]); if (arrivo.trail.length > 34) arrivo.trail.shift();
+    arrivo.trail.forEach(([qx, qy], i) => { const [sx, sy] = toS(qx, qy), k = i / arrivo.trail.length; ctx.fillStyle = hexA(th.col, .5 * k * (1 - dive)); ctx.beginPath(); ctx.arc(sx, sy, 1 + 3 * k, 0, TAU); ctx.fill(); });
+    ctx.font = "400 10px 'JetBrains Mono', monospace"; ctx.textAlign = 'center'; ctx.fillStyle = hexA(th.col, .85 * (1 - dive));
+    ctx.fillText(u < .8 ? 'CERCA IL SUO POSTO…' : th.id.toUpperCase(), x, y + d / 2 + 16);
+  } else {                                                 // 3. si posa: cerchi nell'acqua
+    if (arrivo.step < 2) { arrivo.step = 2; }
+    const v = Math.min(1, (el - T_VIAGGIO) / (T_POSA - T_VIAGGIO));
+    x = tx; y = ty; d = dT * (1 + .3 * (1 - easeBack(Math.min(1, v * 2)))); glow = 1 - v;
+    for (let k = 0; k < 3; k++) { const vv = Math.min(1, Math.max(0, v * 1.3 - k * .18)); if (vv <= 0) continue; ctx.strokeStyle = hexA(th.col, .8 * (1 - vv)); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, d / 2 + vv * Dp * 3.2 * s, 0, TAU); ctx.stroke(); }
+    if (el >= T_POSA) { p.hold = false; p.X = p.tx; p.Y = p.ty; p.D = p.td; p.nuova = now + 9000; toast(arrivo.a); arrivo = null; fineUltimo = now; renderCron(); return; }
+  }
+  // un velo scuro sul cerchio mentre la foto nasce; poi si dissolve e la si vede vagare
+  const veil = el < T_GRANDE ? .62 * Math.min(1, el / 400) : .62 * Math.max(0, 1 - (el - T_GRANDE) / 1400);
+  if (veil > 0) {
+    ctx.fillStyle = `rgba(6,5,10,${veil})`; ctx.fillRect(0, 0, W, H);
+    if (th.lx != null) {
+      ctx.font = "italic 400 18px 'Playfair Display', serif"; ctx.textAlign = th.la || 'center';
+      ctx.shadowColor = hexA(th.col, .8); ctx.shadowBlur = 16; ctx.fillStyle = th.col; ctx.fillText(th.id, th.lx, th.ly); ctx.shadowBlur = 0;
+      ctx.font = "400 10px 'JetBrains Mono', monospace"; ctx.fillStyle = hexA(th.col, .6 + .4 * Math.sin(now / 180)); ctx.fillText('● STA ENTRANDO', th.lx, th.ly + 30);
+    }
+  }
+  if (el < T_GRANDE) {                                     // la polvere del cerchio si raccoglie al centro e diventa la foto
+    for (const q of arrivo.parts) {
+      const v = clamp((el - q.del) / 1300, 0, 1); if (v <= 0 || v >= 1) continue;
+      const e = easeIO(v), r = (q.r0 * s) * (1 - e) + d * .25 * e, an = q.ang + e * 1.6;
+      ctx.fillStyle = q.w ? `rgba(255,255,255,${.8 * (1 - v)})` : hexA(th.col, .9 * (1 - v));
+      ctx.beginPath(); ctx.arc(cx + Math.cos(an) * r, cy + Math.sin(an) * r, q.sz, 0, TAU); ctx.fill();
+    }
+  }
+  ctx.save(); ctx.globalAlpha = alpha;
+  const g = ctx.createRadialGradient(x, y, d * .35, x, y, d * .9); g.addColorStop(0, hexA(th.col, .5 * glow)); g.addColorStop(1, hexA(th.col, 0));
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, d * .9, 0, TAU); ctx.fill();
+  const im = big.complete && big.naturalWidth ? big : p.im;
+  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 30; ctx.fillStyle = '#151219'; ctx.beginPath(); ctx.arc(x, y, d / 2, 0, TAU); ctx.fill(); ctx.restore();
+  if (im && im.complete && im.naturalWidth) { const m = Math.min(im.naturalWidth, im.naturalHeight); ctx.save(); ctx.beginPath(); ctx.arc(x, y, d / 2, 0, TAU); ctx.clip(); ctx.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, x - d / 2, y - d / 2, d, d); ctx.restore(); }
+  ctx.strokeStyle = th.col; ctx.lineWidth = Math.max(2, d * .012); ctx.beginPath(); ctx.arc(x, y, d / 2, 0, TAU); ctx.stroke();
+  ctx.restore();
+}
+function removeArrival(id) {
+  cron.delete(id); const qi = arrQueue.findIndex(x => x.id === id); if (qi >= 0) arrQueue.splice(qi, 1);
+  renderCron();
+  const p = photoById[id]; if (!p) return;
+  if (arrivo && arrivo.a.id === id) { arrivo = null; $('arrivo').classList.remove('on'); }
+  photos.splice(photos.indexOf(p), 1); delete photoById[id];
+  p.theme.photos.splice(p.theme.photos.indexOf(p), 1); p.theme.ids.splice(p.theme.ids.indexOf(id), 1);
+  for (const [t, ids] of tagIdx) { const i = ids.indexOf(id); if (i >= 0) ids.splice(i, 1); if (!ids.length) tagIdx.delete(t); }
+  arrivate--;
+  relayoutSoon();
+}
+function toast(a) {
+  const p = photoById[a.id]; if (!p) return;
+  const el = document.createElement('div'); el.className = 'toast';
+  el.innerHTML = `<img src="${thumbSrc(a.id)}" alt=""><div><div class="k">Nuova foto${a.nome ? ' · ' + esc(a.nome) : ''}</div><div class="t" style="color:${p.theme.col}">${esc(p.theme.id)}</div><div class="w">${esc(a.frase || 'è entrata nella memoria')}</div></div>`;
+  el.onclick = () => { const q = photoById[a.id]; if (q) openPhoto(q); };
+  $('toasts').prepend(el);
+  while ($('toasts').children.length > 4) $('toasts').lastChild.remove();
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 700); }, 11000);
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-elimina]'); if (!b) return;
+  e.stopPropagation();
+  if (!confirm('Rimuovere questa foto dalla nebulosa? Verrà cancellata anche dal computer.')) return;
+  const r = await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.elimina }) });
+  if (r.ok) closeSf();
+}, true);
+
+// ---------------- la cronologia: tutte le foto arrivate dai telefoni ----------------
+function quando(q) {
+  if (!q) return '';
+  const [d, h] = q.split(' '), n = new Date(), oggi = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
+  return (d === oggi ? 'oggi' : d.slice(8, 10) + '/' + d.slice(5, 7)) + ' ' + h.slice(0, 5);
+}
+function renderCron() {
+  const list = [...cron.values()].reverse();
+  $('cronN').textContent = list.length ? '· ' + list.length : '';
+  if (!$('cron').classList.contains('open')) return;
+  $('cronC').innerHTML = (online ? '<span style="color:#7fd38a">● in diretta</span>' : '<span style="color:#e6a08c">○ mi sto ricollegando…</span>') + ' · ' +
+    (list.length === 1 ? '1 foto arrivata' : list.length + ' foto arrivate') + (QUI && list.length ? '<br><button id="cronAll">Rimuovi tutte</button>' : '');
+  $('cronL').innerHTML = list.length ? list.map(a => {
+    const p = photoById[a.id], th = p ? p.theme : ATTESA, f = info(a.id), att = arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id);
+    return `<div class="ci" data-apri="${a.id}"><img src="${thumbSrc(a.id)}" alt="" loading="lazy"><div style="flex:1;min-width:0"><div class="k">${esc(a.nome || 'anonimo')} · ${quando(a.quando)}${att ? ' · <span class="att">sta entrando</span>' : ''}</div>` +
+      `<div class="t" style="color:${th.col}">${esc(th.id)}</div><div class="w">${esc(f ? f.lettura : (a.frase ? '«' + a.frase + '»' : ''))}</div>${QUI ? `<button data-elimina="${a.id}">Rimuovi</button>` : ''}</div></div>`;
+  }).join('') : '<div class="vuota">Ancora nessuna foto. Inquadra il QR code con un telefono: ogni foto che arriva comparirà qui, con chi l\'ha mandata, quando, e il nucleo in cui è entrata.</div>';
+}
+$('cronbtn').onclick = () => { $('qr').classList.remove('open'); $('cron').classList.toggle('open'); renderCron(); };
+$('cronx').onclick = () => $('cron').classList.remove('open');
+$('cronL').addEventListener('click', e => { const it = e.target.closest('[data-apri]'); if (!it) return; const p = photoById[it.dataset.apri]; if (p && !p.hold) openPhoto(p); });
+$('cron').addEventListener('click', async e => {
+  if (e.target.id !== 'cronAll') return;
+  if (!confirm('Rimuovere tutte le ' + cron.size + ' foto arrivate dai telefoni? Verranno cancellate anche dal computer.')) return;
+  for (const id of [...cron.keys()]) await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }).catch(() => {});
+});
+// "una foto sta arrivando": dal telefono e' partita
+let inViaggio = 0, chiViaggia = '';
+function viaggio(d, nome) {
+  inViaggio = Math.max(0, inViaggio + d); if (nome != null) chiViaggia = nome;
+  $('inarr').textContent = '● Una foto sta arrivando' + (chiViaggia ? ' da ' + chiViaggia : '') + (inViaggio > 1 ? ' (+' + (inViaggio - 1) + ')' : '') + '…';
+  $('inarr').classList.toggle('on', inViaggio > 0 && !arrivo);
+}
+setInterval(() => $('inarr').classList.toggle('on', inViaggio > 0 && !arrivo), 500);
+function arrivata(a, animate) { if (!cron.has(a.id)) { cron.set(a.id, a); arrivate++; } addArrival(a, animate); renderCron(); }
+if (LIVE) {
+  fetch('/api/arrivi', { cache: 'no-store' }).then(r => r.ok ? r.json() : []).then(list => {
+    // ?prova-arrivo nell'indirizzo: rifa' l'ingresso dell'ultima foto arrivata
+    const prova = /prova-arrivo/.test(location.search) && list.length ? list.pop() : null;
+    list.forEach(a => arrivata(a, false));
+    if (prova) {
+      cron.set(prova.id, prova); arrivate++;
+      const p = photoById[prova.id];
+      if (p) { removeFromRing(p); }
+      setTimeout(() => { addArrival(prova, true); renderCron(); }, 600);
+    }
+    counts();
+  }).catch(() => {});
+  const conn = () => {
+    const es = new EventSource('/api/eventi');
+    es.onopen = () => setOnline(true);
+    es.addEventListener('inarrivo', e => {
+      if ($('sf').classList.contains('open')) closeSf();
+      viaggio(+1, JSON.parse(e.data).nome || ''); setTimeout(() => viaggio(-1), 30000); });
+    es.addEventListener('annullata', () => viaggio(-1));
+    es.addEventListener('foto', e => { viaggio(-1); arrivata(JSON.parse(e.data), true); });
+    es.addEventListener('rimossa', e => removeArrival(JSON.parse(e.data).id));
+    es.onerror = () => { setOnline(false); es.close(); setTimeout(conn, 2000); };
+  };
+  conn();
+  // per sicurezza ogni 5 secondi controllo l'elenco: se la diretta si e' persa qualcosa, lo recupero
+  setInterval(() => fetch('/api/arrivi', { cache: 'no-store' }).then(r => r.json()).then(list => {
+    const ids = new Set(list.map(a => a.id));
+    list.forEach(a => { if (!cron.has(a.id)) arrivata(a, true); });
+    [...cron.keys()].forEach(id => { if (!ids.has(id)) removeArrival(id); });
+  }).catch(() => setOnline(false)), 5000);
+}
+// per la prova: tolgo dall'anello una foto gia' presente, cosi' puo' rientrare con l'animazione
+function removeFromRing(p) {
+  photos.splice(photos.indexOf(p), 1); delete photoById[p.id];
+  p.theme.photos.splice(p.theme.photos.indexOf(p), 1); p.theme.ids.splice(p.theme.ids.indexOf(p.id), 1);
+  layout();
+}
+function setOnline(v) { online = v; $('liveDot').classList.toggle('on', v); $('liveDot').title = v ? 'in diretta' : 'non collegata'; renderCron(); }
+// il pannello con il QR code
+$('qrbtn').onclick = async () => {
+  $('cron').classList.remove('open');
+  $('qr').classList.toggle('open');
+  if (!$('qr').classList.contains('open')) return;
+  if (!LIVE) { $('qrurl').textContent = 'Apri la nebulosa con «Apri la nebulosa.command» per ricevere foto dai telefoni.'; return; }
+  try {
+    const inf = await (await fetch('/api/info')).json();
+    $('qrurl').textContent = inf.carica; counts();
+    const drawQR = () => { $('qrcode').innerHTML = ''; new QRCode($('qrcode'), { text: inf.carica, width: 180, height: 180, colorDark: '#06050a', colorLight: '#ffffff' }); };
+    if (window.QRCode) drawQR();
+    else { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload = drawQR; sc.onerror = () => { $('qrcode').textContent = 'QR non disponibile senza internet: usa l’indirizzo qui sotto.'; $('qrcode').style.cssText += ';color:#06050a;font-size:12px;text-align:center'; }; document.head.appendChild(sc); }
+  } catch (e) { $('qrurl').textContent = 'Il server non risponde.'; }
+};
+$('qrx').onclick = () => $('qr').classList.remove('open');
+
+counts();
+requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

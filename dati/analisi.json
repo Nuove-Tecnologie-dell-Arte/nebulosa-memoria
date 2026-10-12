@@ -1,0 +1,5051 @@
+{
+ "luogo": "Accademia di Belle Arti · Napoli",
+ "nuclei": [
+  {
+   "id": "Noi",
+   "testo": "La comunità che si riconosce: lavorare insieme, parlarsi, prendere la parola, dichiararsi amore e appartenenza."
+  },
+  {
+   "id": "Le mani che sanno",
+   "testo": "Il sapere che passa per le mani: attrezzi, laboratori, la materia che prende forma e chi insegna a farlo."
+  },
+  {
+   "id": "Prima che accada",
+   "testo": "Il tempo della preparazione: materiali ammassati, cavi, scatoloni, strumenti che aspettano di diventare opera."
+  },
+  {
+   "id": "Dietro le quinte",
+   "testo": "Il teatro visto da chi non va in scena: palchi vuoti, costumi, manichini, camerini, ombre."
+  },
+  {
+   "id": "Muri che parlano",
+   "testo": "Quello che chi passa lascia scritto o disegnato: poesie, firme, rabbia, dediche, voci senza nome."
+  },
+  {
+   "id": "La storia che guarda",
+   "testo": "Statue, quadri, affreschi e maestri di un tempo: il passato che osserva il presente e gli fa da cornice."
+  },
+  {
+   "id": "Ferite e cure",
+   "testo": "Crepe, intonaco che cade, pietre consumate, e le mani pazienti che restaurano: il luogo che invecchia e viene curato."
+  },
+  {
+   "id": "Soglie e passaggi",
+   "testo": "Porte, corridoi, scale, archi: il luogo come sequenza di soglie da attraversare."
+  },
+  {
+   "id": "Dentro e fuori",
+   "testo": "Finestre, cortili, giardini, pioggia, la città che si vede da dentro: il confine tra il chiuso e l'aperto."
+  },
+  {
+   "id": "Il lavoro invisibile",
+   "testo": "Ciò che tiene in piedi il luogo senza essere visto: regole, sicurezza, pulizia, magazzini, angoli dimenticati."
+  },
+  {
+   "id": "Vuoto e attesa",
+   "testo": "Stanze vuote, sedie senza nessuno, buio, silenzio: lo spazio quando le persone non ci sono."
+  },
+  {
+   "id": "Trasfigurare",
+   "testo": "L'ordinario che diventa meraviglia: bacinelle come cieli, stoffe come case, il gioco e il sogno dentro l'installazione."
+  }
+ ],
+ "foto": {
+  "001": {
+   "lettura": "Un'aula abitata come una piazza: ragazzi che lavorano, parlano, si stravaccano sotto striscioni e slogan sulla città ferita. È il ritratto di una comunità che si è presa uno spazio e lo vive insieme.",
+   "tag": [
+    "comunità",
+    "abitare lo spazio",
+    "identità napoletana",
+    "voce collettiva",
+    "lavorare insieme"
+   ],
+   "nucleo": "Noi"
+  },
+  "002": {
+   "lettura": "Un tavolo comune, molti schermi e una maglietta che dice «ogni tanto devo perdermi, altrimenti non mi trovo». È lo smarrimento come metodo: il lavoro creativo come ricerca di sé dentro un gruppo.",
+   "tag": [
+    "lavorare insieme",
+    "perdersi per trovarsi",
+    "ironia",
+    "identità napoletana",
+    "comunità"
+   ],
+   "nucleo": "Noi"
+  },
+  "003": {
+   "lettura": "Un ragazzo solo, chino sul portatile, nella stanza svuotata: intorno restano borse, cavi, il cuore rosso alla parete. È la concentrazione di chi resta quando gli altri sono andati via.",
+   "tag": [
+    "concentrazione",
+    "solitudine",
+    "dopo la festa",
+    "fatica silenziosa"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "004": {
+   "lettura": "Cassettiere colorate, viti, bicchieri, avanzi: un banco di lavoro che conserva tutto perché tutto può servire. È la riserva di possibilità di un laboratorio.",
+   "tag": [
+    "materia in attesa",
+    "disordine fertile",
+    "custodire",
+    "fare con le mani"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "005": {
+   "lettura": "«L'idea buona è quella che…», «Blocchiamo tutto», #attodamore, una barchetta di carta: il muro come manifesto. Racconta la protesta vissuta come gesto d'amore, la fragilità che diventa slogan.",
+   "tag": [
+    "voce collettiva",
+    "protesta",
+    "atto d'amore",
+    "fragilità"
+   ],
+   "nucleo": "Noi"
+  },
+  "006": {
+   "lettura": "Macchine, una sega da banco, un vecchio iMac, scatoloni e bastoni di legno ammassati: strumenti di epoche diverse che convivono. È il laboratorio come officina, dove il vecchio non si butta ma si rimette al lavoro.",
+   "tag": [
+    "fare con le mani",
+    "materia in attesa",
+    "riuso",
+    "disordine fertile"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "007": {
+   "lettura": "Una scatola piena di cavi aggrovigliati. Sembra solo disordine, ma è l'energia che servirà ad accendere tutto: la parte invisibile, faticosa e intricata di ogni allestimento.",
+   "tag": [
+    "lavoro invisibile",
+    "materia in attesa",
+    "groviglio",
+    "preparare"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "008": {
+   "lettura": "Decine di bacinelle di plastica blu appese sotto un soffitto a cassettoni antico. L'oggetto più povero e domestico, trasfigurato in costellazione: lo stupore di vedere il quotidiano diventare opera dentro la storia.",
+   "tag": [
+    "trasfigurare il quotidiano",
+    "meraviglia",
+    "antico e contemporaneo",
+    "installazione",
+    "guardare in su"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "009": {
+   "lettura": "Una bacinella blu vista da sotto, come un sole o un occhio, davanti al legno intagliato. È lo sguardo che si ferma su un oggetto banale e lo scopre astratto, quasi sacro.",
+   "tag": [
+    "trasfigurare il quotidiano",
+    "guardare in su",
+    "antico e contemporaneo",
+    "meraviglia"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "010": {
+   "lettura": "Un bersaglio per freccette, foto di serate appese, il cartello del quadro elettrico e un cervo che sporge: un angolo di muro che è un album dei ricordi. Racconta il gioco, le notti passate insieme e la memoria fatta a mano.",
+   "tag": [
+    "memoria condivisa",
+    "gioco",
+    "comunità",
+    "tracce sui muri"
+   ],
+   "nucleo": "Noi"
+  },
+  "011": {
+   "lettura": "Ragazzi in piedi attorno a un banco di lavoro, sotto le bacinelle e una rete di luci, mentre si discute e si prepara. È il momento del cantiere: il dialogo che precede l'opera.",
+   "tag": [
+    "preparare",
+    "lavorare insieme",
+    "dialogo",
+    "installazione"
+   ],
+   "nucleo": "Noi"
+  },
+  "012": {
+   "lettura": "Un telo di plastica trasparente accartocciato sul pavimento. Materia leggera e informe, ancora senza destino: la fase in cui un'opera è solo possibilità.",
+   "tag": [
+    "materia in attesa",
+    "fragilità",
+    "trasparenza",
+    "preparare"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "013": {
+   "lettura": "Decine di stendardi appesi al soffitto, «la crisi», «ogni crepa racconta una storia, Napoli non nasconde le ferite». Una volta di voci: la città raccontata come ferita che si espone invece di nascondersi.",
+   "tag": [
+    "voce collettiva",
+    "identità napoletana",
+    "ferita e cura",
+    "guardare in su"
+   ],
+   "nucleo": "Noi"
+  },
+  "014": {
+   "lettura": "Tre ragazzi tendono un telo trasparente su un grande tavolo, con cura, come si rifà un letto. È il gesto del proteggere e del preparare insieme, un lavoro di mani che si coordinano.",
+   "tag": [
+    "preparare",
+    "lavorare insieme",
+    "proteggere",
+    "cura",
+    "fare con le mani"
+   ],
+   "nucleo": "Noi"
+  },
+  "015": {
+   "lettura": "Un cuore rosso a pixel sotto la scritta «ogni crepa racconta una storia, Napoli non nasconde le ferite». Il simbolo dell'amore in forma digitale, quasi un videogioco, posato sulla ferita della città.",
+   "tag": [
+    "ferita e cura",
+    "identità napoletana",
+    "atto d'amore",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "016": {
+   "lettura": "Una rete fitta di piccole luci con un proiettore appeso: visto da sotto sembra un cielo stellato artificiale. È la tecnica che costruisce meraviglia, il dietro le quinte di un incanto.",
+   "tag": [
+    "meraviglia",
+    "installazione",
+    "guardare in su",
+    "lavoro invisibile",
+    "cielo artificiale"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "017": {
+   "lettura": "Una scala appoggiata a un muro scrostato, in attesa. È lo strumento di chi deve arrivare in alto per appendere, sistemare, aggiustare: la promessa di un lavoro che sta per cominciare.",
+   "tag": [
+    "preparare",
+    "attesa",
+    "lavoro invisibile",
+    "tracce sui muri"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "018": {
+   "lettura": "Un salotto inventato dentro un'aula storica: tappeti, divani coperti di stoffe, cubi rossi, bacinelle blu sospese. Lo spazio istituzionale trasformato in casa, in luogo dove stare.",
+   "tag": [
+    "abitare lo spazio",
+    "trasformare lo spazio",
+    "installazione",
+    "comunità",
+    "casa"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "019": {
+   "lettura": "Due casse, un microfono, bottigliette d'acqua e un cuore rosso a pixel sul tavolo: tutto pronto per parlare a qualcuno. È il palco minimo di un incontro, la voce che sta per prendere la parola.",
+   "tag": [
+    "voce collettiva",
+    "preparare",
+    "atto d'amore",
+    "attesa"
+   ],
+   "nucleo": "Noi"
+  },
+  "020": {
+   "lettura": "Un enorme occhio dentro un cerchio rosso, incorniciato da tende. È lo sguardo che guarda chi guarda: il luogo che osserva e si fa osservare, la consapevolezza di essere visti.",
+   "tag": [
+    "sguardo",
+    "essere visti",
+    "installazione",
+    "guardare in su"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "021": {
+   "lettura": "Un adesivo rosso «UAH!» con una freccia, su un telo scuro. Un'esclamazione di stupore che indica una direzione: la meraviglia come segnaletica, l'invito a seguire.",
+   "tag": [
+    "meraviglia",
+    "gioco",
+    "ironia",
+    "segni lasciati"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "022": {
+   "lettura": "Un carrello della spesa pieno di scatole e cavi in mezzo a sedie accatastate. L'oggetto rubato alla quotidianità diventa mezzo di trasporto del lavoro: il trasloco continuo di chi costruisce.",
+   "tag": [
+    "riuso",
+    "trasportare",
+    "materia in attesa",
+    "preparare",
+    "disordine fertile"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "023": {
+   "lettura": "«Bene comune» scritto sul muro accanto a una finestra aperta su un palazzo rosso di Napoli. Dentro e fuori si toccano: lo spazio interno dichiara di appartenere a tutti, come la città che si vede fuori.",
+   "tag": [
+    "bene comune",
+    "dentro e fuori",
+    "identità napoletana",
+    "voce collettiva",
+    "finestra"
+   ],
+   "nucleo": "Noi"
+  },
+  "024": {
+   "lettura": "«Bene comune» in lettere nere su un muro bianco segnato da nastro adesivo e tracce. Una dichiarazione politica semplice e ferma: questo spazio è di tutti.",
+   "tag": [
+    "bene comune",
+    "voce collettiva",
+    "tracce sui muri",
+    "dichiarare"
+   ],
+   "nucleo": "Noi"
+  },
+  "025": {
+   "lettura": "Di spalle, la maglietta rossa: «ogni tanto devo perdermi, altrimenti non mi trovo». Una filosofia di vita in dialetto, indossata mentre si lavora al computer: perdersi come condizione per ritrovarsi.",
+   "tag": [
+    "perdersi per trovarsi",
+    "identità napoletana",
+    "ironia",
+    "concentrazione"
+   ],
+   "nucleo": "Noi"
+  },
+  "026": {
+   "lettura": "Una scatola di condensatori, resistenze, componenti elettronici: i semi minuscoli di un'opera tecnologica. È la materia prima della creazione, ordinata ma ancora muta.",
+   "tag": [
+    "materia in attesa",
+    "fare con le mani",
+    "tecnologia",
+    "preparare"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "027": {
+   "lettura": "Il muro del cuore rosso visto per intero, con «la crisi», «ogni crepa racconta una storia», e sotto un tavolo di lavoro. Il manifesto e il lavoro quotidiano nella stessa inquadratura: le parole sopra, il fare sotto.",
+   "tag": [
+    "voce collettiva",
+    "ferita e cura",
+    "identità napoletana",
+    "atto d'amore",
+    "lavorare insieme"
+   ],
+   "nucleo": "Noi"
+  },
+  "028": {
+   "lettura": "Una luna rossa e la scritta «l'artista fatica con quello che ha». È l'orgoglio di chi crea con pochi mezzi: l'arte come arte di arrangiarsi, il sogno alto e la fatica concreta.",
+   "tag": [
+    "fatica",
+    "fare con poco",
+    "identità napoletana",
+    "sogno",
+    "voce collettiva"
+   ],
+   "nucleo": "Noi"
+  },
+  "029": {
+   "lettura": "Tazze appese a ganci in una cucinetta piastrellata, e la scritta «this is a project about love». Il gesto domestico più umile, il caffè condiviso, dichiarato come atto d'amore.",
+   "tag": [
+    "atto d'amore",
+    "casa",
+    "quotidiano condiviso",
+    "cura"
+   ],
+   "nucleo": "Noi"
+  },
+  "030": {
+   "lettura": "Bottiglie, detersivi, pentole e bicchieri ammassati vicino a una finestra: una cucina comune affollata. Racconta la vita che scorre tra un lavoro e l'altro, il nutrirsi insieme, il disordine di chi vive lo spazio.",
+   "tag": [
+    "quotidiano condiviso",
+    "casa",
+    "abitare lo spazio",
+    "disordine fertile"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "031": {
+   "lettura": "Il manifesto di un postino sorridente appeso in un bagno. Un volto della città, un lavoratore, portato dentro il luogo più intimo: l'ironia e la tenerezza di chi decora anche gli angoli dimenticati.",
+   "tag": [
+    "ironia",
+    "ritratto",
+    "identità napoletana",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "032": {
+   "lettura": "Un computer acceso su un tavolo di fortuna, in un angolo con il muro crepato. La tecnologia nuova appoggiata sulla precarietà: si lavora al futuro dentro un edificio che invecchia.",
+   "tag": [
+    "tecnologia",
+    "antico e contemporaneo",
+    "fare con poco",
+    "precarietà"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "033": {
+   "lettura": "Stendardi con parole come «emozioni» e «sognare», la scritta «art is everywhere» e «il sogno che diventa segno». Un muro che dichiara una poetica: l'arte non sta in un museo, sta ovunque, e nasce dal sogno.",
+   "tag": [
+    "sogno",
+    "voce collettiva",
+    "arte ovunque",
+    "guardare in su"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "034": {
+   "lettura": "Secchi impilati, scope, un annaffiatoio, un lavandino da sgabuzzino. È il dietro le quinte di ogni spazio vissuto: la cura quotidiana, il pulire e rimettere a posto che nessuno vede.",
+   "tag": [
+    "lavoro invisibile",
+    "cura",
+    "quotidiano condiviso",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "035": {
+   "lettura": "Due macchinette del caffè, una tazzina appena fatta, un barattolo «caffè sospeso». È il rito napoletano della pausa e del dono: il caffè come gesto di accoglienza verso chi verrà dopo.",
+   "tag": [
+    "rito del caffè",
+    "dono",
+    "identità napoletana",
+    "quotidiano condiviso",
+    "accoglienza"
+   ],
+   "nucleo": "Noi"
+  },
+  "036": {
+   "lettura": "Stendardi appesi a festa sotto un soffitto bianco, una lumaca disegnata sopra la porta. Una festa permanente e lenta: la lumaca come elogio della lentezza in un luogo pieno di voci.",
+   "tag": [
+    "voce collettiva",
+    "lentezza",
+    "festa",
+    "guardare in su"
+   ],
+   "nucleo": "Noi"
+  },
+  "037": {
+   "lettura": "La parola «CURA» sopra una folla di piccole figure bianche stampate in 3D, con accanto una lettera ufficiale del Ministero della Giustizia. La cura come gesto collettivo, una moltitudine che regge una parola, anche davanti alle istituzioni.",
+   "tag": [
+    "cura",
+    "comunità",
+    "voce collettiva",
+    "istituzione",
+    "fare con le mani"
+   ],
+   "nucleo": "Noi"
+  },
+  "038": {
+   "lettura": "Sedute rosse, un tappeto di stracci, un ragazzo che riposa, e accanto un armadio stracolmo di tubi, dischi, reti, materiali. Il riposo e il deposito convivono: chi si ferma e le cose che aspettano di diventare opera.",
+   "tag": [
+    "riposo",
+    "materia in attesa",
+    "abitare lo spazio",
+    "disordine fertile"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "039": {
+   "lettura": "Una barchetta di carta posata su un cuscino rosso. Il gioco dell'infanzia, fragile e leggero, che si ferma a riposare: un piccolo viaggio immaginato, sospeso.",
+   "tag": [
+    "fragilità",
+    "gioco",
+    "infanzia",
+    "viaggio",
+    "sogno"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "040": {
+   "lettura": "La rete di luci vista da sotto, con due bacinelle blu illuminate. Un cielo costruito a mano, un firmamento domestico che sostituisce quello vero.",
+   "tag": [
+    "cielo artificiale",
+    "meraviglia",
+    "guardare in su",
+    "installazione",
+    "trasfigurare il quotidiano"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "041": {
+   "lettura": "Uno sguardo attraverso i fori di una struttura in legno tagliata al laser: cornici dentro cornici che si aprono su altri spazi. È il guardare attraverso, la profondità di un luogo fatto di passaggi.",
+   "tag": [
+    "guardare attraverso",
+    "passaggio",
+    "fare con le mani",
+    "profondità"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "042": {
+   "lettura": "Un piccolo fantasma bianco davanti a una tenda di carta crespa e la scritta «fantasmini». Un teatrino giocoso, tenero: la paura trasformata in gioco, l'invisibile reso simpatico.",
+   "tag": [
+    "gioco",
+    "fantasmi",
+    "infanzia",
+    "teatro",
+    "tenerezza"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "043": {
+   "lettura": "Due ragazzi attorno a un banco consumato: uno spiega con le mani, l'altro ascolta, un oggetto bianco stampato davanti. È il sapere che passa da persona a persona, l'apprendere facendo.",
+   "tag": [
+    "passare il sapere",
+    "fare con le mani",
+    "lavorare insieme",
+    "tecnologia"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "044": {
+   "lettura": "Sul pavimento, accanto a una porta antica, la scritta gialla «qui inizia la pau…», tagliata. Forse paura, forse pausa: una soglia che annuncia un cambiamento, una frase che lascia sospesi.",
+   "tag": [
+    "soglia",
+    "passaggio",
+    "segni lasciati",
+    "attesa",
+    "ambiguità"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "045": {
+   "lettura": "«#attodamore: la relazione è la forma di resistenza più alta», e sotto una nuvola di firme, nomi e dediche a penna. Il muro diventa registro di presenze: chi è passato ha lasciato il suo nome come atto di relazione.",
+   "tag": [
+    "atto d'amore",
+    "firmare",
+    "memoria condivisa",
+    "comunità",
+    "resistenza"
+   ],
+   "nucleo": "Noi"
+  },
+  "046": {
+   "lettura": "Una stampante 3D al lavoro su un tavolo, tra cavi e strumenti, in un laboratorio luminoso. È la fabbricazione di oggi, la macchina che dà corpo alle idee.",
+   "tag": [
+    "tecnologia",
+    "fare con le mani",
+    "materia in attesa",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "047": {
+   "lettura": "Due persone chine sullo stesso schermo e su un quaderno di schizzi: una indica, l'altro disegna. È il pensiero che nasce in due, tra la carta e il digitale.",
+   "tag": [
+    "passare il sapere",
+    "lavorare insieme",
+    "progettare",
+    "dialogo"
+   ],
+   "nucleo": "Noi"
+  },
+  "048": {
+   "lettura": "Lettere giganti in polistirolo e fiori di stoffa appoggiati a un muro dipinto, foto storta come un giramento. Parole smontate in attesa di diventare scenografia: l'allestimento dopo, o prima, della festa.",
+   "tag": [
+    "materia in attesa",
+    "preparare",
+    "scenografia",
+    "dopo la festa"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "049": {
+   "lettura": "Una ragazza in piedi guarda lo schermo da sopra la spalla di un compagno: sulla sua maglia c'è scritto «Legacy». Il sapere che si guarda fare, l'eredità che passa da chi sa a chi impara.",
+   "tag": [
+    "passare il sapere",
+    "lavorare insieme",
+    "eredità",
+    "concentrazione"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "050": {
+   "lettura": "Scatoloni aperti, una cassa di cavi arrotolati, sedie e gambe di chi lavora sullo sfondo. Il materiale grezzo dell'allestimento ai piedi di chi progetta: l'energia ancora arrotolata.",
+   "tag": [
+    "materia in attesa",
+    "lavoro invisibile",
+    "groviglio",
+    "preparare"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "051": {
+   "lettura": "Un groviglio di nastri bianchi stampati di frasi, abbandonato su un tappeto di stoffe arrotolate, tra tralicci e casse. Parole di qualcuno, intrecciate e lasciate a terra: le voci di molti che si mescolano in una sola matassa.",
+   "tag": [
+    "voci intrecciate",
+    "parole scritte",
+    "groviglio",
+    "memoria condivisa",
+    "installazione"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "052": {
+   "lettura": "Ragazzi seduti sui cubi rossi a parlare, sopra di loro lo striscione «noi umani». È il momento del confronto, quando l'opera si ferma e resta la conversazione tra persone.",
+   "tag": [
+    "dialogo",
+    "comunità",
+    "riposo",
+    "noi umani",
+    "abitare lo spazio"
+   ],
+   "nucleo": "Noi"
+  },
+  "053": {
+   "lettura": "Bacinelle blu appese con fili sottili sotto un soffitto ligneo intarsiato. Il dialogo tra la ricchezza antica e la plastica povera: due tempi del luogo che si guardano.",
+   "tag": [
+    "antico e contemporaneo",
+    "trasfigurare il quotidiano",
+    "guardare in su",
+    "installazione"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "054": {
+   "lettura": "Una ragazza dorme con la testa su un cuscino blu, tra scatoloni e cartoni. La stanchezza dopo il lavoro, il corpo che cede: uno spazio così vissuto da diventare anche letto.",
+   "tag": [
+    "riposo",
+    "stanchezza",
+    "abitare lo spazio",
+    "casa",
+    "dopo la fatica"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "055": {
+   "lettura": "Il banco di lavoro con le cassettiere colorate e gli attrezzi, di nuovo: lo stesso angolo in un altro momento. Il deposito ordinato del possibile, la memoria degli oggetti che servono.",
+   "tag": [
+    "materia in attesa",
+    "disordine fertile",
+    "fare con le mani",
+    "custodire"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "056": {
+   "lettura": "Dentro una scatola rossa: un piccolo computer, cavi, un relè. È il cuore nascosto della macchina che raccoglie le foto, la tecnica che rende possibile la memoria collettiva.",
+   "tag": [
+    "tecnologia",
+    "lavoro invisibile",
+    "macchina della memoria",
+    "fare con le mani"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "057": {
+   "lettura": "Ragazzi ai computer, e in primo piano il totem rosso «Tocca e scatta» ancora aperto, con i cavi a terra. È la nascita dello strumento che raccoglierà i ricordi di tutti: la memoria collettiva mentre viene costruita.",
+   "tag": [
+    "macchina della memoria",
+    "lavorare insieme",
+    "preparare",
+    "tecnologia"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "058": {
+   "lettura": "Una vasca rossa piena di supporti metallici, un cesto di stoffe, cornici di legno e un braccio che si appoggia. Il magazzino di un laboratorio che ricicla tutto: corpi, materiali e fatica nello stesso fotogramma.",
+   "tag": [
+    "materia in attesa",
+    "riuso",
+    "fatica",
+    "fare con le mani"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "059": {
+   "lettura": "Un drappo rosso appeso tra due listelli di legno, sotto la scritta interrotta «NON…». Un oggetto semplice, quasi rituale, che diventa stendardo: un'affermazione che non sappiamo come finisce.",
+   "tag": [
+    "stendardo",
+    "ambiguità",
+    "voce collettiva",
+    "segni lasciati"
+   ],
+   "nucleo": "Noi"
+  },
+  "060": {
+   "lettura": "Una grande X di velluto arancione e un cuscino rosa sopra un tappeto di stoffe arrotolate. Il segno che indica un punto, che firma, o che cancella: una lettera che è anche un gesto.",
+   "tag": [
+    "segno",
+    "firmare",
+    "gioco",
+    "materia morbida",
+    "casa"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "061": {
+   "lettura": "Il manifesto del postino nel bagno, visto più da vicino: il sorriso di chi porta le notizie. Il volto del lavoro quotidiano reso icona, in un luogo inaspettato e umile.",
+   "tag": [
+    "ritratto",
+    "ironia",
+    "angoli dimenticati",
+    "identità napoletana",
+    "lavoro"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "062": {
+   "lettura": "La grande sala con le bacinelle blu sospese, i cubi rossi, i divani coperti di stoffe, ragazzi in movimento. È il luogo trasformato in casa e in installazione nello stesso tempo: un'opera da abitare.",
+   "tag": [
+    "abitare lo spazio",
+    "installazione",
+    "comunità",
+    "trasformare lo spazio",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "063": {
+   "lettura": "La sala con le bacinelle, un'altra inquadratura: persone che arrivano, sistemano, si siedono. La vita che scorre sotto un cielo di oggetti poveri trasfigurati.",
+   "tag": [
+    "abitare lo spazio",
+    "installazione",
+    "comunità",
+    "trasfigurare il quotidiano",
+    "guardare in su"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "064": {
+   "lettura": "La stessa sala un istante dopo: quasi la stessa foto, scattata di nuovo. Il desiderio di trattenere un momento, di ripetere lo sguardo per non perderlo.",
+   "tag": [
+    "abitare lo spazio",
+    "installazione",
+    "trattenere il momento",
+    "comunità",
+    "guardare in su"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "065": {
+   "lettura": "La sala dall'alto della prospettiva: bacinelle blu come una pioggia sospesa, cubi rossi, divani, persone che attraversano. Un luogo che sembra insieme un salotto, un cantiere e un sogno.",
+   "tag": [
+    "abitare lo spazio",
+    "installazione",
+    "trasfigurare il quotidiano",
+    "comunità",
+    "sogno"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "066": {
+   "lettura": "Una ragazza sdraiata sui cubi rossi, con gli occhi socchiusi e un oggetto in mano, accanto a scatoloni e attrezzi. Il riposo rubato in mezzo al lavoro: il corpo che si concede una pausa nello spazio di tutti.",
+   "tag": [
+    "riposo",
+    "stanchezza",
+    "abitare lo spazio",
+    "casa"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "067": {
+   "lettura": "La sala allestita: striscioni «noi umani», «educare questo futuro», «condiviso», uno schermo, un uovo gigante, il cuore a pixel, i cubi rossi. È il momento in cui tutto è pronto per accogliere: una piazza di idee dentro un palazzo storico.",
+   "tag": [
+    "voce collettiva",
+    "noi umani",
+    "accoglienza",
+    "installazione",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Noi"
+  },
+  "068": {
+   "lettura": "Un ragazzo sorride tenendo una scala, sotto le bacinelle e gli stendardi «questo è un atto d'amore», «l'arte è uno stato d'incontro». La gioia di chi fa la fatica dell'allestimento: costruire come gesto felice.",
+   "tag": [
+    "preparare",
+    "gioia",
+    "atto d'amore",
+    "fatica",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Noi"
+  },
+  "069": {
+   "lettura": "Un uovo fritto gigante appoggiato sopra uno schermo da proiezione, tra stendardi «sentire condiviso». L'ironia pop che entra in un salone storico: la leggerezza come modo di stare insieme.",
+   "tag": [
+    "ironia",
+    "gioco",
+    "antico e contemporaneo",
+    "sentire condiviso"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "070": {
+   "lettura": "Una bacinella blu sospesa contro il soffitto a cassettoni intarsiato, vista da sotto. Il quotidiano più povero sospeso davanti alla decorazione più ricca: un piccolo sole di plastica nel cielo di legno.",
+   "tag": [
+    "antico e contemporaneo",
+    "trasfigurare il quotidiano",
+    "guardare in su",
+    "meraviglia"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "071": {
+   "lettura": "Stendardi viola «questo è un atto d'amore» e «l'arte è uno stato d'incontro» appesi a un ponteggio. Le parole appese all'impalcatura: l'amore e l'incontro come struttura che regge tutto il lavoro.",
+   "tag": [
+    "atto d'amore",
+    "incontro",
+    "voce collettiva",
+    "preparare"
+   ],
+   "nucleo": "Noi"
+  },
+  "072": {
+   "lettura": "Cubi rossi a forma di casa, un cuscino verde, una barchetta di carta e il telo con «UAH!». Un paesaggio d'infanzia costruito con forme semplici: la casa, il viaggio, la meraviglia.",
+   "tag": [
+    "casa",
+    "infanzia",
+    "gioco",
+    "viaggio",
+    "meraviglia"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "073": {
+   "lettura": "Un'altra vista della sala dalle bacinelle: il soffitto antico, i fili tesi, la bocca rossa dipinta sul muro, la barchetta. Il luogo che si lascia attraversare da un sogno collettivo senza perdere la sua storia.",
+   "tag": [
+    "antico e contemporaneo",
+    "installazione",
+    "guardare in su",
+    "sogno",
+    "trasfigurare il quotidiano"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "074": {
+   "lettura": "Un divano coperto di stoffe tie-dye accanto a un antico armadio di libri scuri, e un tappeto di stracci. Il morbido e il colorato vicino al severo e al vecchio: due modi di custodire, la biblioteca e il salotto.",
+   "tag": [
+    "antico e contemporaneo",
+    "casa",
+    "abitare lo spazio",
+    "custodire"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "075": {
+   "lettura": "Il viso capovolto di una ragazza che sorride, sdraiata, guardando chi la fotografa. È la confidenza, la complicità di chi si sente a casa: un ritratto rubato, felice, a testa in giù.",
+   "tag": [
+    "complicità",
+    "ritratto",
+    "gioia",
+    "riposo",
+    "gioco"
+   ],
+   "nucleo": "Noi"
+  },
+  "076": {
+   "lettura": "Un banco con morsa, seghetto e un carrello pieno di attrezzi, e dietro una ragazza che riposa sui cubi rossi. Il lavoro e il riposo fianco a fianco: nello stesso spazio si costruisce e ci si abbandona.",
+   "tag": [
+    "fare con le mani",
+    "riposo",
+    "abitare lo spazio",
+    "attrezzi"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "077": {
+   "lettura": "Un portautensili arancione pieno di cacciaviti, martelli e pinze consumati. Gli attrezzi come estensione delle mani: il sapere artigiano che resta negli oggetti usati da tanti.",
+   "tag": [
+    "fare con le mani",
+    "attrezzi",
+    "passare il sapere",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "078": {
+   "lettura": "Un soffitto pieno di stendardi colorati con parole come «sentimento», «fiducia», «curiosità», «direzione», «visione», «insieme». Un cielo di parole: il vocabolario di una comunità appeso sopra le teste.",
+   "tag": [
+    "voce collettiva",
+    "guardare in su",
+    "parole scritte",
+    "comunità",
+    "sogno"
+   ],
+   "nucleo": "Noi"
+  },
+  "079": {
+   "lettura": "Il muro del cuore rosso pixel, «ogni crepa racconta una storia», un foglio «non entrare», le firme «T.T.T.» e una porta aperta. La dichiarazione d'amore per la città e i piccoli segni di chi è passato.",
+   "tag": [
+    "ferita e cura",
+    "identità napoletana",
+    "atto d'amore",
+    "tracce sui muri",
+    "soglia"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "080": {
+   "lettura": "La luna rossa e la scritta «l'artista fatica con quello che ha», sotto stendardi appesi. Una luna che è un sogno lontano e una frase che riporta a terra: l'ambizione e la fatica.",
+   "tag": [
+    "fatica",
+    "fare con poco",
+    "sogno",
+    "identità napoletana",
+    "voce collettiva"
+   ],
+   "nucleo": "Noi"
+  },
+  "081": {
+   "lettura": "Due stampanti 3D affiancate davanti a un muro schizzato di colore, con bobine di filamento rosa e bianco. La fabbrica minima del laboratorio: dare forma alle idee, uno strato alla volta, sopra le tracce di chi ha dipinto prima.",
+   "tag": [
+    "tecnologia",
+    "fare con le mani",
+    "tracce sui muri",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "082": {
+   "lettura": "Il totem «Tocca e scatta», con la scritta «un sentimento è più bello se condiviso», ancora a terra tra cavi e la scatola aperta. La macchina della memoria collettiva prima di nascere: un'idea di condivisione ancora in pezzi.",
+   "tag": [
+    "macchina della memoria",
+    "sentire condiviso",
+    "preparare",
+    "groviglio",
+    "tecnologia"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "083": {
+   "lettura": "La lumaca sopra la porta, tra stendardi appesi. Un simbolo di lentezza e di casa portata con sé, sulla soglia di un luogo dove si corre per allestire.",
+   "tag": [
+    "lentezza",
+    "casa",
+    "soglia",
+    "guardare in su"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "084": {
+   "lettura": "Il volto di una ragazza con gli occhiali, assorta, che guarda in basso; dietro la sala piena di gente al lavoro e la scritta #cuoredinapoli. Un ritratto di concentrazione: la persona dentro la folla, il pensiero dentro il rumore.",
+   "tag": [
+    "ritratto",
+    "concentrazione",
+    "comunità",
+    "identità napoletana"
+   ],
+   "nucleo": "Noi"
+  },
+  "085": {
+   "lettura": "Un corridoio con tavoli coperti di plastica, ragazzi al lavoro sotto la rete di luci e le bacinelle, un crocifisso antico e un grande «manifesto» con parole come errore, relazione, intelligenza collettiva. Il sacro, il cantiere e la dichiarazione di principi nello stesso spazio.",
+   "tag": [
+    "preparare",
+    "lavorare insieme",
+    "antico e contemporaneo",
+    "manifesto",
+    "sacro e profano"
+   ],
+   "nucleo": "Noi"
+  },
+  "086": {
+   "lettura": "«Processo, errore, relazione» scritte sul muro, mezzo coperte da una scala. Le parole chiave di un metodo, e la scala che ricorda che vanno messe in pratica: sbagliare fa parte del costruire.",
+   "tag": [
+    "errore",
+    "processo",
+    "relazione",
+    "voce collettiva",
+    "preparare"
+   ],
+   "nucleo": "Noi"
+  },
+  "087": {
+   "lettura": "Zaini e giacche ammassati vicino a un portone antico e a una stampante 3D, sul pavimento la scritta «qui inizia la pau…». Le tracce di molte persone arrivate insieme: la soglia dove si lascia il peso per entrare.",
+   "tag": [
+    "presenza di molti",
+    "soglia",
+    "comunità",
+    "quotidiano condiviso"
+   ],
+   "nucleo": "Noi"
+  },
+  "088": {
+   "lettura": "Una montagna di zaini, caschi e giacche a terra. Nessun volto, ma una folla intera raccontata dagli oggetti che si porta dietro: siamo in tanti, e siamo qui.",
+   "tag": [
+    "presenza di molti",
+    "comunità",
+    "oggetti personali",
+    "quotidiano condiviso"
+   ],
+   "nucleo": "Noi"
+  },
+  "089": {
+   "lettura": "Due bidoni della differenziata con un cartello fatto a mano che spiega cosa buttare, e accanto uno zaino. La responsabilità condivisa nei gesti piccoli: la cura del luogo comune passa anche dalla spazzatura.",
+   "tag": [
+    "cura",
+    "bene comune",
+    "regole condivise",
+    "quotidiano condiviso"
+   ],
+   "nucleo": "Noi"
+  },
+  "090": {
+   "lettura": "Una lavagna luminosa con la frase «ognuno è diverso e cresce a modo suo». Una dichiarazione di rispetto per i tempi di ciascuno: la diversità come regola del crescere insieme.",
+   "tag": [
+    "diversità",
+    "crescere",
+    "voce collettiva",
+    "educare"
+   ],
+   "nucleo": "Noi"
+  },
+  "091": {
+   "lettura": "Un poster «una rivoluzionaria presa di coscienza» che spiega il metodo del laboratorio, sotto un piede gigante ritagliato. Il pensiero didattico messo per iscritto, e il piede che ricorda che si impara camminando.",
+   "tag": [
+    "educare",
+    "metodo",
+    "passare il sapere",
+    "manifesto"
+   ],
+   "nucleo": "Noi"
+  },
+  "092": {
+   "lettura": "Due forme scure illuminate di blu da dietro e una bacinella appesa a un filo. Oggetti semplici che, con la luce, diventano presenze misteriose: la luce che trasforma.",
+   "tag": [
+    "luce",
+    "trasfigurare il quotidiano",
+    "installazione",
+    "mistero"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "093": {
+   "lettura": "Una piccola stampante di scontrini accesa in primo piano, un rotolo di carta, e dietro la sala dei cubi rossi dove qualcuno scatta una foto. È lo strumento che restituirà su carta i ricordi raccolti: la memoria che si stampa.",
+   "tag": [
+    "macchina della memoria",
+    "tecnologia",
+    "trattenere il momento",
+    "installazione"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "094": {
+   "lettura": "La barchetta di carta gialla e lo striscione fatto a mano «blocchiamo tutto», con l'adesivo «UAH!». Il gesto di protesta e il gioco infantile accostati: fermare tutto per poter immaginare altro.",
+   "tag": [
+    "protesta",
+    "voce collettiva",
+    "gioco",
+    "viaggio",
+    "fragilità"
+   ],
+   "nucleo": "Noi"
+  },
+  "095": {
+   "lettura": "Lo stendardo «educare questi futuri artisti ad aprirsi al diverso… noi umani» tra porte antiche e bacinelle blu. È il manifesto di una scuola che vuole formare persone prima che artisti.",
+   "tag": [
+    "educare",
+    "noi umani",
+    "diversità",
+    "voce collettiva",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Noi"
+  },
+  "096": {
+   "lettura": "«Pratiche per disinnescare un futuro che sembra già scritto», in lettere rosse, sopra un cappello. Una frase di resistenza: credere che il futuro si possa ancora cambiare con quello che si fa.",
+   "tag": [
+    "resistenza",
+    "futuro",
+    "voce collettiva",
+    "protesta"
+   ],
+   "nucleo": "Noi"
+  },
+  "097": {
+   "lettura": "Una bacinella blu appesa davanti alla scritta «#attodamore» e «l'idea buona è quella che capiti che…», con fili e prese lungo il muro. La dichiarazione d'amore attraversata dai cavi: il sentimento e la tecnica che lo fa funzionare.",
+   "tag": [
+    "atto d'amore",
+    "voce collettiva",
+    "lavoro invisibile",
+    "trasfigurare il quotidiano"
+   ],
+   "nucleo": "Noi"
+  },
+  "098": {
+   "lettura": "Uno stendardo viola «vivere costantemente con la pelle d'oca», appoggiato tra sedie impilate e una scala. Un invito a restare sensibili, a farsi emozionare sempre, posato in mezzo al disordine del cantiere.",
+   "tag": [
+    "emozione",
+    "voce collettiva",
+    "preparare",
+    "stupore"
+   ],
+   "nucleo": "Noi"
+  },
+  "099": {
+   "lettura": "Una scatola elettrica bianca con un cuore rosso a pixel e un fascio di fili colorati che escono. Il cuore come centralina: l'emozione che passa per i cavi, l'affetto come energia che alimenta lo spazio.",
+   "tag": [
+    "atto d'amore",
+    "tecnologia",
+    "lavoro invisibile",
+    "groviglio"
+   ],
+   "nucleo": "Noi"
+  },
+  "100": {
+   "lettura": "Un crocifisso antico circondato da bacinelle blu, una rete di luci e il «manifesto» con errore, relazione, intelligenza collettiva. Il sacro della tradizione e il credo laico di una comunità che si guardano faccia a faccia.",
+   "tag": [
+    "sacro e profano",
+    "antico e contemporaneo",
+    "manifesto",
+    "voce collettiva"
+   ],
+   "nucleo": "Noi"
+  },
+  "101": {
+   "lettura": "Il «manifesto, dal latino preso per mano»: errore, emozione, relazione, intelligenza collettiva, orizzontalità imperfetta. Un credo scritto a caratteri grandi: il laboratorio dichiara i valori su cui si regge.",
+   "tag": [
+    "manifesto",
+    "errore",
+    "relazione",
+    "intelligenza collettiva",
+    "educare"
+   ],
+   "nucleo": "Noi"
+  },
+  "102": {
+   "lettura": "Il manifesto ancora più da vicino: relazione, intelligenza collettiva, orizzonte generativo, orizzontalità imperfetta. Lo sguardo che si avvicina alle parole per leggerle davvero, una per una.",
+   "tag": [
+    "manifesto",
+    "relazione",
+    "intelligenza collettiva",
+    "educare"
+   ],
+   "nucleo": "Noi"
+  },
+  "103": {
+   "lettura": "Uno scaffale pieno di maschere di cartapesta colorate, teste di animali fatte a mano, sotto lo stendardo «ognuno è diverso e cresce a modo suo». Ogni maschera è diversa: la diversità diventa collezione, gioco, identità da indossare.",
+   "tag": [
+    "maschere",
+    "diversità",
+    "fare con le mani",
+    "gioco",
+    "teatro"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "104": {
+   "lettura": "Lo stesso scaffale di maschere, ma ora davanti c'è un ragazzo che fa la linguaccia. La persona entra nella foto e rompe la serietà: anche lui è una maschera, il gioco diventa vivo.",
+   "tag": [
+    "gioco",
+    "ironia",
+    "maschere",
+    "ritratto",
+    "gioia"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "105": {
+   "lettura": "Lo stendardo «ognuno è diverso e cresce a modo suo» e le maschere colorate, con la nuca di qualcuno in basso. Il principio e chi lo vive: la frase appesa sopra le teste di chi cresce lì.",
+   "tag": [
+    "diversità",
+    "crescere",
+    "voce collettiva",
+    "maschere"
+   ],
+   "nucleo": "Noi"
+  },
+  "106": {
+   "lettura": "Il grande banco in legno tagliato al laser, con i vani etichettati a mano: «squadrette», «righelli», «taglia carte». L'ordine costruito insieme: ogni cosa ha il suo posto perché tutti possano trovarla.",
+   "tag": [
+    "fare con le mani",
+    "regole condivise",
+    "custodire",
+    "quotidiano condiviso"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "107": {
+   "lettura": "Una targa «#Benvenuti in NTA 207 LAB» su un muro crepato e segnato dal nastro adesivo. Il benvenuto di un luogo che si presenta, con le sue cicatrici: l'accoglienza come prima parola.",
+   "tag": [
+    "accoglienza",
+    "soglia",
+    "tracce sui muri",
+    "ferita e cura"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "108": {
+   "lettura": "Un tappeto di stoffe arrotolate a spirale, con due cuscini giallo e blu. Ogni rotolo è uno scarto trasformato: il riuso paziente diventa morbidezza, un luogo dove sedersi.",
+   "tag": [
+    "riuso",
+    "fare con le mani",
+    "casa",
+    "materia morbida",
+    "pazienza"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "109": {
+   "lettura": "Un grande blocco di stoffe arrotolate, accatastato sotto un ponteggio con altri pezzi che pendono. La materia dell'installazione in attesa: il lavoro lento di tante mani raccolto in un mucchio.",
+   "tag": [
+    "riuso",
+    "materia in attesa",
+    "pazienza",
+    "fare con le mani"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "110": {
+   "lettura": "Un angolo pieno: un cerchio verde con una stella «UAH!», canne di bambù, scatoloni, un telo che pende. Il retro della festa, dove gli oggetti della meraviglia aspettano ammassati.",
+   "tag": [
+    "materia in attesa",
+    "disordine fertile",
+    "dopo la festa",
+    "meraviglia"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "111": {
+   "lettura": "Uno scaffale di tubi, canne di bambù, giunti metallici e tegole arancioni. Il magazzino come archivio di possibilità: ogni pezzo è una struttura che non esiste ancora.",
+   "tag": [
+    "materia in attesa",
+    "riuso",
+    "custodire",
+    "disordine fertile"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "112": {
+   "lettura": "Un proiettore al centro della sala, tra i cubi rossi, i cuscini colorati e il tappeto di stracci; sullo sfondo un cervo, le bacinelle, persone di passaggio. Tutto è pronto per una proiezione: lo spazio aspetta di essere illuminato da un racconto.",
+   "tag": [
+    "attesa",
+    "installazione",
+    "abitare lo spazio",
+    "accoglienza",
+    "comunità"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "113": {
+   "lettura": "Uno schermo da proiezione bianco e vuoto, che riempie tutta l'inquadratura. La superficie che aspetta un'immagine: il vuoto prima del racconto, tutte le possibilità ancora aperte.",
+   "tag": [
+    "attesa",
+    "vuoto",
+    "possibilità",
+    "installazione"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "114": {
+   "lettura": "Una finestra sul teatro di fronte, sotto un muro scrostato; dentro, sedie, bidoni pieni di leggii e cavi ammassati. Il retro disordinato che guarda la facciata del teatro: il dietro le quinte affacciato sulla scena.",
+   "tag": [
+    "dentro e fuori",
+    "dietro le quinte",
+    "materia in attesa",
+    "finestra",
+    "teatro"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "115": {
+   "lettura": "Un mixer, un microfono, un portatile e il libretto «manuale collettivo: pratiche per disinnescare un futuro già scritto», con dietro la folla di figurine bianche. È la postazione da cui una comunità prende la parola.",
+   "tag": [
+    "voce collettiva",
+    "comunità",
+    "tecnologia",
+    "futuro",
+    "resistenza"
+   ],
+   "nucleo": "Noi"
+  },
+  "116": {
+   "lettura": "Rotoli di fondali colorati appesi al muro: nero, verde, rosso, bianco, blu. Gli sfondi su cui si fotografa e si mette in scena: colori in attesa di diventare scena.",
+   "tag": [
+    "materia in attesa",
+    "scenografia",
+    "colore",
+    "preparare"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "117": {
+   "lettura": "Uno scaffale pieno di libri, scatole, attrezzi e un busto in gesso, sotto il cartello «giorni senza incidenti». Il sapere dei libri e quello delle mani nello stesso mobile, con l'ironia di chi conta i giorni senza farsi male.",
+   "tag": [
+    "passare il sapere",
+    "ironia",
+    "custodire",
+    "fare con le mani"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "118": {
+   "lettura": "Un pannello di legno dipinto a mano: «giorni senza incidenti». L'ironia del cartello da fabbrica in un laboratorio d'arte: la sicurezza raccontata con un sorriso, e la fatica che si porta dietro.",
+   "tag": [
+    "ironia",
+    "regole condivise",
+    "fatica",
+    "segni lasciati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "119": {
+   "lettura": "Il cartello dell'estintore e, sotto, scritto a mano: «l'artista fatica con quello che ha». La regola ufficiale e la massima del luogo affiancate: due modi di proteggere chi lavora.",
+   "tag": [
+    "fatica",
+    "fare con poco",
+    "ironia",
+    "identità napoletana",
+    "regole condivise"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "120": {
+   "lettura": "Uno scaffale di libri e cataloghi d'arte ammassati, con titoli come «il mondo dell'elettronica» e «ci sono colori diversi». Una biblioteca vissuta, consultata e rimessa a posto in fretta: il sapere condiviso.",
+   "tag": [
+    "passare il sapere",
+    "custodire",
+    "libri",
+    "disordine fertile"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "121": {
+   "lettura": "Un busto di donna in gesso appoggiato sul davanzale, che guarda fuori verso i tetti gialli di Napoli. Una figura antica che contempla la città: la scultura che sembra avere nostalgia del fuori.",
+   "tag": [
+    "dentro e fuori",
+    "antico e contemporaneo",
+    "sguardo",
+    "finestra",
+    "identità napoletana"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "122": {
+   "lettura": "La scritta «art is everywhere» sul muro, con stendardi appesi e l'allarme antincendio. Un'affermazione grande, tra le cose più ordinarie dell'edificio: l'arte dichiarata ovunque, anche accanto all'allarme.",
+   "tag": [
+    "arte ovunque",
+    "voce collettiva",
+    "guardare in su",
+    "quotidiano"
+   ],
+   "nucleo": "Noi"
+  },
+  "123": {
+   "lettura": "«Sogno che diventa segno», con le parole sogno e segno disegnate da un tubo luminoso spento. La poetica del laboratorio in tre parole: trasformare quello che si immagina in qualcosa di visibile.",
+   "tag": [
+    "sogno",
+    "segno",
+    "voce collettiva",
+    "luce",
+    "manifesto"
+   ],
+   "nucleo": "Noi"
+  },
+  "124": {
+   "lettura": "Un tavolo con un portatile chiuso, sacchetti arancioni, scatole e cavi, e sopra il muro firme a pennarello. La pausa del lavoro: oggetti lasciati come li si è usati, in attesa che qualcuno torni.",
+   "tag": [
+    "materia in attesa",
+    "dopo la fatica",
+    "tracce sui muri",
+    "attesa"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "125": {
+   "lettura": "La lumaca sopra una porta di passaggio, con stendardi che pendono. La lentezza che sorveglia la soglia: chi entra è invitato a rallentare.",
+   "tag": [
+    "lentezza",
+    "soglia",
+    "casa",
+    "guardare in su"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "126": {
+   "lettura": "Il cartello del quadro elettrico e il divieto di usare acqua contro gli incendi, accanto a tubi bianchi. Le regole della sicurezza come presenza silenziosa, il limite che protegge chi crea.",
+   "tag": [
+    "regole condivise",
+    "proteggere",
+    "pericolo",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "127": {
+   "lettura": "La X di velluto arancione sul tappeto di stoffe arrotolate, vista dall'alto. Un segno grande come un punto sulla mappa: qui, proprio qui, è successo qualcosa.",
+   "tag": [
+    "segno",
+    "materia morbida",
+    "gioco",
+    "riuso"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "128": {
+   "lettura": "Gli stendardi «questo è un atto d'amore» e «l'arte è uno stato d'incontro» davanti a un ponteggio con sacchi neri. Le parole più alte appese sopra i sacchi della spazzatura: l'amore dichiarato in mezzo alla fatica concreta.",
+   "tag": [
+    "atto d'amore",
+    "incontro",
+    "fatica",
+    "voce collettiva",
+    "preparare"
+   ],
+   "nucleo": "Noi"
+  },
+  "129": {
+   "lettura": "Ruote di bicicletta appoggiate contro scatoloni, reti metalliche, un cartone «alto/fragile». Pezzi di un movimento smontato: oggetti che hanno viaggiato e ora aspettano una seconda vita.",
+   "tag": [
+    "riuso",
+    "materia in attesa",
+    "viaggio",
+    "fragilità"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "130": {
+   "lettura": "Una ruota di carrello arrugginita sotto un tubo, su un cartone, con un nastro di stoffa a terra. Il dettaglio umile di ciò che regge e sposta le strutture: la fatica dei pezzi che non guarda nessuno.",
+   "tag": [
+    "lavoro invisibile",
+    "trasportare",
+    "consumo",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "131": {
+   "lettura": "Una morsa blu, un seghetto, cacciaviti e cinghie appese a un banco rosso. Gli attrezzi pronti, in ordine, come una promessa di costruzione: il laboratorio come officina artigiana.",
+   "tag": [
+    "fare con le mani",
+    "attrezzi",
+    "preparare",
+    "custodire"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "132": {
+   "lettura": "Una ragazza sdraiata sul cuscino blu che sorride guardando il telefono, i capelli sparsi sul rosso. Un momento di leggerezza e di intimità in mezzo al lavoro: lo spazio comune vissuto come la propria stanza.",
+   "tag": [
+    "riposo",
+    "gioia",
+    "casa",
+    "ritratto",
+    "complicità"
+   ],
+   "nucleo": "Noi"
+  },
+  "133": {
+   "lettura": "Una borraccia piena di adesivi e un contenitore del pranzo su un mobile antico, con un cartello «cosa trovi qui» e l'adesivo «e se fossi tu?». La vita quotidiana appoggiata sulla storia: si mangia, si beve, si chiede chi sarà il prossimo.",
+   "tag": [
+    "quotidiano condiviso",
+    "antico e contemporaneo",
+    "casa",
+    "segni lasciati"
+   ],
+   "nucleo": "Noi"
+  },
+  "134": {
+   "lettura": "Un cuscino ricamato con due gufi buffi uno accanto all'altro. Una coppia tenera e un po' kitsch: l'affetto domestico portato dentro il laboratorio, il calore di casa.",
+   "tag": [
+    "tenerezza",
+    "casa",
+    "coppia",
+    "ironia",
+    "materia morbida"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "135": {
+   "lettura": "Un angolo con ombrelli appesi, giacche, una cassetta e sacchetti di plastica. Il deposito di chi arriva da fuori, dalla pioggia: le tracce della vita di ognuno lasciate all'ingresso.",
+   "tag": [
+    "presenza di molti",
+    "oggetti personali",
+    "dentro e fuori",
+    "quotidiano condiviso"
+   ],
+   "nucleo": "Noi"
+  },
+  "136": {
+   "lettura": "Un groviglio di nastri di carta stampati con frasi spezzate («più b…», «palle», «chie…»), come scontrini di parole. Frammenti di voci raccolte e restituite su carta: una memoria collettiva fatta di pezzi che si intrecciano.",
+   "tag": [
+    "voci intrecciate",
+    "parole scritte",
+    "macchina della memoria",
+    "groviglio",
+    "memoria condivisa"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "137": {
+   "lettura": "Il cartello verde dell'uscita di emergenza, con l'omino che corre, sotto una scatola elettrica. Il segno universale della fuga, in un luogo dove invece si resta: la soglia come via d'uscita sempre possibile.",
+   "tag": [
+    "soglia",
+    "regole condivise",
+    "uscita",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "138": {
+   "lettura": "Una scala aperta davanti alle parole «processo, errore, relazione», accanto a una finestra sul palazzo di fronte. La scala come strumento del metodo: salire, provare, sbagliare, insieme.",
+   "tag": [
+    "errore",
+    "processo",
+    "preparare",
+    "attesa",
+    "dentro e fuori"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "139": {
+   "lettura": "La scala appoggiata al muro scrostato, vista di nuovo in un altro momento. Lo stesso oggetto che resta mentre tutto intorno cambia: l'attesa di un lavoro che tornerà.",
+   "tag": [
+    "attesa",
+    "preparare",
+    "tracce sui muri",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "140": {
+   "lettura": "Una presa elettrica con un cavo inserito e, sopra, uno scotch con scritto a mano «non staccare». Un piccolo ordine, una preghiera domestica: qualcosa di prezioso dipende da quel filo.",
+   "tag": [
+    "regole condivise",
+    "lavoro invisibile",
+    "proteggere",
+    "segni lasciati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "141": {
+   "lettura": "Un metro a nastro rosso posato su un tavolo macchiato di colori. Lo strumento della misura sopra le tracce di mille lavori: la precisione e il caos che convivono nel fare.",
+   "tag": [
+    "fare con le mani",
+    "attrezzi",
+    "tracce",
+    "misura"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "142": {
+   "lettura": "La rete di luci vista da vicino, con i puntini che si ripetono su un fondo scuro. Un cielo fatto a mano, regolare e artificiale, che nella sua ripetizione diventa quasi un ricamo.",
+   "tag": [
+    "cielo artificiale",
+    "luce",
+    "installazione",
+    "meraviglia"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "143": {
+   "lettura": "Una rete di corda bianca appesa con mollette da bucato. Un oggetto povero, domestico, che diventa scultura morbida: la rete che trattiene, che unisce i nodi.",
+   "tag": [
+    "trasfigurare il quotidiano",
+    "rete",
+    "legami",
+    "fare con le mani"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "144": {
+   "lettura": "Il palco della sala: schermo, casse, il cuore a pixel, l'uovo gigante, gli stendardi «#cuoredinapoli» e «l'arte è uno stato d'incontro», le bacinelle sotto il soffitto antico e la scritta «teatro» oltre la finestra. Tutto è pronto per parlare a una platea.",
+   "tag": [
+    "accoglienza",
+    "voce collettiva",
+    "identità napoletana",
+    "antico e contemporaneo",
+    "installazione"
+   ],
+   "nucleo": "Noi"
+  },
+  "145": {
+   "lettura": "Controluce, la finestra con la scritta «teatro» del palazzo di fronte, e dentro leggii, rotoli di carta, un estintore e un telo che pende. Il laboratorio guarda il teatro: dentro si prepara, fuori c'è la scena.",
+   "tag": [
+    "dentro e fuori",
+    "dietro le quinte",
+    "teatro",
+    "finestra",
+    "materia in attesa"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "146": {
+   "lettura": "Canne di bambù viste dall'alto, con i loro cerchi vuoti. Materia naturale e cava, raccolta per costruire: il vuoto dentro le cose che le rende leggere.",
+   "tag": [
+    "materia in attesa",
+    "vuoto",
+    "riuso",
+    "fare con le mani"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "147": {
+   "lettura": "Tegole arancioni curve, impilate contro un muro rosso. Forme di copertura, di riparo, smontate dal tetto e trasformate in materiale da scultura: il riparo che diventa forma.",
+   "tag": [
+    "riuso",
+    "materia in attesa",
+    "riparo",
+    "colore"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "148": {
+   "lettura": "Un microfono fissato a un'asta con un supporto verde stampato in 3D, e i piedi di qualcuno che passa. La voce in attesa di qualcuno che la usi: lo strumento della parola pronto per chiunque.",
+   "tag": [
+    "voce collettiva",
+    "attesa",
+    "tecnologia",
+    "fare con le mani"
+   ],
+   "nucleo": "Noi"
+  },
+  "149": {
+   "lettura": "Sedie spaiate, blu, rossa, nera, raccolte in un angolo vuoto. Una riunione che è finita, o che non è ancora cominciata: le sedie come presenze di chi non c'è.",
+   "tag": [
+    "assenza",
+    "attesa",
+    "dopo la festa",
+    "presenza di molti"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "150": {
+   "lettura": "Il bersaglio per freccette e una griglia di foto stampate di serate, ragazzi, luci blu, accanto al cartello del quadro elettrico. Un album appeso al muro: la memoria delle notti insieme, a portata di sguardo.",
+   "tag": [
+    "memoria condivisa",
+    "gioco",
+    "comunità",
+    "ritratto",
+    "tracce sui muri"
+   ],
+   "nucleo": "Noi"
+  },
+  "151": {
+   "lettura": "La struttura metallica dei tralicci sotto le bacinelle blu, vista dal basso, nel salone con il soffitto antico. L'impalcatura dello spettacolo e il cielo di oggetti poveri: la struttura che regge il sogno.",
+   "tag": [
+    "installazione",
+    "guardare in su",
+    "antico e contemporaneo",
+    "struttura",
+    "trasfigurare il quotidiano"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "152": {
+   "lettura": "Un tavolo pieno di ragazzi ai portatili sotto «art is everywhere» e «sogno che diventa segno», con la maglia «Legacy» in primo piano. La comunità al lavoro sotto le parole che la guidano.",
+   "tag": [
+    "lavorare insieme",
+    "comunità",
+    "eredità",
+    "sogno",
+    "concentrazione"
+   ],
+   "nucleo": "Noi"
+  },
+  "153": {
+   "lettura": "Il grande tavolo di lavoro: chi scrive, chi guarda, chi parla, una ragazza in piedi che osserva. Il lavoro creativo come esperienza di gruppo, fatta di sguardi incrociati.",
+   "tag": [
+    "lavorare insieme",
+    "comunità",
+    "dialogo",
+    "concentrazione"
+   ],
+   "nucleo": "Noi"
+  },
+  "154": {
+   "lettura": "La stessa scena un attimo dopo: una ragazza si gira verso chi fotografa e fa una smorfia, altri ridono. La complicità che rompe la concentrazione: il gruppo che si accorge di essere guardato.",
+   "tag": [
+    "complicità",
+    "gioia",
+    "comunità",
+    "essere visti",
+    "ironia"
+   ],
+   "nucleo": "Noi"
+  },
+  "155": {
+   "lettura": "Un cervo ritagliato sopra il bersaglio delle freccette, le foto appese e una grande A rossa. Un animale solenne sopra un muro di giochi e ricordi: la natura evocata in un angolo di vita notturna.",
+   "tag": [
+    "memoria condivisa",
+    "gioco",
+    "animali",
+    "tracce sui muri"
+   ],
+   "nucleo": "Noi"
+  },
+  "156": {
+   "lettura": "Una bocca rossa spalancata sopra una porta, e oltre la porta un corridoio lungo pieno di luci e bacinelle. Entrare è come essere inghiottiti: la soglia diventa una bocca che accoglie, o che parla.",
+   "tag": [
+    "soglia",
+    "passaggio",
+    "voce",
+    "accoglienza",
+    "ironia"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "157": {
+   "lettura": "La porta con la bocca rossa vista per intero, in verticale, con il corridoio luminoso in fondo. Un passaggio da un mondo all'altro: dalla quiete di qui al fermento di là.",
+   "tag": [
+    "soglia",
+    "passaggio",
+    "voce",
+    "guardare attraverso"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "158": {
+   "lettura": "La sala vista dal fondo: divani colorati, il grande armadio antico, lettere rosse giganti sparse sul tappeto di stracci, un ragazzo in piedi. Le lettere smontate di una parola, sparse come un gioco da ricomporre.",
+   "tag": [
+    "parole smontate",
+    "gioco",
+    "abitare lo spazio",
+    "installazione",
+    "casa"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "159": {
+   "lettura": "Le lettere rosse giganti sul tappeto, viste dal basso, con i divani e il cuore a pixel sullo sfondo. Un alfabeto da sedersi sopra: le parole diventano mobili, le idee diventano luoghi da abitare.",
+   "tag": [
+    "parole smontate",
+    "abitare lo spazio",
+    "gioco",
+    "materia morbida"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "160": {
+   "lettura": "La stessa inquadratura delle lettere rosse, ripetuta. Lo scatto doppio di chi vuole essere sicuro di aver preso il momento giusto: trattenere lo spazio prima che cambi.",
+   "tag": [
+    "parole smontate",
+    "trattenere il momento",
+    "abitare lo spazio",
+    "gioco"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "161": {
+   "lettura": "Lo schermo sotto l'uovo fritto gigante, i cubi rossi a forma di casa davanti, le bandiere «sentimento» e «#cuoredinapoli» ai lati. Un piccolo cinema domestico e ironico: la casa davanti allo schermo, in attesa del film.",
+   "tag": [
+    "attesa",
+    "casa",
+    "ironia",
+    "installazione",
+    "accoglienza"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "162": {
+   "lettura": "La stessa scena dello schermo e dell'uovo, ripresa ancora. Lo sguardo che torna sullo stesso punto, come a voler fissare il palco prima che si accenda.",
+   "tag": [
+    "attesa",
+    "trattenere il momento",
+    "installazione",
+    "ironia"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "163": {
+   "lettura": "Due uomini chini su un portatile e su un foglio con schemi disegnati, mentre dietro una ragazza lavora a una parete con la scritta «non goccia ma oceano». Il progetto che nasce in due e la frase che ricorda che ogni contributo fa parte di qualcosa di più grande.",
+   "tag": [
+    "progettare",
+    "lavorare insieme",
+    "passare il sapere",
+    "comunità",
+    "noi umani"
+   ],
+   "nucleo": "Noi"
+  },
+  "164": {
+   "lettura": "La stessa scena un momento dopo: uno disegna, l'altro osserva da vicino. Il pensiero tecnico condiviso, che passa dagli occhi alle mani.",
+   "tag": [
+    "progettare",
+    "lavorare insieme",
+    "passare il sapere",
+    "concentrazione"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "165": {
+   "lettura": "Un ragazzo seduto al portatile alza lo sguardo verso un compagno in piedi, sotto la scritta «art is everywhere». Il dialogo tra chi fa e chi consiglia: imparare chiedendo.",
+   "tag": [
+    "dialogo",
+    "passare il sapere",
+    "lavorare insieme",
+    "arte ovunque"
+   ],
+   "nucleo": "Noi"
+  },
+  "166": {
+   "lettura": "Un ragazzo con gli occhiali si sistema la montatura, pensieroso, mentre dietro passa la maglia «ogni tanto devo perdermi». Il momento del dubbio, della riflessione, in mezzo al movimento degli altri.",
+   "tag": [
+    "concentrazione",
+    "dubbio",
+    "perdersi per trovarsi",
+    "ritratto"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "167": {
+   "lettura": "La scatola di cavi e i totem «Tocca e scatta» con la scatola rossa aperta, tra le sedie di chi lavora. Il cantiere della macchina che raccoglierà la memoria: i fili ancora da collegare.",
+   "tag": [
+    "macchina della memoria",
+    "preparare",
+    "groviglio",
+    "tecnologia"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "168": {
+   "lettura": "L'anta di un armadio metallico piena di adesivi, foto, cartoline del golfo, un cuore #cuoredinapoli e un adesivo «perdimm' o' tiemp». Una bacheca affettiva: i ricordi personali appesi su un oggetto comune.",
+   "tag": [
+    "memoria condivisa",
+    "identità napoletana",
+    "ironia",
+    "segni lasciati",
+    "ricordi personali"
+   ],
+   "nucleo": "Noi"
+  },
+  "169": {
+   "lettura": "Un armadio grigio coperto di adesivi e biglietti, con le scritte «legami» e «gesto costante». L'oggetto più anonimo diventa diario: un mobile che porta i segni di chi lo ha usato.",
+   "tag": [
+    "segni lasciati",
+    "legami",
+    "memoria condivisa",
+    "gesto costante"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "170": {
+   "lettura": "Una colonna tappezzata di locandine «siamo tornati» con pizza, sandwich e pesce, e dietro la sala piena di gente. Il ritorno dopo una pausa annunciato col cibo: la comunità si ritrova attorno a una tavola.",
+   "tag": [
+    "ritorno",
+    "comunità",
+    "cibo",
+    "quotidiano condiviso",
+    "identità napoletana"
+   ],
+   "nucleo": "Noi"
+  },
+  "171": {
+   "lettura": "Un pilastro bianco con «#attodamore» in alto e una grande mano di gommapiuma blu con l'indice alzato in basso. La dichiarazione d'amore e il dito del tifoso: l'amore come tifo, come incoraggiamento.",
+   "tag": [
+    "atto d'amore",
+    "ironia",
+    "incoraggiare",
+    "voce collettiva"
+   ],
+   "nucleo": "Noi"
+  },
+  "172": {
+   "lettura": "La parola «CURA» sopra la folla di figurine bianche, vista di fronte davanti a una finestra. Una piccola umanità che sostiene una parola: la cura come qualcosa che si fa insieme, in tanti.",
+   "tag": [
+    "cura",
+    "comunità",
+    "noi umani",
+    "presenza di molti"
+   ],
+   "nucleo": "Noi"
+  },
+  "173": {
+   "lettura": "La folla di figurine sotto la parola CURA, ancora più vicina: si distinguono volti, corpi, posture diverse. Ognuno diverso, tutti insieme: la cura come somma di individui.",
+   "tag": [
+    "cura",
+    "comunità",
+    "diversità",
+    "noi umani"
+   ],
+   "nucleo": "Noi"
+  },
+  "174": {
+   "lettura": "La scultura CURA tra due casse, con la lettera del Ministero della Giustizia davanti e la scritta «Teatro Bellini» oltre la finestra. La cura messa in scena e documentata: un'opera che dialoga con le istituzioni e con la città.",
+   "tag": [
+    "cura",
+    "istituzione",
+    "voce collettiva",
+    "identità napoletana",
+    "dentro e fuori"
+   ],
+   "nucleo": "Noi"
+  },
+  "175": {
+   "lettura": "Una finestra aperta su un cielo grigio e su palazzi antichi di Napoli, con un condizionatore sul tetto. Lo sguardo che esce, si ferma sulla città in un giorno opaco: un momento di pausa e di respiro.",
+   "tag": [
+    "dentro e fuori",
+    "finestra",
+    "identità napoletana",
+    "malinconia",
+    "guardare fuori"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "176": {
+   "lettura": "Dal buio di una porta, un lungo corridoio ad archi con muri gialli scrostati e figure lontane. Uno sguardo dall'ombra verso la luce: la profondità del luogo, i suoi passaggi, le sue ferite.",
+   "tag": [
+    "passaggio",
+    "guardare attraverso",
+    "profondità",
+    "ferita e cura",
+    "luce"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "177": {
+   "lettura": "Da un balcone con la ringhiera di ferro, un giardino interno fitto di alberi e un palazzo storico sotto un cielo di pioggia. Il verde nascosto dentro la città, visto dall'alto: un rifugio silenzioso dentro le mura.",
+   "tag": [
+    "dentro e fuori",
+    "natura",
+    "guardare fuori",
+    "rifugio",
+    "pioggia"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "178": {
+   "lettura": "Il divieto di usare acqua contro gli incendi e il triangolo del quadro elettrico, su un muro bianco e vuoto. Il linguaggio delle regole, freddo e uguale ovunque: il pericolo che si annuncia senza persone.",
+   "tag": [
+    "regole condivise",
+    "pericolo",
+    "vuoto",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "179": {
+   "lettura": "Una cassetta di pronto soccorso grigia con il simbolo verde, su un muro nudo. La cura d'emergenza pronta e silenziosa: qualcuno ha pensato a chi potrebbe farsi male.",
+   "tag": [
+    "cura",
+    "proteggere",
+    "regole condivise",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "180": {
+   "lettura": "Una porta metallica grigia piena di firme e scarabocchi, in fondo a una stanza vuota. La porta anonima che si è riempita di segni: anche il luogo più neutro finisce per raccontare chi è passato.",
+   "tag": [
+    "segni lasciati",
+    "tracce sui muri",
+    "soglia",
+    "vuoto"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "181": {
+   "lettura": "Un rettangolo di intonaco grezzo sul muro bianco, con graffi, disegni a matita e tre ganci sotto. Dove prima c'era qualcosa appeso, ora resta la sua assenza: un'impronta, un palinsesto di segni.",
+   "tag": [
+    "assenza",
+    "tracce sui muri",
+    "palinsesto",
+    "ferita e cura"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "182": {
+   "lettura": "Una volta a crociera bianca, un bassorilievo classico sopra una porta scura e una luce al neon. La storia dell'Accademia che sorveglia i passaggi quotidiani: l'antico che fa da cornice al presente.",
+   "tag": [
+    "antico e contemporaneo",
+    "soglia",
+    "passaggio",
+    "guardare in su"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "183": {
+   "lettura": "Il cartello del defibrillatore sotto un bassorilievo antico con corpi scolpiti. Corpi di pietra e un apparecchio per salvare corpi vivi: la bellezza eterna e la fragilità della vita, una sopra l'altra.",
+   "tag": [
+    "antico e contemporaneo",
+    "fragilità",
+    "cura",
+    "corpo"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "184": {
+   "lettura": "Un volto disegnato a china lungo una scala, tra fiori e foglie, con una sigaretta in bocca e una A rossa tracciata sopra. L'arte spontanea delle scale, e il gesto che la segna di nuovo: il muro come luogo di dialogo e di contesa.",
+   "tag": [
+    "segni lasciati",
+    "tracce sui muri",
+    "ritratto",
+    "contesa",
+    "arte ovunque"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "185": {
+   "lettura": "Uno spazio sotto un arco coperto di graffiti: un mostro con le corna, la parola «mazziato», tag e scritte. Il muro come sfogo, come diario collettivo e anonimo: rabbia e ironia di chi passa.",
+   "tag": [
+    "segni lasciati",
+    "tracce sui muri",
+    "voci anonime",
+    "rabbia",
+    "ironia"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "186": {
+   "lettura": "Un volto colorato e vorticoso disegnato a matita sul muro della scala, sotto il corrimano. Un piccolo ritratto lasciato da qualcuno in un momento libero: l'arte che scappa fuori dai fogli.",
+   "tag": [
+    "segni lasciati",
+    "ritratto",
+    "arte ovunque",
+    "tracce sui muri"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "187": {
+   "lettura": "Una porta a vetri aperta su un terrazzo bagnato dalla pioggia, con i vetri pieni di adesivi e di un QR code. La soglia tra il chiuso e l'aperto in un giorno di pioggia: uscire o restare.",
+   "tag": [
+    "soglia",
+    "dentro e fuori",
+    "pioggia",
+    "passaggio"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "188": {
+   "lettura": "Una finestra ad arco sopra una nicchia con gradini, i muri coperti di scritte, disegni e frasi in altre lingue. Un angolo dove molti si sono fermati e hanno lasciato qualcosa: un rifugio fatto di segni.",
+   "tag": [
+    "segni lasciati",
+    "tracce sui muri",
+    "rifugio",
+    "voci anonime",
+    "finestra"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "189": {
+   "lettura": "Un soffitto dipinto di blu con stelle dorate, che si sgretola agli angoli. Un cielo artificiale antico, una promessa di infinito che il tempo sta consumando.",
+   "tag": [
+    "cielo artificiale",
+    "antico e contemporaneo",
+    "guardare in su",
+    "consumo",
+    "meraviglia"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "190": {
+   "lettura": "Un'aula vuota con un tavolo macchiato di pittura, sedie scolastiche, una scopa e una bottiglia d'acqua. Lo spazio dopo la lezione: il silenzio che resta dove si è lavorato.",
+   "tag": [
+    "vuoto",
+    "dopo la fatica",
+    "assenza",
+    "aula"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "191": {
+   "lettura": "Un tavolo enorme coperto di colori colati sul bordo, e dietro un armadietto metallico. Le tracce dei pennelli di tanti studenti accumulate sulla stessa superficie: il tempo del fare depositato.",
+   "tag": [
+    "tracce",
+    "consumo",
+    "aula",
+    "presenza di molti",
+    "vuoto"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "192": {
+   "lettura": "Cavalletti di legno, sedie e un armadietto in un'aula deserta. Gli strumenti della pittura in attesa di qualcuno che torni: la vocazione dell'aula, anche senza persone.",
+   "tag": [
+    "attesa",
+    "vuoto",
+    "aula",
+    "assenza",
+    "attrezzi"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "193": {
+   "lettura": "Una poesia scritta a mano sul muro: «arpeggio il tuo corpo, rimembrando il lieve tatto… le corde dell'anima, mostrandosi solo a colui che amò». Una dichiarazione d'amore lasciata in un luogo pubblico, intima e anonima insieme.",
+   "tag": [
+    "amore",
+    "poesia",
+    "parole scritte",
+    "segni lasciati",
+    "voci anonime"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "194": {
+   "lettura": "Scritte sovrapposte a matita e pennarello: «amor», «il mondo è nostro», «sfrattiamo i ratti». Un muro dove amore, rivendicazione e rabbia si mescolano: la voce collettiva senza firma.",
+   "tag": [
+    "voci anonime",
+    "protesta",
+    "amore",
+    "palinsesto",
+    "parole scritte"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "195": {
+   "lettura": "«L'arte song' e purpette ca' sarz' l'una e mezza», e sotto la richiesta «scrivi pasta al sugo nella tua lingua» con risposte in cinese, sardo, francese, napoletano. Un gioco che diventa mappa di chi abita il luogo: tante lingue, una tavola.",
+   "tag": [
+    "tante lingue",
+    "cibo",
+    "identità napoletana",
+    "ironia",
+    "comunità",
+    "parole scritte"
+   ],
+   "nucleo": "Noi"
+  },
+  "196": {
+   "lettura": "Un grande laboratorio di scenografia: cornici dorate a terra, uno specchio ovale, barattoli di vernice, un compressore. Il teatro costruito pezzo per pezzo, la bellezza dorata che nasce dalla polvere.",
+   "tag": [
+    "scenografia",
+    "fare con le mani",
+    "teatro",
+    "materia in attesa",
+    "dietro le quinte"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "197": {
+   "lettura": "Un'uscita di emergenza buia, sotto travi di ferro e un lucernario, con graffiti accanto alla porta. Un passaggio di servizio, dimenticato, che però tutti conoscono.",
+   "tag": [
+    "soglia",
+    "angoli dimenticati",
+    "passaggio",
+    "segni lasciati"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "198": {
+   "lettura": "Un maestro e i ragazzi davanti a grandi elementi scenici dipinti, legni curvi, telai. Chi insegna osserva, chi impara lavora a terra: il mestiere che passa nella bottega.",
+   "tag": [
+    "passare il sapere",
+    "scenografia",
+    "fare con le mani",
+    "maestro e allievi",
+    "teatro"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "199": {
+   "lettura": "Scritto a matita: «you call it trauma, I call it spicy memory», con una faccina sorridente. Il dolore riletto con ironia: la memoria ferita che diventa qualcosa da raccontare, quasi da gustare.",
+   "tag": [
+    "ferita e cura",
+    "ironia",
+    "memoria",
+    "parole scritte",
+    "voci anonime"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "200": {
+   "lettura": "Un ragazzo si fotografa in uno specchio ovale con la cornice dorata, nel laboratorio di scenografia, con un maestro alle spalle. L'autoritratto dentro la scena che si sta costruendo: guardarsi mentre si diventa qualcuno.",
+   "tag": [
+    "autoritratto",
+    "scenografia",
+    "essere visti",
+    "identità",
+    "teatro"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "201": {
+   "lettura": "Un cielo grigio sopra i tetti, e sul muretto la scritta «maybe in another universe» con una faccina. Una frase malinconica e leggera: il desiderio di un'altra possibilità, scritto guardando il cielo.",
+   "tag": [
+    "malinconia",
+    "desiderio",
+    "dentro e fuori",
+    "parole scritte",
+    "voci anonime"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "202": {
+   "lettura": "Ragazzi chini su una grande cornice di boccascena dorata stesa a terra, con un sipario rosso dipinto. Costruire il teatro dal pavimento: il palcoscenico che prima di stare in piedi è sdraiato e fragile.",
+   "tag": [
+    "scenografia",
+    "lavorare insieme",
+    "fare con le mani",
+    "teatro",
+    "preparare"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "203": {
+   "lettura": "Un laboratorio enorme con pannelli di legno, una sega a nastro, scatole, un tubo dell'aria a spirale e una mano dipinta sul muro. L'officina dove si fa il lavoro pesante dell'arte: legno, polvere, rumore.",
+   "tag": [
+    "fare con le mani",
+    "materia in attesa",
+    "officina",
+    "fatica"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "204": {
+   "lettura": "Una pialla, un lungo banco nero, una lavagna con schemi, quadri e ritratti alle pareti. Il laboratorio di falegnameria come aula: si impara con il legno e con il gesso.",
+   "tag": [
+    "fare con le mani",
+    "passare il sapere",
+    "officina",
+    "aula",
+    "attrezzi"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "205": {
+   "lettura": "Un portone antico di legno scuro coperto di disegni a pennarello bianco: faccine, conigli, scritte. L'antico che si lascia graffiare dalla giovinezza: la storia che diventa supporto di gioco.",
+   "tag": [
+    "antico e contemporaneo",
+    "segni lasciati",
+    "gioco",
+    "soglia",
+    "voci anonime"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "206": {
+   "lettura": "La locandina di una mostra, «Alter ego», con un volto dipinto, e sopra la scritta a matita «mi mancano le…» e una firma. Un ritratto dell'altro sé e una frase di nostalgia: l'identità e la mancanza nello stesso angolo.",
+   "tag": [
+    "nostalgia",
+    "identità",
+    "ritratto",
+    "segni lasciati",
+    "parole scritte"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "207": {
+   "lettura": "Scritto a matita su un muro bianco: «give your cat, dog a kiss from me». Un saluto tenero affidato a uno sconosciuto: un piccolo atto d'affetto lasciato in giro.",
+   "tag": [
+    "tenerezza",
+    "voci anonime",
+    "parole scritte",
+    "dono",
+    "animali"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "208": {
+   "lettura": "Un occhio disegnato a penna con ciglia lunghe, e sotto viticci e un fiore. Un segno delicato, quasi un tatuaggio sul muro: lo sguardo di qualcuno che resta a guardare chi passa.",
+   "tag": [
+    "sguardo",
+    "segni lasciati",
+    "tenerezza",
+    "arte ovunque"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "209": {
+   "lettura": "Il cartello «Accademia di Belle Arti, terzo piano, aule di pittura» coperto da una tag nera, e sotto un foglio con le istruzioni per lavarsi le mani. L'istituzione e chi la abita si sovrappongono: la segnaletica ufficiale riscritta dagli studenti.",
+   "tag": [
+    "istituzione",
+    "segni lasciati",
+    "regole condivise",
+    "orientarsi"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "210": {
+   "lettura": "Una finestra a mezzaluna con le grate, da cui si intravedono auto parcheggiate. Uno sguardo basso e limitato verso fuori: la città che si vede solo a pezzi, da dentro.",
+   "tag": [
+    "dentro e fuori",
+    "finestra",
+    "guardare fuori",
+    "limite"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "211": {
+   "lettura": "Un pianerottolo con frecce di uscita, il cartello «primo piano», muri anneriti, scatoloni e un termosifone. Un luogo di passaggio caotico, dove si cerca la strada tra mille segnali.",
+   "tag": [
+    "orientarsi",
+    "passaggio",
+    "segni lasciati",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "212": {
+   "lettura": "Una grande finestra ad arco vista dall'alto della scala, aperta su un chiostro verde; sotto, una figura piccola appoggiata al davanzale. La persona minuscola davanti all'immensità del luogo: fermarsi a guardare fuori.",
+   "tag": [
+    "dentro e fuori",
+    "natura",
+    "guardare fuori",
+    "solitudine",
+    "finestra"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "213": {
+   "lettura": "Un lungo corridoio con volte a vela e finestre ad arco, visto dall'alto, con poche persone che camminano. La maestosità dell'edificio storico attraversata da passi quotidiani: la storia come corridoio di tutti i giorni.",
+   "tag": [
+    "passaggio",
+    "antico e contemporaneo",
+    "profondità",
+    "attraversare"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "214": {
+   "lettura": "Una stanza in penombra blu, tende scure tirate, due sedie vuote vicino a un termosifone. Il silenzio di una stanza chiusa, l'attesa di qualcuno che non arriva.",
+   "tag": [
+    "assenza",
+    "vuoto",
+    "attesa",
+    "silenzio",
+    "soglia"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "215": {
+   "lettura": "Un carrello pieno di cassette di viti, chiodi, attrezzi, un tubo arancione a spirale, e una mano che lo spinge. Il trasloco del lavoro: tutto ciò che serve a costruire, portato da un posto all'altro.",
+   "tag": [
+    "trasportare",
+    "fare con le mani",
+    "attrezzi",
+    "materia in attesa"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "216": {
+   "lettura": "Una porta socchiusa su una stanza buia con uno schermo acceso in fondo. Il bagliore di un lavoro notturno, di qualcuno che resta quando gli altri sono andati.",
+   "tag": [
+    "soglia",
+    "buio",
+    "concentrazione",
+    "solitudine",
+    "guardare attraverso"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "217": {
+   "lettura": "Un lavandino sporco di pittura sotto una fila di spatole e pennelli appesi. Il luogo dove si lavano gli strumenti dopo il lavoro: le macchie come diario di tutto ciò che è stato dipinto.",
+   "tag": [
+    "tracce",
+    "fare con le mani",
+    "consumo",
+    "lavoro invisibile",
+    "attrezzi"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "218": {
+   "lettura": "Un corridoio buio con la luce verde dell'uscita di emergenza e una porta aperta. Il luogo di notte, quando solo i segnali di sicurezza restano accesi: la quiete inquieta degli spazi vuoti.",
+   "tag": [
+    "buio",
+    "soglia",
+    "vuoto",
+    "silenzio",
+    "uscita"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "219": {
+   "lettura": "Uno sgabuzzino di scaffali grigi pieni di nastri, scatole, un aspirapolvere e una tronchese. La riserva nascosta che fa funzionare tutto: il luogo dove si custodiscono gli strumenti del lavoro invisibile.",
+   "tag": [
+    "lavoro invisibile",
+    "custodire",
+    "materia in attesa",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "220": {
+   "lettura": "Lo stesso sgabuzzino da un'altra angolazione, con squadre blu appese e rotoli di nastro adesivo. L'ordine pratico di chi deve trovare tutto in fretta.",
+   "tag": [
+    "lavoro invisibile",
+    "custodire",
+    "attrezzi",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "221": {
+   "lettura": "Un soffitto affrescato con una figura sacra tra nuvole e angeli, cornici dorate e stucchi, sopra una lampada di emergenza. La gloria barocca che sopravvive sopra i segnali di oggi: lo splendore antico che continua a guardare dall'alto.",
+   "tag": [
+    "antico e contemporaneo",
+    "sacro e profano",
+    "guardare in su",
+    "meraviglia"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "222": {
+   "lettura": "Uno scaffale disordinato con scatole di chiodi, una pistola a spruzzo, buste e un barattolo di patatine. Il caos fertile del magazzino, dove anche la merenda trova posto tra gli attrezzi.",
+   "tag": [
+    "disordine fertile",
+    "materia in attesa",
+    "quotidiano condiviso",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "223": {
+   "lettura": "Un armadietto con morsetti appesi, un rotolo di carta, scatole di chiodi. L'ordine minimo di un laboratorio: ogni oggetto ha il suo scomparto, anche se un po' alla volta si mescola.",
+   "tag": [
+    "custodire",
+    "attrezzi",
+    "lavoro invisibile",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "224": {
+   "lettura": "Ancora l'armadietto con la carta, i morsetti e le cassette di chiodi, più da vicino. Il dettaglio degli strumenti usati e riposti: il tempo passato a lavorare, raccolto in un mobile.",
+   "tag": [
+    "custodire",
+    "attrezzi",
+    "consumo",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "225": {
+   "lettura": "Un plastico scenografico scuro: un boccascena in miniatura con porte e colonne, appoggiato sul banco. Il teatro immaginato in piccolo prima di diventare grande: il progetto come sogno in scala.",
+   "tag": [
+    "scenografia",
+    "progettare",
+    "teatro",
+    "miniatura",
+    "fare con le mani"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "226": {
+   "lettura": "Il plastico dello stesso boccascena, visto più di fronte: si intravedono le quinte, le porte, la profondità. Guardare dentro un mondo che ancora non esiste.",
+   "tag": [
+    "scenografia",
+    "miniatura",
+    "guardare attraverso",
+    "teatro",
+    "progettare"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "227": {
+   "lettura": "Il plastico visto dall'alto, con le sue quinte inclinate e un'architettura di archi, accanto a una pialla e a una borraccia. La città teatrale in miniatura sul tavolo da lavoro: l'immaginazione che si misura col reale.",
+   "tag": [
+    "scenografia",
+    "miniatura",
+    "progettare",
+    "teatro",
+    "fare con le mani"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "228": {
+   "lettura": "Il grande laboratorio di scenografia con la cornice dorata a terra, un compressore, telai e uno specchio ovale; persone chine a dipingere. La bottega teatrale in piena attività: il sogno costruito a mano, sul pavimento.",
+   "tag": [
+    "scenografia",
+    "lavorare insieme",
+    "fare con le mani",
+    "teatro",
+    "dietro le quinte"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "229": {
+   "lettura": "Un soffitto bianco a botte visto da sotto, punteggiato da piccole scatole rosse allineate lungo tubi metallici. Una geometria tecnica e quasi astratta: il cielo di un teatro fatto di impianti.",
+   "tag": [
+    "guardare in su",
+    "struttura",
+    "lavoro invisibile",
+    "geometria"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "230": {
+   "lettura": "Un palcoscenico vuoto e scuro, con un tavolo di regia in primo piano, microfoni, bicchieri di plastica. Il momento prima o dopo la prova: la scena che aspetta, il silenzio pieno di possibilità.",
+   "tag": [
+    "teatro",
+    "attesa",
+    "vuoto",
+    "palcoscenico",
+    "dietro le quinte"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "231": {
+   "lettura": "Una platea di poltrone chiare vuote, con grandi finestre sui palazzi. Il pubblico che manca: il teatro come promessa di sguardi che verranno.",
+   "tag": [
+    "teatro",
+    "vuoto",
+    "assenza",
+    "attesa",
+    "platea"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "232": {
+   "lettura": "Il palcoscenico illuminato da fari, con una scala e un fondale verde in fondo, visto dal tavolo di regia. La scena come cantiere, pronta per qualcosa che deve ancora accadere.",
+   "tag": [
+    "teatro",
+    "palcoscenico",
+    "preparare",
+    "luce",
+    "attesa"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "233": {
+   "lettura": "L'ombra di chi fotografa proiettata sulle assi consumate del palcoscenico, nella luce di un faro. Essere sulla scena senza essere visti: la propria presenza ridotta a un'ombra.",
+   "tag": [
+    "ombra",
+    "palcoscenico",
+    "presenza",
+    "autoritratto",
+    "teatro"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "234": {
+   "lettura": "La stessa ombra sul palco, un istante dopo. Il gesto ripetuto di chi vuole fissare la sensazione di stare su un palcoscenico, anche solo come ombra.",
+   "tag": [
+    "ombra",
+    "palcoscenico",
+    "trattenere il momento",
+    "autoritratto"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "235": {
+   "lettura": "Il palco visto dalle quinte: una lunga scala, fari accesi, un fondale verde e scatoloni sul fondo. Il teatro mentre si prepara, nudo, senza scenografie: la struttura del sogno prima del sogno.",
+   "tag": [
+    "teatro",
+    "dietro le quinte",
+    "preparare",
+    "palcoscenico",
+    "luce"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "236": {
+   "lettura": "Una foto mossa: un pezzo di scala, il pavimento del palco, una mano. Uno scatto sbagliato, involontario, che restituisce la vertigine del movimento dietro le quinte.",
+   "tag": [
+    "errore",
+    "movimento",
+    "dietro le quinte",
+    "casualità"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "237": {
+   "lettura": "Un fondale verde per le riprese in fondo a un palco buio, con scatoloni impilati e una barra di luci a terra. Lo spazio dove tutto potrà essere sostituito da altro: il verde come luogo di tutte le immagini possibili.",
+   "tag": [
+    "teatro",
+    "possibilità",
+    "materia in attesa",
+    "tecnologia",
+    "palcoscenico"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "238": {
+   "lettura": "Un proiettore su un vecchio tavolo di legno al centro del palco, con scatoloni e scope intorno. L'immagine che verrà proiettata nasce da un oggetto umile, appoggiato su un mobile qualunque.",
+   "tag": [
+    "tecnologia",
+    "attesa",
+    "palcoscenico",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "239": {
+   "lettura": "Il proiettore da vicino, con un listello di legno davanti, sul tavolo consumato. La macchina che darà luce alle immagini, in attesa di essere accesa.",
+   "tag": [
+    "tecnologia",
+    "attesa",
+    "luce",
+    "materia in attesa"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "240": {
+   "lettura": "Le quinte del teatro: una catena che pende, un pannello appoggiato, un sipario nero e il pavimento segnato. Il mondo nascosto da cui si entra in scena: il retro di ogni apparizione.",
+   "tag": [
+    "dietro le quinte",
+    "teatro",
+    "soglia",
+    "buio"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "241": {
+   "lettura": "Le quinte buie con una catena che pende, un pannello appoggiato, un rotolo di cavo, un lembo di fondale verde. Un mondo in ombra dove gli oggetti aspettano il loro momento di scena.",
+   "tag": [
+    "dietro le quinte",
+    "buio",
+    "attesa",
+    "teatro"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "242": {
+   "lettura": "Un passaggio stretto tra pannelli neri e un sipario grigio, verso un corridoio dove sono ammassati legni. Il percorso segreto degli attori e dei tecnici: il teatro visto da chi non si vede.",
+   "tag": [
+    "dietro le quinte",
+    "passaggio",
+    "buio",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "243": {
+   "lettura": "Una vecchia bicicletta arrugginita e una ruota gialla con pezzi colorati, nel buio delle quinte. Oggetti di scena che hanno vissuto altre storie: la memoria degli spettacoli passati.",
+   "tag": [
+    "oggetti di scena",
+    "memoria",
+    "dietro le quinte",
+    "riuso",
+    "teatro"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "244": {
+   "lettura": "Un retropalco con uno scaffale di oggetti di scena, sgabelli impilati, una striscia verde, un condizionatore e muro scrostato. Il magazzino della finzione: piccole cose che diventeranno mondi.",
+   "tag": [
+    "oggetti di scena",
+    "dietro le quinte",
+    "custodire",
+    "materia in attesa"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "245": {
+   "lettura": "Un corridoio buio di quinte con rotoli di fondali dipinti, scope rosse e, in fondo, una piccola scultura davanti a una finestra. Il deposito delle scene passate, illuminato appena da una luce esterna.",
+   "tag": [
+    "dietro le quinte",
+    "memoria",
+    "custodire",
+    "buio",
+    "teatro"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "246": {
+   "lettura": "Telai neri e listelli di legno appoggiati in verticale contro un muro scuro. Le ossa delle scenografie: strutture nude che reggono le illusioni.",
+   "tag": [
+    "dietro le quinte",
+    "struttura",
+    "materia in attesa",
+    "scenografia"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "247": {
+   "lettura": "Un angolo delle quinte con un estintore, una cassa audio, un telaio di legno e un cartello di sicurezza. Il necessario per la scena e per la sicurezza, insieme nel buio.",
+   "tag": [
+    "dietro le quinte",
+    "regole condivise",
+    "lavoro invisibile",
+    "buio"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "248": {
+   "lettura": "Un grande cartone appoggiato al muro con una scopa, una cassa blu, una scala e un condizionatore, sul pavimento consumato. Il retropalco dopo il lavoro: si pulisce, si ripone.",
+   "tag": [
+    "dietro le quinte",
+    "dopo la fatica",
+    "lavoro invisibile",
+    "materia in attesa"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "249": {
+   "lettura": "Una regia piena di scatoloni, pannelli di polistirolo impilati e cavi, davanti a una grande vetrata sulla città. La tecnica appena arrivata, ancora imballata: uno spazio nuovo che deve ancora nascere.",
+   "tag": [
+    "tecnologia",
+    "preparare",
+    "materia in attesa",
+    "dentro e fuori"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "250": {
+   "lettura": "La cabina di regia tra imballaggi, un armadio di cavi colorati, una sedia dipinta a colori vivaci e la finestra sulla facciata di fronte. La macchina del teatro mentre viene montata.",
+   "tag": [
+    "tecnologia",
+    "preparare",
+    "lavoro invisibile",
+    "groviglio"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "251": {
+   "lettura": "Una finestra ad arco sulla facciata di un palazzo antico, e sotto una postazione di regia con mixer e monitor, accanto a pile di polistirolo. Il presente tecnologico guarda il passato della città.",
+   "tag": [
+    "antico e contemporaneo",
+    "tecnologia",
+    "dentro e fuori",
+    "finestra"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "252": {
+   "lettura": "Scatole di casse acustiche e cavi davanti a una vetrata buia sulla strada illuminata di sera. Il lavoro che continua anche quando fuori è notte: preparare il suono di qualcosa che verrà.",
+   "tag": [
+    "tecnologia",
+    "preparare",
+    "buio",
+    "dentro e fuori",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "253": {
+   "lettura": "Un ambiente scuro con grandi pannelli neri a griglia, una scala e scaffali vuoti. Lo spazio spoglio, quasi astratto, di un teatro che deve ancora essere riempito.",
+   "tag": [
+    "vuoto",
+    "buio",
+    "struttura",
+    "attesa",
+    "dietro le quinte"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "254": {
+   "lettura": "Una porta aperta sulla scala di emergenza, con un cavo che pende e l'ombra di chi fotografa sul pavimento. Un passaggio di servizio e una presenza che si lascia solo intravedere.",
+   "tag": [
+    "ombra",
+    "soglia",
+    "uscita",
+    "presenza",
+    "dietro le quinte"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "255": {
+   "lettura": "Una scala di ferro grigia che scende tra muri bianchi, con un carrello, una cassa blu e pannelli appoggiati. I percorsi interni del teatro, fatti per portare le cose, non per essere visti.",
+   "tag": [
+    "passaggio",
+    "dietro le quinte",
+    "trasportare",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "256": {
+   "lettura": "In fondo a una scala, oltre una porta, un manichino con un abito rosso d'epoca. Un costume che aspetta da solo, come un personaggio rimasto in scena dopo lo spettacolo.",
+   "tag": [
+    "costume",
+    "teatro",
+    "attesa",
+    "presenza",
+    "mistero"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "257": {
+   "lettura": "Il manichino con l'abito rosso d'epoca, da vicino, nell'angolo di un corridoio bianco, mentre qualcuno passa dietro. Il personaggio senza attore: un corpo vuoto che conserva la memoria di uno spettacolo.",
+   "tag": [
+    "costume",
+    "teatro",
+    "presenza",
+    "assenza",
+    "memoria"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "258": {
+   "lettura": "Una tromba di scale vista dall'alto, con le ringhiere che girano su se stesse verso il fondo. La vertigine dei passaggi verticali: scendere dentro il luogo come in una spirale.",
+   "tag": [
+    "passaggio",
+    "vertigine",
+    "profondità",
+    "struttura"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "259": {
+   "lettura": "Un camerino con manichini, un busto di cartapesta, un costume piumato, sacchi neri e una statua seduta di uomo in gesso. Corpi finti e corpi scolpiti insieme, in attesa di essere vestiti o guardati.",
+   "tag": [
+    "camerino",
+    "corpo",
+    "costume",
+    "materia in attesa",
+    "teatro"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "260": {
+   "lettura": "Il camerino con gli specchi pieni di lampadine, il lavandino, i manichini e un costume piumato riflesso. Il luogo della trasformazione: ci si siede davanti allo specchio e si diventa qualcun altro.",
+   "tag": [
+    "camerino",
+    "trasformazione",
+    "specchio",
+    "teatro",
+    "identità"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "261": {
+   "lettura": "La statua di un uomo seduto, in gesso scrostato, tra manichini, sacchi neri e appendiabiti. Una figura immobile e pensosa nel disordine del camerino: il silenzio delle forme abbandonate.",
+   "tag": [
+    "corpo",
+    "statua",
+    "materia in attesa",
+    "malinconia",
+    "camerino"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "262": {
+   "lettura": "La statua seduta vista più vicino: il volto chino, le mani appoggiate, la superficie consumata. Un corpo che sembra stanco, quasi umano: la fatica scolpita.",
+   "tag": [
+    "corpo",
+    "statua",
+    "stanchezza",
+    "malinconia",
+    "consumo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "263": {
+   "lettura": "La statua seduta per intero, di fronte, contro il muro bianco. La nudità fragile di un corpo di gesso: un uomo che aspetta, senza sapere cosa.",
+   "tag": [
+    "corpo",
+    "statua",
+    "attesa",
+    "fragilità",
+    "solitudine"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "264": {
+   "lettura": "Un manichino vestito con un abito settecentesco di pizzi, fiocchi azzurri e piume rosse, tra sacchi e scatoloni. La sontuosità di un costume in mezzo al disordine: lo splendore dopo lo spettacolo.",
+   "tag": [
+    "costume",
+    "teatro",
+    "dopo la festa",
+    "bellezza"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "265": {
+   "lettura": "Un busto di cartapesta e un manichino bianco in un camerino, tra sedie blu e plastiche. Corpi senza testa, senza storia, pronti a ricevere un abito e un'identità.",
+   "tag": [
+    "corpo",
+    "camerino",
+    "costume",
+    "identità",
+    "attesa"
+   ],
+   "nucleo": "Dietro le quinte"
+  },
+  "266": {
+   "lettura": "Un contrabbasso appoggiato sotto il bancone del camerino. La musica a riposo, uno strumento grande e silenzioso che aspetta di essere suonato.",
+   "tag": [
+    "musica",
+    "attesa",
+    "silenzio",
+    "teatro",
+    "riposo"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "267": {
+   "lettura": "Una porta socchiusa su un locale tecnico con quadri elettrici e sacchi neri. Il cuore impiantistico del teatro, dietro una porta che nessuno apre.",
+   "tag": [
+    "lavoro invisibile",
+    "soglia",
+    "dietro le quinte",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "268": {
+   "lettura": "Una foto completamente mossa: luce e pavimento che scivolano. Un errore che cattura il movimento, la fretta, il passaggio: anche lo sbaglio entra nella memoria.",
+   "tag": [
+    "errore",
+    "movimento",
+    "casualità",
+    "passaggio"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "269": {
+   "lettura": "Un grande dipinto antico su un cavalletto: un gruppo di uomini chini su una lavagnetta, uno che disegna e gli altri che guardano. Il sapere che si trasmette guardando insieme: una lezione dipinta, in una galleria dell'Accademia.",
+   "tag": [
+    "passare il sapere",
+    "antico e contemporaneo",
+    "museo",
+    "maestro e allievi"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "270": {
+   "lettura": "Un grande quadro religioso: una donna inginocchiata ai piedi di una figura sacra, durante un banchetto. Il gesto di cura e di umiltà raccontato dalla pittura classica: l'affetto che si inchina.",
+   "tag": [
+    "sacro e profano",
+    "cura",
+    "museo",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "271": {
+   "lettura": "Un busto in bronzo di un uomo con la barba, su un piedistallo, davanti a un disegno di nudo incorniciato. La memoria dei maestri dell'Accademia: i volti che hanno fatto la storia del luogo.",
+   "tag": [
+    "memoria",
+    "ritratto",
+    "museo",
+    "maestro e allievi",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "272": {
+   "lettura": "Un enorme dipinto ottocentesco di una scena drammatica: un uomo a terra, una donna disperata, militari, sedie rovesciate. La pittura che racconta il dolore e la cronaca: la storia come ferita esposta.",
+   "tag": [
+    "ferita e cura",
+    "museo",
+    "dramma",
+    "antico e contemporaneo",
+    "memoria"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "273": {
+   "lettura": "Una scultura scura di donna seduta che si abbraccia le ginocchia, su un piedistallo in una galleria. Il gesto di raccogliersi in sé, di proteggersi: la solitudine diventata forma.",
+   "tag": [
+    "solitudine",
+    "corpo",
+    "proteggere",
+    "museo",
+    "statua"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "274": {
+   "lettura": "Un'opera a terra fatta di frammenti di metallo, legno e carta accartocciati, con un'asta che spunta. Un relitto, un naufragio composto: la materia ferita che diventa arte.",
+   "tag": [
+    "rovina",
+    "riuso",
+    "ferita e cura",
+    "museo",
+    "materia"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "275": {
+   "lettura": "Un busto in bronzo dal volto allungato e sereno, su un piedistallo grigio. Un ritratto essenziale che guarda lontano: la memoria di una persona ridotta alla sua quiete.",
+   "tag": [
+    "ritratto",
+    "memoria",
+    "museo",
+    "statua",
+    "quiete"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "276": {
+   "lettura": "Sei fotografie in bianco e nero di un uomo anziano con la barba, il volto frammentato da luci e ombre geometriche, mentre fotografa. Lo sguardo che si guarda: il fotografo come soggetto, il tempo inciso sul volto.",
+   "tag": [
+    "sguardo",
+    "ritratto",
+    "tempo",
+    "essere visti",
+    "museo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "277": {
+   "lettura": "Una scultura bianca di ragazza seduta sul bordo di un piedistallo con un caschetto, le gambe che penzolano. Una giovinezza sospesa, in attesa: l'adolescenza resa monumento.",
+   "tag": [
+    "giovinezza",
+    "attesa",
+    "corpo",
+    "statua",
+    "museo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "278": {
+   "lettura": "Un grande dipinto barocco di un banchetto affollato, con figure sacre, servitori, un cane. La festa come caos e come rito: la tavola condivisa che attraversa i secoli.",
+   "tag": [
+    "festa",
+    "cibo",
+    "sacro e profano",
+    "museo",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "279": {
+   "lettura": "Tre busti in fila, due in terracotta e uno in marmo, di uomini anziani dai volti segnati. I volti della memoria accademica: l'età, il carattere, la dignità.",
+   "tag": [
+    "ritratto",
+    "memoria",
+    "museo",
+    "tempo",
+    "maestro e allievi"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "280": {
+   "lettura": "Una scultura in bronzo di un ragazzo seduto su un tronco, chino su un piede, in una galleria. Un gesto quotidiano e intimo eternato: la grazia di un momento qualunque.",
+   "tag": [
+    "giovinezza",
+    "corpo",
+    "gesto quotidiano",
+    "statua",
+    "museo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "281": {
+   "lettura": "Una statua classica di donna drappeggiata, in cima a una scala di marmo, colpita dalla luce. La custode silenziosa del passaggio: l'antico che accoglie chi sale.",
+   "tag": [
+    "antico e contemporaneo",
+    "accoglienza",
+    "statua",
+    "soglia",
+    "luce"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "282": {
+   "lettura": "Una lapide «l'Accademia ricorda i figli gloriosamente caduti nella Grande Guerra», con nomi incisi, e davanti un leone di bronzo. La memoria del lutto collettivo, i nomi che restano: il luogo ricorda chi non è tornato.",
+   "tag": [
+    "memoria",
+    "lutto",
+    "nomi",
+    "istituzione",
+    "storia"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "283": {
+   "lettura": "Due quadri: «Napoli» scritto con un fiore arcobaleno, e lettere colorate cadute su un deserto con farfalle. La città raccontata come sogno, come parola che si scompone e rinasce.",
+   "tag": [
+    "identità napoletana",
+    "sogno",
+    "parole smontate",
+    "colore"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "284": {
+   "lettura": "Una porta d'ufficio a vetri smerigliati, con un attaccapanni e una giacca appena visibili dietro. La presenza intuita, filtrata: qualcuno c'è, ma non si vede.",
+   "tag": [
+    "soglia",
+    "presenza",
+    "mistero",
+    "istituzione"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "285": {
+   "lettura": "Le porte di un ascensore coperte di adesivi e tag, incastrate tra blocchi di pietra antica. Il passaggio meccanico e moderno riempito di segni: il quotidiano che si deposita sulla storia.",
+   "tag": [
+    "segni lasciati",
+    "antico e contemporaneo",
+    "passaggio",
+    "voci anonime"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "286": {
+   "lettura": "Un cartello nero con la scritta «LOOP», con riflessi sul vetro. Il ritorno ciclico, la ripetizione: un luogo dove le cose tornano, si ripetono, ricominciano.",
+   "tag": [
+    "ripetizione",
+    "tempo",
+    "parole scritte",
+    "mistero"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "287": {
+   "lettura": "Una scultura in marmo di un uomo seduto su una roccia che lavora con un attrezzo, sul pianerottolo di una scala con finestre. Il lavoro umile reso eterno: la fatica come soggetto d'arte.",
+   "tag": [
+    "fatica",
+    "lavoro",
+    "statua",
+    "antico e contemporaneo",
+    "gesto quotidiano"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "288": {
+   "lettura": "Un cubo rosso in un angolo di marmo, con un cartello che avverte che è una scultura; dalla porta aperta si intravede la sala con le luci e le bacinelle. L'arte che può sembrare un oggetto qualunque, e il mondo dell'installazione che si affaccia.",
+   "tag": [
+    "arte ovunque",
+    "ironia",
+    "soglia",
+    "regole condivise"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "289": {
+   "lettura": "Un pianerottolo di marmo con una porta d'ascensore scura in fondo e una grande finestra a grata sulla destra. Uno spazio di attesa e di passaggio, silenzioso, illuminato dalla luce di fuori.",
+   "tag": [
+    "passaggio",
+    "attesa",
+    "soglia",
+    "vuoto",
+    "luce"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "290": {
+   "lettura": "Una parete viola con quattro grandi studi di nudo maschile e un busto di marmo accanto. Gli esercizi dei giovani artisti di un tempo: il corpo studiato, misurato, imparato.",
+   "tag": [
+    "corpo",
+    "museo",
+    "passare il sapere",
+    "antico e contemporaneo",
+    "maestro e allievi"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "291": {
+   "lettura": "Un quadro di un uomo che dorme raggomitolato davanti a rovine al tramonto, sotto la scritta «premi, pensionati, esercizi dall'antico». La stanchezza di un viandante e la storia che lo sovrasta: la malinconia del passato.",
+   "tag": [
+    "malinconia",
+    "stanchezza",
+    "museo",
+    "antico e contemporaneo",
+    "rovina"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "292": {
+   "lettura": "Una statua di marmo bianco di una giovane donna seduta con una rosa, davanti a un armadio scuro. La grazia e la delicatezza scolpite: un corpo giovane che contempla un fiore.",
+   "tag": [
+    "giovinezza",
+    "corpo",
+    "bellezza",
+    "statua",
+    "museo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "293": {
+   "lettura": "Un busto in bronzo di un uomo con il volto teso, la bocca aperta, le braccia dietro la schiena. Un grido trattenuto, un'emozione forte fissata nel metallo: la fatica e l'angoscia di un corpo.",
+   "tag": [
+    "angoscia",
+    "corpo",
+    "statua",
+    "museo",
+    "emozione"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "294": {
+   "lettura": "Una testa in gesso di donna che appoggia il viso alla mano, pensosa, con i segni della lavorazione visibili. Il pensiero, l'attesa, la malinconia di un volto sospeso.",
+   "tag": [
+    "malinconia",
+    "pensiero",
+    "ritratto",
+    "statua",
+    "museo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "295": {
+   "lettura": "Una scultura astratta di forme curve in nero, giallo e rosso che si incastrano. La gioia della forma pura, del colore e del gioco geometrico: l'arte che non rappresenta ma inventa.",
+   "tag": [
+    "colore",
+    "gioco",
+    "geometria",
+    "museo",
+    "forma"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "296": {
+   "lettura": "Un'opera tonda, quasi un oblò, con un paesaggio di figure, oggetti e colori in rilievo dentro una cornice dorata. Un mondo intero visto attraverso una finestra rotonda: un sogno in miniatura.",
+   "tag": [
+    "sogno",
+    "guardare attraverso",
+    "museo",
+    "miniatura",
+    "colore"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "297": {
+   "lettura": "«Arte/Laboratorio, 1960 – anni duemila»: un trittico apribile di collage colorati su una parete bianca. L'arte come laboratorio, come scatola da aprire: la storia recente dell'Accademia.",
+   "tag": [
+    "arte ovunque",
+    "museo",
+    "laboratorio",
+    "sperimentare"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "298": {
+   "lettura": "Una griglia di piccoli disegni astratti a china in cornici nere, lungo una parete. Il gesto ripetuto, la ricerca che si fa serie: tanti tentativi diversi della stessa idea.",
+   "tag": [
+    "ripetizione",
+    "ricerca",
+    "museo",
+    "segno",
+    "sperimentare"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "299": {
+   "lettura": "Otto fotografie quasi uguali di una piazza bianca con una figura in rosso che si muove. La sequenza come racconto: il tempo scomposto in istanti, il movimento fermato.",
+   "tag": [
+    "ripetizione",
+    "tempo",
+    "movimento",
+    "museo",
+    "trattenere il momento"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "300": {
+   "lettura": "Una forma nera allungata come un'anfora sospesa a due fili, con la sua ombra sul muro. Un oggetto antico e misterioso che fluttua: il peso reso leggero.",
+   "tag": [
+    "sospensione",
+    "mistero",
+    "museo",
+    "ombra",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "301": {
+   "lettura": "Un collage di carte, spartiti, scritture fitte e una foglia bianca, con colori caldi. Un archivio poetico di segni e parole: la memoria fatta di frammenti e di cura.",
+   "tag": [
+    "memoria",
+    "parole scritte",
+    "collage",
+    "museo",
+    "cura"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "302": {
+   "lettura": "Un mucchio di legni di mare levigati, dipinti di colori vivi, ammassati. La materia trovata e trasfigurata: lo scarto che ritorna con colori nuovi.",
+   "tag": [
+    "riuso",
+    "colore",
+    "trasfigurare il quotidiano",
+    "museo"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "303": {
+   "lettura": "Un ritratto di donna con un velo in cornice dorata, sotto la scritta «Richiami d'Oriente», visto di sbieco. Il fascino del lontano e dell'altrove nella pittura di un tempo.",
+   "tag": [
+    "altrove",
+    "ritratto",
+    "museo",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "304": {
+   "lettura": "Una parete scura con la scritta «Il buio e la luce». Il titolo di una sezione di museo che è anche una sintesi: le cose esistono nel contrasto, nell'alternanza.",
+   "tag": [
+    "luce",
+    "buio",
+    "parole scritte",
+    "museo",
+    "contrasto"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "305": {
+   "lettura": "Un ritratto barocco di una giovane donna con un cesto di frutta sulla testa, in una cornice dorata, sotto «l'alba del paesaggio». L'abbondanza e la sensualità della pittura antica: la bellezza come dono della terra.",
+   "tag": [
+    "bellezza",
+    "abbondanza",
+    "museo",
+    "antico e contemporaneo",
+    "ritratto"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "306": {
+   "lettura": "Una parete di piccoli paesaggi in cornici dorate sotto la scritta «La Scuola di Posillipo e il paesaggio a Napoli». La città e il suo golfo dipinti con amore: Napoli come paesaggio dell'anima.",
+   "tag": [
+    "identità napoletana",
+    "paesaggio",
+    "museo",
+    "memoria"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "307": {
+   "lettura": "Una grande finestra ad arco in una sala di museo buia, con la luce grigia della pioggia e un cartello di uscita. Il fuori che entra appena: la luce del giorno che filtra nel silenzio delle sale.",
+   "tag": [
+    "dentro e fuori",
+    "finestra",
+    "luce",
+    "silenzio",
+    "museo"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "308": {
+   "lettura": "Una panca antica di legno sotto una finestra coperta da una tenda bianca, su una parete verde petrolio. Un posto per fermarsi a guardare, vuoto: l'invito a sedersi e restare.",
+   "tag": [
+    "riposo",
+    "attesa",
+    "vuoto",
+    "museo",
+    "silenzio"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "309": {
+   "lettura": "Una terrazza di cotto bagnata dalla pioggia, lungo le facciate rosa e gialle scrostate dell'Accademia, con una porta-finestra ad arco riflessa. La bellezza consumata del luogo che si specchia nell'acqua.",
+   "tag": [
+    "pioggia",
+    "antico e contemporaneo",
+    "ferita e cura",
+    "riflesso",
+    "dentro e fuori"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "310": {
+   "lettura": "La stessa terrazza bagnata, con grandi condotti metallici argentati e una sedia sola, sotto i palazzi antichi. Il nuovo impianto e l'architettura storica sotto lo stesso cielo grigio.",
+   "tag": [
+    "antico e contemporaneo",
+    "pioggia",
+    "solitudine",
+    "dentro e fuori",
+    "tecnologia"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "311": {
+   "lettura": "Una scalinata di marmo grigio con una balaustra scolpita, vista dal basso. La grandezza solenne del luogo, consumata dai passi di generazioni di studenti.",
+   "tag": [
+    "passaggio",
+    "antico e contemporaneo",
+    "consumo",
+    "salire"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "312": {
+   "lettura": "La porta a vetri della biblioteca con il cartello «si prega di chiudere la porta, grazie», e dentro una stanza calda. Il sapere custodito dietro un vetro, accessibile ma protetto.",
+   "tag": [
+    "passare il sapere",
+    "custodire",
+    "soglia",
+    "regole condivise",
+    "biblioteca"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "313": {
+   "lettura": "La biblioteca vista ancora dalla porta, con la luce calda dentro e il buio fuori. Un rifugio silenzioso dove si studia, mentre il resto del palazzo è al buio.",
+   "tag": [
+    "biblioteca",
+    "rifugio",
+    "luce",
+    "soglia",
+    "passare il sapere"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "314": {
+   "lettura": "Un corridoio lunghissimo con volte a vela, finestre e una figura lontana in fondo. La prospettiva infinita del palazzo: il tempo e la distanza resi spazio.",
+   "tag": [
+    "passaggio",
+    "profondità",
+    "antico e contemporaneo",
+    "solitudine",
+    "attraversare"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "315": {
+   "lettura": "Da una porta buia, uno spazio bianco con un disegno a grandezza d'uomo sul muro e il cartello di uscita. Una figura disegnata che sembra accogliere chi entra: la presenza dell'arte anche nei bagni.",
+   "tag": [
+    "soglia",
+    "arte ovunque",
+    "ritratto",
+    "buio"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "316": {
+   "lettura": "Un cortile con un grande albero, tende bianche montate per un evento, finestre illuminate e pavimento bagnato. La vita che si prepara sotto la pioggia, all'ombra di un albero antico.",
+   "tag": [
+    "natura",
+    "pioggia",
+    "preparare",
+    "dentro e fuori",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "317": {
+   "lettura": "Le radici enormi e intrecciate di un albero nel giardino, con un nastro bianco e rosso che delimita. La forza della natura che rompe il recinto: radici che tengono insieme il luogo.",
+   "tag": [
+    "natura",
+    "radici",
+    "ferita e cura",
+    "tempo"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "318": {
+   "lettura": "Un giardino rigoglioso di alberi e palme davanti alla facciata rosa del palazzo. Il verde che addolcisce la pietra: un respiro di natura nel cuore della città.",
+   "tag": [
+    "natura",
+    "rifugio",
+    "antico e contemporaneo",
+    "dentro e fuori"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "319": {
+   "lettura": "La facciata interna del palazzo vista dall'alto: finestre, cornici, tubi e foglie secche sui davanzali. I dettagli dimenticati di un edificio che invecchia.",
+   "tag": [
+    "antico e contemporaneo",
+    "consumo",
+    "angoli dimenticati",
+    "struttura"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "320": {
+   "lettura": "La porta dell'ufficio personale con un divieto d'accesso e un foglio scritto a mano: «elogia in pubblico e correggi in privato, un leader corregge senza offendere e insegna senza umiliare». Una regola di umanità attaccata alla porta della burocrazia.",
+   "tag": [
+    "regole condivise",
+    "istituzione",
+    "educare",
+    "rispetto",
+    "parole scritte"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "321": {
+   "lettura": "Un telo di alluminio ammaccato da colpi, appeso a un telaio di legno, con la scritta «#puntiamoaldisastro», davanti a una carta da parati gialla. Una protesta ironica e amara: i colpi come segno di rabbia, il disastro come bersaglio.",
+   "tag": [
+    "protesta",
+    "ferita e cura",
+    "ironia",
+    "voce collettiva"
+   ],
+   "nucleo": "Noi"
+  },
+  "322": {
+   "lettura": "Una grande palma nel cortile interno, vista dall'alto, tra le facciate rosa e gialle del palazzo. Un pezzo di Mediterraneo dentro le mura: la natura che cresce nel cuore della storia.",
+   "tag": [
+    "natura",
+    "identità napoletana",
+    "dentro e fuori",
+    "rifugio"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "323": {
+   "lettura": "Un cartello «vietato fumare» su un muro bianco, con l'ultima lettera tagliata in modo da leggere «fumarmi». Un piccolo gioco di parole nato per caso: anche le regole possono far sorridere.",
+   "tag": [
+    "regole condivise",
+    "ironia",
+    "parole scritte",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "324": {
+   "lettura": "Le ante di una porta coperte di scritte, cuori, gatti disegnati e dediche: «Guerry prof del cuore», «love you Guerrizio», «l'Accademia senza la Guerrizio non ha senso». Una dichiarazione d'amore collettiva per un'insegnante: la gratitudine scritta sui muri.",
+   "tag": [
+    "gratitudine",
+    "maestro e allievi",
+    "segni lasciati",
+    "atto d'amore",
+    "memoria condivisa"
+   ],
+   "nucleo": "Noi"
+  },
+  "325": {
+   "lettura": "Un lucchetto chiuso sotto un banco, con un adesivo e un graffio. Qualcosa da proteggere, un piccolo segreto: la custodia di ciò che è proprio in uno spazio di tutti.",
+   "tag": [
+    "custodire",
+    "proteggere",
+    "oggetti personali",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "326": {
+   "lettura": "La piantina di evacuazione dell'edificio con «voi siete qui», attraversata da un tubo di ponteggio. Orientarsi nel luogo: la mappa ufficiale e il cantiere che la taglia.",
+   "tag": [
+    "orientarsi",
+    "regole condivise",
+    "istituzione",
+    "struttura"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "327": {
+   "lettura": "Dal buio di una porta, il corridoio ad archi con muri scrostati e ragazzi che camminano. Guardare la vita che passa da un angolo in ombra.",
+   "tag": [
+    "passaggio",
+    "guardare attraverso",
+    "comunità",
+    "profondità",
+    "ferita e cura"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "328": {
+   "lettura": "Il cartello «toilette» con un QR code e sotto un foglio «donne» attaccato con lo scotch. La segnaletica arrangiata: l'istituzione che si aggiusta con quello che ha.",
+   "tag": [
+    "regole condivise",
+    "fare con poco",
+    "orientarsi",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "329": {
+   "lettura": "La porta del bagno delle donne, marrone, con un foglio «wc donne» e impronte di mani bianche e blu dipinte. Mani che hanno lasciato il segno: la presenza di chi è passato, impressa come una firma.",
+   "tag": [
+    "segni lasciati",
+    "mani",
+    "presenza",
+    "firmare",
+    "voci anonime"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "330": {
+   "lettura": "Una porta metallica grigia piena di scarabocchi in fondo a una stanza vuota. Un'uscita anonima che porta i segni di chi l'ha attraversata.",
+   "tag": [
+    "segni lasciati",
+    "soglia",
+    "vuoto",
+    "voci anonime"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "331": {
+   "lettura": "Un bassorilievo classico con figure in toga sopra la teca del defibrillatore e la scritta «qui il tuo cuore è al sicuro». Il cuore antico della storia e il cuore vivo da salvare, uno sopra l'altro.",
+   "tag": [
+    "antico e contemporaneo",
+    "cura",
+    "proteggere",
+    "corpo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "332": {
+   "lettura": "Una cassetta elettrica coperta di adesivi, con un volantino giallo «cine club» e un QR code per il gruppo WhatsApp. La comunità che si organizza da sola: un invito a guardare film insieme.",
+   "tag": [
+    "comunità",
+    "invito",
+    "segni lasciati",
+    "quotidiano condiviso"
+   ],
+   "nucleo": "Noi"
+  },
+  "333": {
+   "lettura": "Disegni a matita sul muro della scala: figure femminili con teste di gatto, nude, con scritte. Un immaginario libero e un po' provocatorio, lasciato su un muro di passaggio.",
+   "tag": [
+    "corpo",
+    "segni lasciati",
+    "arte ovunque",
+    "tracce sui muri",
+    "voci anonime"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "334": {
+   "lettura": "Il muro con le donne-gatto disegnate e la frase «ricordiamolo, sono più umane le mie aliene che gli umani stessi». Un manifesto ironico sull'umanità, affidato a figure strane e fragili.",
+   "tag": [
+    "noi umani",
+    "corpo",
+    "parole scritte",
+    "segni lasciati",
+    "arte ovunque"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "335": {
+   "lettura": "Lo stesso muro, inquadrato di nuovo, con le due figure femminili e le scritte. Lo sguardo che torna su un'opera anonima per non perderla.",
+   "tag": [
+    "corpo",
+    "segni lasciati",
+    "trattenere il momento",
+    "arte ovunque"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "336": {
+   "lettura": "Il volto disegnato a china sulla scala con la A rossa sovrapposta e una maschera verde accanto. Il dialogo tra mani diverse sullo stesso muro: l'opera che si trasforma.",
+   "tag": [
+    "segni lasciati",
+    "ritratto",
+    "palinsesto",
+    "contesa",
+    "tracce sui muri"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "337": {
+   "lettura": "Un passaggio ad arco in pietra, buio, che si apre su una scala e un muro bianco con una A rossa. Il cammino quotidiano attraverso le viscere del palazzo, verso la luce.",
+   "tag": [
+    "passaggio",
+    "buio",
+    "soglia",
+    "segni lasciati"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "338": {
+   "lettura": "Un atrio con volte, una balconata con ringhiera e, sotto l'arco, il muro dei graffiti con il mostro e «mazziato». La solennità dell'architettura e la voce irriverente degli studenti, nello stesso sguardo.",
+   "tag": [
+    "antico e contemporaneo",
+    "segni lasciati",
+    "voci anonime",
+    "contesa"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "339": {
+   "lettura": "Una poesia a matita sul muro: «ciò che tu fai di queste notti… vorrei avere notti di vento… mi mancano le notti vicine», firmata, sopra la locandina «Alter ego». La nostalgia di qualcuno, affidata al muro come a un diario.",
+   "tag": [
+    "nostalgia",
+    "poesia",
+    "parole scritte",
+    "amore",
+    "voci anonime"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "340": {
+   "lettura": "Una porta a vetri ad arco coperta di tag, tra colonne di pietra e una scala, di sera. La soglia dell'edificio antico segnata dai graffiti: la storia che si lascia scrivere addosso.",
+   "tag": [
+    "soglia",
+    "antico e contemporaneo",
+    "segni lasciati",
+    "buio"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "341": {
+   "lettura": "Una terrazza bagnata con un lungo muro pieno di scritte in molte lingue, anche in arabo e in inglese, e ragazzi che camminano; sopra, i tetti di Napoli e un cielo di pioggia. Un muro di voci da tutto il mondo che guarda la città.",
+   "tag": [
+    "tante lingue",
+    "voci anonime",
+    "dentro e fuori",
+    "pioggia",
+    "identità napoletana"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "342": {
+   "lettura": "Un volto di ragazza disegnato a carboncino, con i capelli scompigliati e lo sguardo vuoto, su un muro pieno di altri segni. Un autoritratto, forse, di qualcuno che si sente fragile.",
+   "tag": [
+    "ritratto",
+    "fragilità",
+    "segni lasciati",
+    "malinconia",
+    "arte ovunque"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "343": {
+   "lettura": "Un angolo di terrazza con sedie scolastiche vecchie, muri coperti di scritte e la cupola di una chiesa sullo sfondo. Un luogo di pausa all'aperto, scelto e abitato dagli studenti.",
+   "tag": [
+    "riposo",
+    "comunità",
+    "segni lasciati",
+    "dentro e fuori",
+    "rifugio"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "344": {
+   "lettura": "Il portone antico con i coniglietti disegnati a pennarello bianco, visto di nuovo. La giovinezza che gioca sulla storia, che lascia la sua firma leggera.",
+   "tag": [
+    "segni lasciati",
+    "gioco",
+    "antico e contemporaneo",
+    "voci anonime"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "345": {
+   "lettura": "Un disegno a matita di sei bambini che si tengono per mano sotto uno striscione «Crista lo dite co», con l'ombra di chi fotografa. Un gruppo di amici ritratto come un piccolo corteo: l'amicizia che si fa bandiera.",
+   "tag": [
+    "amicizia",
+    "comunità",
+    "segni lasciati",
+    "ombra",
+    "voce collettiva"
+   ],
+   "nucleo": "Noi"
+  },
+  "346": {
+   "lettura": "Un volto di ragazza dai capelli a caschetto con un contorno verde come pelliccia, e accanto Squiddi dei cartoni animati. Il ritratto delicato e il personaggio pop sullo stesso muro: tenerezza e ironia.",
+   "tag": [
+    "ritratto",
+    "ironia",
+    "segni lasciati",
+    "arte ovunque"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "347": {
+   "lettura": "Una vetrata sopra la balaustra di una scala coperta di tag, adesivi, locandine e la scritta «I like this game». Una bacheca collettiva e caotica: chi passa lascia un segno, una notizia, un invito.",
+   "tag": [
+    "segni lasciati",
+    "voci anonime",
+    "palinsesto",
+    "comunità",
+    "gioco"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "348": {
+   "lettura": "La locandina del «Premio Ruaviva» con un volto dipinto dalla bocca spalancata e gli occhiali, accanto a «Lab cinema». L'arte che chiama a raccolta: concorsi, inviti, opportunità attaccate al vetro.",
+   "tag": [
+    "invito",
+    "ritratto",
+    "futuro",
+    "comunità"
+   ],
+   "nucleo": "Noi"
+  },
+  "349": {
+   "lettura": "Una stanza con pannelli blu davanti a una finestra a mezzaluna, una sedia da ufficio vuota e un pavimento di esagoni. Un luogo di lavoro silenzioso, in controluce, momentaneamente abbandonato.",
+   "tag": [
+    "vuoto",
+    "silenzio",
+    "assenza",
+    "luce",
+    "istituzione"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "350": {
+   "lettura": "Una grande finestra ad arco vista dalla balconata, sul cortile con il giardino e le facciate. Il palazzo che si guarda da dentro: la geometria della finestra che incornicia la vita.",
+   "tag": [
+    "dentro e fuori",
+    "finestra",
+    "guardare fuori",
+    "natura",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "351": {
+   "lettura": "Armadi neri alti come monoliti in una grande sala vuota, con una sedia da ufficio. Un paesaggio di oggetti nuovi e muti, in attesa di essere riempiti.",
+   "tag": [
+    "vuoto",
+    "attesa",
+    "struttura",
+    "istituzione",
+    "mistero"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "352": {
+   "lettura": "La stessa sala in penombra, con gli armadi neri e le finestre ad arco in fondo. Uno spazio che sembra un'installazione, senza persone: il vuoto che si fa scultura.",
+   "tag": [
+    "vuoto",
+    "buio",
+    "silenzio",
+    "mistero",
+    "assenza"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "353": {
+   "lettura": "Dal buio, attraverso una ringhiera e una sedia, il lungo corridoio con le volte scrostate illuminato. Guardare il passaggio da un nascondiglio: chi osserva senza essere visto.",
+   "tag": [
+    "guardare attraverso",
+    "buio",
+    "passaggio",
+    "ferita e cura",
+    "profondità"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "354": {
+   "lettura": "Una sala con archi e luci al neon, banchi spogli in fila, un pavimento di cotto. Uno spazio di lavoro pronto ma deserto: la scuola prima che arrivino gli studenti.",
+   "tag": [
+    "vuoto",
+    "attesa",
+    "aula",
+    "assenza"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "355": {
+   "lettura": "Una porta antipanico aperta nella penombra, sotto la luce verde dell'uscita. Il passaggio notturno, quando il luogo si svuota e restano solo i segnali.",
+   "tag": [
+    "soglia",
+    "buio",
+    "uscita",
+    "silenzio"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "356": {
+   "lettura": "Solo la luce verde dell'uscita di emergenza, nel buio quasi totale. L'unico segno rimasto acceso: il luogo che dorme, ma indica comunque una via.",
+   "tag": [
+    "buio",
+    "uscita",
+    "silenzio",
+    "vuoto"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "357": {
+   "lettura": "Un angolo in penombra con un quadro elettrico, un citofono, un estintore, il simbolo dell'idrante e una vecchia bacheca. Gli strumenti della sicurezza che vegliano in silenzio.",
+   "tag": [
+    "regole condivise",
+    "proteggere",
+    "angoli dimenticati",
+    "buio"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "358": {
+   "lettura": "Una teca con libri d'artista: «I paesaggi dell'amore», un libretto «aaa ah!», un leporello con figure floreali. La poesia fatta oggetto, custodita sotto vetro.",
+   "tag": [
+    "libri",
+    "amore",
+    "custodire",
+    "poesia",
+    "museo"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "359": {
+   "lettura": "Una teca con una fila di piccoli taccuini e cartoncini disegnati, in cui si riflettono le finestre e gli alberi. L'opera fragile protetta dal vetro, mentre il fuori ci si specchia sopra.",
+   "tag": [
+    "custodire",
+    "fragilità",
+    "riflesso",
+    "museo",
+    "libri"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "360": {
+   "lettura": "Una teca aperta con un libro bianco, una scatola nera, una piccola foto e il cartello «LOOP». Oggetti silenziosi che raccontano una ricerca: la memoria raccolta in pochi segni.",
+   "tag": [
+    "custodire",
+    "ripetizione",
+    "museo",
+    "memoria"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "361": {
+   "lettura": "Una teca con libri d'artista bianchi e qualche segno blu, con il riflesso di chi fotografa. Lo sguardo di chi guarda si sovrappone all'opera: la memoria che si specchia.",
+   "tag": [
+    "riflesso",
+    "custodire",
+    "libri",
+    "autoritratto",
+    "museo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "362": {
+   "lettura": "Un soffitto affrescato con un medaglione centrale di figure celesti, angeli e cornici dorate rosa e verdi, con un'impalcatura che lo sfiora. La bellezza antica in restauro: il cielo dipinto che viene curato.",
+   "tag": [
+    "antico e contemporaneo",
+    "sacro e profano",
+    "guardare in su",
+    "ferita e cura",
+    "meraviglia"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "363": {
+   "lettura": "Una fuga di archi bianchi in penombra, teche ai lati e una porta di legno in fondo. Il museo come sequenza di soglie: la storia da attraversare passo dopo passo.",
+   "tag": [
+    "passaggio",
+    "profondità",
+    "museo",
+    "silenzio",
+    "soglia"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "364": {
+   "lettura": "Il giardino del cortile dall'alto, con una grande palma e alberi fitti, sotto un cielo di pioggia, oltre una ringhiera. Il cuore verde e nascosto del palazzo, visto da un balcone.",
+   "tag": [
+    "natura",
+    "dentro e fuori",
+    "pioggia",
+    "rifugio",
+    "guardare fuori"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "365": {
+   "lettura": "Il cortile verde dall'alto con la palma, le aiuole e una piccola auto azzurra parcheggiata. La quiete della pioggia sul giardino: un'oasi protetta tra le mura.",
+   "tag": [
+    "natura",
+    "rifugio",
+    "pioggia",
+    "dentro e fuori"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "366": {
+   "lettura": "Una porta dentro una porta: una cornice scura che si apre su un corridoio corto e un'altra porta chiusa, sotto il cartello dell'uscita. Il gioco delle soglie, l'una dentro l'altra.",
+   "tag": [
+    "soglia",
+    "passaggio",
+    "guardare attraverso",
+    "profondità"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "367": {
+   "lettura": "Una scalinata di pietra consumata che sale verso un cancello di ferro aperto e un muro con la scritta «Dirty Paper» e altri graffiti. La salita verso uno spazio vissuto dagli studenti: l'antico portale che si apre sui segni di oggi.",
+   "tag": [
+    "passaggio",
+    "segni lasciati",
+    "antico e contemporaneo",
+    "salire",
+    "soglia"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "368": {
+   "lettura": "La lunga terrazza bagnata con i muri coperti di scritte, una scopa appoggiata e una sedia nera vuota, sotto il cielo grigio. Il luogo dove si viene a stare all'aperto, ora vuoto per la pioggia.",
+   "tag": [
+    "pioggia",
+    "assenza",
+    "segni lasciati",
+    "dentro e fuori",
+    "solitudine"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "369": {
+   "lettura": "Un'impalcatura in un corridoio scuro, con una porta in fondo, scaffali vuoti e un sacco nero. Il luogo in trasformazione, tra un lavoro e l'altro: un cantiere silenzioso.",
+   "tag": [
+    "preparare",
+    "struttura",
+    "buio",
+    "vuoto",
+    "cantiere"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "370": {
+   "lettura": "Una tromba di scale vista dall'alto, con le rampe che scendono a spirale nel buio. Una vertigine verticale: il palazzo come pozzo profondo.",
+   "tag": [
+    "vertigine",
+    "profondità",
+    "passaggio",
+    "buio"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "371": {
+   "lettura": "Una grande vetrata a grata sulla scala, con il palazzo giallo di fronte sotto la pioggia. Salendo, la città si fa vicina: il dentro e il fuori separati solo da un vetro.",
+   "tag": [
+    "dentro e fuori",
+    "finestra",
+    "pioggia",
+    "identità napoletana",
+    "passaggio"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "372": {
+   "lettura": "Un mucchio di manichini neri accatastati su un materasso, con braccia e gambe che sporgono. Corpi finti ammassati e abbandonati: un'immagine inquietante e teatrale, quasi una fossa di figure.",
+   "tag": [
+    "corpo",
+    "inquietudine",
+    "materia in attesa",
+    "accumulo",
+    "mistero"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "373": {
+   "lettura": "In un angolo buio, un busto di manichino rosso accanto a una foto in bianco e nero di un artigiano, e un grande armadio nero. Il corpo vuoto e il ritratto del lavoro: la memoria del mestiere.",
+   "tag": [
+    "corpo",
+    "ritratto",
+    "lavoro",
+    "memoria",
+    "buio"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "374": {
+   "lettura": "Una piccola cupola affrescata con angeli e decorazioni, scura e consumata, vista da sotto. Un cielo antico in miniatura, nascosto, che il tempo ha annerito.",
+   "tag": [
+    "guardare in su",
+    "antico e contemporaneo",
+    "sacro e profano",
+    "consumo",
+    "cielo artificiale"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "375": {
+   "lettura": "Due ragazzi sorridenti che si fotografano in uno specchio del bagno. La complicità di un selfie in un luogo qualunque: l'amicizia che rende memorabile ogni angolo.",
+   "tag": [
+    "amicizia",
+    "autoritratto",
+    "complicità",
+    "gioia",
+    "specchio"
+   ],
+   "nucleo": "Noi"
+  },
+  "376": {
+   "lettura": "Una nicchia profonda e scura, completamente coperta di graffiti e disegni. Un piccolo santuario di segni: il luogo nascosto dove tutti hanno lasciato qualcosa.",
+   "tag": [
+    "segni lasciati",
+    "voci anonime",
+    "palinsesto",
+    "buio",
+    "rifugio"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "377": {
+   "lettura": "Un angolo con un orologio a pendolo blu a forma di torre, un sole e una luna dipinti, una tela con colori fluidi e una sedia da ufficio. Il tempo e il cielo trasformati in oggetti di scena: un angolo che sembra una fiaba.",
+   "tag": [
+    "tempo",
+    "oggetti di scena",
+    "sogno",
+    "gioco",
+    "colore"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "378": {
+   "lettura": "Il lungo corridoio con le volte a vela visto da una porta aperta, con uno stendardo appeso in fondo. L'ingresso nella grande galleria della scuola: la promessa di un cammino.",
+   "tag": [
+    "passaggio",
+    "profondità",
+    "soglia",
+    "antico e contemporaneo",
+    "attraversare"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "379": {
+   "lettura": "Alberi dai tronchi intrecciati nel cortile, con il palazzo rosa sullo sfondo e un davanzale bagnato in primo piano. La natura che abbraccia l'architettura, il giardino dopo la pioggia.",
+   "tag": [
+    "natura",
+    "pioggia",
+    "rifugio",
+    "dentro e fuori"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "380": {
+   "lettura": "Lo scalone monumentale con statue e balaustre, attraversato da un lungo stendardo rosso con scritto «un futuro è possibile qui». Una promessa appesa nel cuore della storia: il futuro dentro l'antico.",
+   "tag": [
+    "futuro",
+    "antico e contemporaneo",
+    "voce collettiva",
+    "speranza",
+    "salire"
+   ],
+   "nucleo": "Noi"
+  },
+  "381": {
+   "lettura": "Un atrio di marmo con statue classiche, un portone scuro, una scala da lavoro e il dorso di una scultura in primo piano. Le statue come abitanti silenziosi del luogo, tra cui si muove il lavoro di oggi.",
+   "tag": [
+    "antico e contemporaneo",
+    "statua",
+    "accoglienza",
+    "corpo",
+    "soglia"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "382": {
+   "lettura": "Lo scalone con una copia del David e un lungo stendardo rosso pieno di parole: ascolta, guardi, sogni, balliamo, ridiamo, sbagliamo, uah, curi, sei vivo, leggi, viaggi. Il vocabolario di una comunità che si arrampica lungo la storia.",
+   "tag": [
+    "voce collettiva",
+    "antico e contemporaneo",
+    "sogno",
+    "emozione",
+    "corpo"
+   ],
+   "nucleo": "Noi"
+  },
+  "383": {
+   "lettura": "Un'ampia porta ad arco con vetri che si apre su una sala illuminata, alla fine di una scala di marmo, con un vecchio torchio a destra. L'ingresso in un laboratorio, tra solennità e mestiere.",
+   "tag": [
+    "soglia",
+    "passaggio",
+    "fare con le mani",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "384": {
+   "lettura": "Il giardino interno con palme e cespugli davanti alla facciata del palazzo, con foglie gialle a terra. La quiete dell'autunno nel cortile: la natura come pausa.",
+   "tag": [
+    "natura",
+    "rifugio",
+    "quiete",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "385": {
+   "lettura": "Una mano che posa fogli gialli sotto il rullo di un torchio da stampa, con una finestra ad arco sullo sfondo. Il gesto preciso della stampa d'arte: la mano che prepara un'immagine da moltiplicare.",
+   "tag": [
+    "fare con le mani",
+    "stampa",
+    "gesto",
+    "passare il sapere"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "386": {
+   "lettura": "Mani che tirano fuori da una rastrelliera stampe di un volto femminile dai capelli neri e fluenti. L'immagine che nasce, uguale e diversa ogni volta: il miracolo della riproduzione fatta a mano.",
+   "tag": [
+    "stampa",
+    "ripetizione",
+    "fare con le mani",
+    "ritratto"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "387": {
+   "lettura": "Una mano in guanto che dipinge con un pennello lungo fiori e cerchi su un pavimento di pastelli azzurri e gialli. L'opera fatta a terra, in ginocchio: la cura del dettaglio dentro un grande disegno.",
+   "tag": [
+    "fare con le mani",
+    "cura",
+    "gesto",
+    "colore"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "388": {
+   "lettura": "Una galleria di gessi classici sotto archi blu: statue di donne, rilievi, corpi immobili in fila. Il museo dei modelli, dove generazioni di studenti hanno imparato il corpo.",
+   "tag": [
+    "antico e contemporaneo",
+    "statua",
+    "passare il sapere",
+    "corpo",
+    "museo"
+   ],
+   "nucleo": "La storia che guarda"
+  },
+  "389": {
+   "lettura": "Un laboratorio di scultura con un lungo tavolo coperto di polvere, camici appesi, un quaderno aperto e una grande finestra ad arco. La quiete prima del lavoro, la luce che entra su un tavolo pieno di tracce.",
+   "tag": [
+    "fare con le mani",
+    "officina",
+    "attesa",
+    "luce",
+    "tracce"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "390": {
+   "lettura": "Un uomo al lavoro su un grande disco in un laboratorio con volte e finestre ad arco, tra tavoli e quadri colorati. La concentrazione solitaria del mestiere, nella grandezza dello spazio antico.",
+   "tag": [
+    "fare con le mani",
+    "concentrazione",
+    "officina",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "391": {
+   "lettura": "Un angolo di laboratorio pieno di secchi, un trapano, frammenti di gesso e un lavandino, con il numero 5 sul pilastro. Il disordine vivo del cantiere scultoreo: tutto è materia in trasformazione.",
+   "tag": [
+    "disordine fertile",
+    "materia in attesa",
+    "fare con le mani",
+    "officina"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "392": {
+   "lettura": "Sculture bianche a forma di tubi contorti ricoperti di bolle, accanto a un pannello rosso con disegni, e il numero 6. Forme strane e organiche che sembrano crescere: l'immaginazione che prende corpo.",
+   "tag": [
+    "sperimentare",
+    "forma",
+    "materia",
+    "fare con le mani",
+    "sogno"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "393": {
+   "lettura": "Un tavolo di scultura con teste di argilla, forme avvolte nella plastica, un disco con piccole sfere. Lavori a metà, coperti per non seccare: l'opera che aspetta di essere ripresa.",
+   "tag": [
+    "materia in attesa",
+    "fare con le mani",
+    "cura",
+    "proteggere"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "394": {
+   "lettura": "Una scultura di figure intrecciate in terracotta con una fiamma di resina gialla, davanti a un telo rosso. Corpi che si abbracciano e bruciano insieme: la passione resa materia.",
+   "tag": [
+    "amore",
+    "corpo",
+    "passione",
+    "forma",
+    "fare con le mani"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "395": {
+   "lettura": "Un armadio aperto pieno di attrezzi, barattoli, seghe e martelli in un laboratorio, con finestre a grata. Il tesoro di chi lavora con le mani, ordinato in modo personale.",
+   "tag": [
+    "attrezzi",
+    "custodire",
+    "fare con le mani",
+    "officina"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "396": {
+   "lettura": "Uno scaffale di sculture in ceramica, figure animali e forme bizzarre, sopra una vetrina di locandine di mostre. Il laboratorio che diventa vetrina: le opere che parlano tra loro.",
+   "tag": [
+    "forma",
+    "sperimentare",
+    "materia",
+    "museo",
+    "comunità"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "397": {
+   "lettura": "Un tavolo coperto di pietre grigie su un telo a quadri e una piccola scultura in terracotta. Il paesaggio della materia prima: la roccia e la forma accanto, il prima e il dopo.",
+   "tag": [
+    "materia in attesa",
+    "fare con le mani",
+    "forma",
+    "pazienza"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "398": {
+   "lettura": "Un ceppo di legno con un martello sopra, una grande forma nera appuntita, scaffali con sculture in terracotta e corpi avvolti nella carta. La bottega dello scultore come mondo pieno di presenze.",
+   "tag": [
+    "fare con le mani",
+    "attrezzi",
+    "forma",
+    "materia",
+    "officina"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "399": {
+   "lettura": "Un angolo di laboratorio con una scultura in bronzo di forme aggrovigliate, una figura appesa, una girandola colorata alla finestra. Il gioco e il lavoro, la leggerezza di una girandola tra pesi enormi.",
+   "tag": [
+    "forma",
+    "gioco",
+    "fare con le mani",
+    "sperimentare",
+    "leggerezza"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "400": {
+   "lettura": "Un telaio di legno con fili tesi su cui sono intrecciati frammenti di carta, foto e colori, come una mappa sfilacciata. Un tessuto di memorie, fragile e trasparente: i ricordi tenuti insieme da fili.",
+   "tag": [
+    "memoria",
+    "fili",
+    "fragilità",
+    "legami",
+    "fare con le mani"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "401": {
+   "lettura": "Un grande laboratorio di scultura con volte bianche, lunghi tavoli gialli e sculture appoggiate alle pareti. Uno spazio luminoso e pronto: la promessa del lavoro di molte mani.",
+   "tag": [
+    "officina",
+    "fare con le mani",
+    "luce",
+    "attesa",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "402": {
+   "lettura": "Un tavolo giallo con una ciotola di argilla grezza, scaffali bianchi con teste scolpite e una forma nera appesa. Le opere in crescita, i volti che si formano: il laboratorio come vivaio di figure.",
+   "tag": [
+    "fare con le mani",
+    "forma",
+    "materia in attesa",
+    "officina",
+    "ritratto"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "403": {
+   "lettura": "Sopra un armadietto, una fila di teste e busti: uno dai capelli rossi, uno di gesso, una figura con un serpente. Un piccolo pubblico di sculture che osserva chi lavora: la comunità delle opere.",
+   "tag": [
+    "ritratto",
+    "forma",
+    "presenza",
+    "ironia",
+    "officina"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "404": {
+   "lettura": "Un angolo di laboratorio pieno di sculture coperte da teli e plastica, cavalletti e materiali sparsi. Le opere in lavorazione protette, in attesa di essere svelate.",
+   "tag": [
+    "materia in attesa",
+    "proteggere",
+    "fare con le mani",
+    "disordine fertile"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "405": {
+   "lettura": "Pezzi degli scacchi in terracotta fatti a mano su un tavolo giallo, con dietro sculture e busti. Il gioco più antico rifatto con le proprie mani: imparare la forma giocando.",
+   "tag": [
+    "gioco",
+    "fare con le mani",
+    "forma",
+    "pazienza"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "406": {
+   "lettura": "Secchi pieni di frammenti di gesso rotto, accatastati in un angolo. I resti di tante prove, gli scarti delle forme: il tempo e l'errore raccolti in un secchio.",
+   "tag": [
+    "errore",
+    "scarto",
+    "consumo",
+    "materia",
+    "tracce"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "407": {
+   "lettura": "Un'aula buia piena di cavalletti di legno consumati, con finestre ad arco che danno luce. Una foresta di strumenti in attesa: l'aula di pittura vuota, pronta per i pittori.",
+   "tag": [
+    "aula",
+    "attesa",
+    "attrezzi",
+    "buio",
+    "luce"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "408": {
+   "lettura": "Lo scalone di marmo con le statue e lo stendardo rosso «un f…», visto dal basso. La salita monumentale verso il futuro scritto sui teli: l'antico che porta in alto.",
+   "tag": [
+    "salire",
+    "antico e contemporaneo",
+    "futuro",
+    "voce collettiva"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "409": {
+   "lettura": "Lo scalone visto dall'alto, con la balaustra in diagonale e lo stendardo rosso «quando». Una vertigine di marmo e una parola sospesa: la domanda sul tempo.",
+   "tag": [
+    "vertigine",
+    "tempo",
+    "passaggio",
+    "voce collettiva"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "410": {
+   "lettura": "Una carta da parati gialla strappata, con un grande vuoto bianco a forma quasi di figura umana, e una persona in ombra accanto. L'assenza che prende una forma: la ferita del muro che sembra un corpo.",
+   "tag": [
+    "assenza",
+    "ferita e cura",
+    "corpo",
+    "consumo",
+    "mistero"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "411": {
+   "lettura": "Il cortile interno visto dall'alto: grandi alberi, una palma, il giardino e la facciata ottocentesca nella pioggia. La grandezza calma del luogo, il suo cuore verde.",
+   "tag": [
+    "natura",
+    "dentro e fuori",
+    "pioggia",
+    "antico e contemporaneo",
+    "rifugio"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "412": {
+   "lettura": "Una sedia di plastica azzurra sola, accanto a un termosifone, su un pavimento di cotto. Una presenza minima, colorata, che aspetta qualcuno.",
+   "tag": [
+    "attesa",
+    "solitudine",
+    "assenza",
+    "quotidiano"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "413": {
+   "lettura": "Un ponteggio metallico in una stanza buia, sotto un soffitto affrescato appena visibile. Il cantiere che sale verso la storia: la cura del passato fatta di tubi e assi.",
+   "tag": [
+    "ferita e cura",
+    "struttura",
+    "antico e contemporaneo",
+    "buio",
+    "preparare"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "414": {
+   "lettura": "Una struttura di ferro con una ruota di colori come una girandola, accanto a una sedia nera, in una stanza bianca. Un oggetto giocoso e misterioso: il colore che gira, il gioco della percezione.",
+   "tag": [
+    "colore",
+    "gioco",
+    "forma",
+    "sperimentare"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "415": {
+   "lettura": "La stessa struttura con la ruota dei colori, vista più di fronte e con più luce. Lo sguardo che torna su un oggetto per capirlo meglio: la curiosità.",
+   "tag": [
+    "colore",
+    "gioco",
+    "sperimentare",
+    "trattenere il momento"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "416": {
+   "lettura": "Una cassa audio montata al muro sopra un quadro elettrico e il cartello del pericolo. Una voce che può arrivare da un momento all'altro, accanto alla corrente che la alimenta.",
+   "tag": [
+    "tecnologia",
+    "lavoro invisibile",
+    "angoli dimenticati",
+    "regole condivise"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "417": {
+   "lettura": "Un angolo vuoto con il pavimento a spina di pesce rattoppato e una porta scura del bagno con le impronte delle mani. Il passaggio quotidiano e consumato: il rattoppo come memoria del tempo.",
+   "tag": [
+    "consumo",
+    "ferita e cura",
+    "soglia",
+    "segni lasciati",
+    "vuoto"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "418": {
+   "lettura": "Uno stipite scuro accanto a un muro bianco con il cartello «vietato fumare», le scritte «081» e «reals» e l'intonaco staccato. Il prefisso di Napoli come firma: l'appartenenza scritta in tre numeri.",
+   "tag": [
+    "identità napoletana",
+    "segni lasciati",
+    "regole condivise",
+    "consumo"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "419": {
+   "lettura": "Il rettangolo di intonaco grezzo con graffi e i tre ganci sotto, visto per intero. Il vuoto lasciato da qualcosa che c'era: l'assenza che diventa disegno.",
+   "tag": [
+    "assenza",
+    "tracce sui muri",
+    "palinsesto",
+    "memoria"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "420": {
+   "lettura": "Una cassetta metallica aperta e consumata con scritte a matita, accanto al defibrillatore e sotto un bassorilievo. Un oggetto rotto che resta al suo posto, con i segni di chi l'ha toccato.",
+   "tag": [
+    "consumo",
+    "segni lasciati",
+    "angoli dimenticati",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "421": {
+   "lettura": "Un trabattello metallico con scatole sopra, tra due porte in un corridoio. Il cantiere che si muove da una stanza all'altra: la manutenzione continua.",
+   "tag": [
+    "cantiere",
+    "preparare",
+    "struttura",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "422": {
+   "lettura": "Una scatola di cartone piena di tele bianche e carta, vicino a un termosifone. Superfici vuote in attesa di diventare quadri: la possibilità conservata in uno scatolone.",
+   "tag": [
+    "materia in attesa",
+    "possibilità",
+    "vuoto",
+    "custodire"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "423": {
+   "lettura": "Un laboratorio di restauro con un grande telaio, un dipinto antico appoggiato, pannelli a terra e una ragazza al lavoro sullo sfondo. La cura delle opere del passato: rimettere in piedi la memoria.",
+   "tag": [
+    "ferita e cura",
+    "restauro",
+    "antico e contemporaneo",
+    "memoria",
+    "fare con le mani"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "424": {
+   "lettura": "Due piccoli ritratti di ragazzi con la pipa, dipinti antichi, su un tavolo di restauro con carta velina, bicchieri e una caraffa. Volti del passato che vengono curati con pazienza, uno sguardo alla volta.",
+   "tag": [
+    "restauro",
+    "ritratto",
+    "ferita e cura",
+    "pazienza",
+    "memoria"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "425": {
+   "lettura": "Un carrello pieno di pennelli, barattoli, ciotole e stracci accanto a un lavandino, sotto il divieto di fumo. Gli strumenti della cura delle opere, pronti per il lavoro paziente.",
+   "tag": [
+    "restauro",
+    "attrezzi",
+    "cura",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "426": {
+   "lettura": "Il pulsante di allarme antincendio rosso su un muro bianco con un buco nell'intonaco. La sicurezza e la ferita del muro, una accanto all'altra.",
+   "tag": [
+    "regole condivise",
+    "proteggere",
+    "consumo",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "427": {
+   "lettura": "Un carrello visto dall'alto con barattoli di pesto e salsa riciclati, bottiglie, pennelli e un pezzo di legno dipinto. Il cibo di casa che diventa contenitore per il lavoro: il riuso quotidiano.",
+   "tag": [
+    "riuso",
+    "quotidiano condiviso",
+    "fare con poco",
+    "attrezzi"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "428": {
+   "lettura": "Un arco bianco con un telo da proiezione, tubi dell'aspirazione e una canalina metallica sotto la volta. La tecnica moderna che si infila nell'architettura antica.",
+   "tag": [
+    "antico e contemporaneo",
+    "tecnologia",
+    "struttura",
+    "lavoro invisibile"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "429": {
+   "lettura": "Lo stesso arco con il telo, un boiler, tubi e una canalina, visto più da vicino. L'impianto di un laboratorio montato dentro la storia: la necessità che si adatta.",
+   "tag": [
+    "antico e contemporaneo",
+    "tecnologia",
+    "struttura",
+    "fare con poco"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "430": {
+   "lettura": "Un armadio aperto con barattoli di prodotti chimici, pennelli, scatole di plastica e una borsa di tela. La dispensa del restauratore: ogni sostanza è uno strumento di cura.",
+   "tag": [
+    "restauro",
+    "custodire",
+    "attrezzi",
+    "cura"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "431": {
+   "lettura": "Una centralina e il cartello del divieto di fumo su un muro bianco segnato da buchi e una piantina di evacuazione. Il volto tecnico e normativo del luogo, punteggiato di ferite.",
+   "tag": [
+    "regole condivise",
+    "consumo",
+    "angoli dimenticati",
+    "istituzione"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "432": {
+   "lettura": "Una sirena rossa con la scritta «spegnimento in corso» sotto una volta e una canalina. Un allarme che aspetta di suonare: la vigilanza silenziosa.",
+   "tag": [
+    "regole condivise",
+    "proteggere",
+    "guardare in su",
+    "tecnologia"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "433": {
+   "lettura": "L'intradosso di una porta con l'intonaco nero e scrostato, sotto una canalina metallica. La ferita del tempo sopra il passaggio quotidiano.",
+   "tag": [
+    "ferita e cura",
+    "consumo",
+    "soglia",
+    "guardare in su"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "434": {
+   "lettura": "Una parete con i cartelli «spegnimento in corso», «evacuare il locale», l'uscita di emergenza, rotoli di carta e canaline. Il linguaggio della sicurezza che riempie uno spazio vuoto.",
+   "tag": [
+    "regole condivise",
+    "uscita",
+    "vuoto",
+    "istituzione"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "435": {
+   "lettura": "Un soffitto con luci al neon, sirene rosse e piccole nicchie, macchiato e scrostato. Lo sguardo verso l'alto in una stanza tecnica: la luce fredda sulla pelle antica del palazzo.",
+   "tag": [
+    "guardare in su",
+    "consumo",
+    "tecnologia",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "436": {
+   "lettura": "Un lavandino bianco con due stracci appesi al rubinetto e due secchielli dentro. La cura umile del pulire: un angolo dove ci si lava le mani dopo il lavoro.",
+   "tag": [
+    "lavoro invisibile",
+    "cura",
+    "quotidiano",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "437": {
+   "lettura": "Una volta bianca vista dal basso, con due neon allineati e quattro sirene rosse simmetriche. Una geometria quasi sacra fatta di oggetti tecnici: un altare della sicurezza.",
+   "tag": [
+    "guardare in su",
+    "geometria",
+    "tecnologia",
+    "struttura"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "438": {
+   "lettura": "Un piccolo spazio con un termosifone scrostato, una tag nera, un triangolo disegnato e una porta antica coperta di firme. L'angolo dimenticato dove tutti passano e lasciano un segno.",
+   "tag": [
+    "segni lasciati",
+    "angoli dimenticati",
+    "consumo",
+    "soglia"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "439": {
+   "lettura": "Il cortile con la grande palma e gli alberi, la facciata rosa, auto parcheggiate e bidoni colorati, visto dall'alto nella pioggia. La vita ordinaria nel cuore del palazzo.",
+   "tag": [
+    "natura",
+    "dentro e fuori",
+    "pioggia",
+    "quotidiano",
+    "identità napoletana"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "440": {
+   "lettura": "Lo stesso cortile al crepuscolo, quasi buio: le chiome nere e la facciata che scompare. Il luogo che si spegne a fine giornata, la malinconia della sera.",
+   "tag": [
+    "buio",
+    "malinconia",
+    "natura",
+    "tempo",
+    "dentro e fuori"
+   ],
+   "nucleo": "Vuoto e attesa"
+  },
+  "441": {
+   "lettura": "Un piccolo tavolino nero usato come portacenere, pieno di mozziconi, davanti a un muro blu. Il rito della pausa sigaretta: il luogo dove ci si ferma a parlare.",
+   "tag": [
+    "pausa",
+    "rito",
+    "quotidiano condiviso",
+    "segni lasciati"
+   ],
+   "nucleo": "Muri che parlano"
+  },
+  "442": {
+   "lettura": "Un muro dipinto di blu e giallo, scrostato in basso, accanto a una porta scura su un pavimento consumato. I colori di qualcuno che ha voluto dare vita a un angolo, ormai segnati dal tempo.",
+   "tag": [
+    "colore",
+    "consumo",
+    "tracce sui muri",
+    "ferita e cura"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "443": {
+   "lettura": "Un bagno con piastrelle bianche, separatori appoggiati, un boiler e una finestra aperta sulla città con la scritta «Pachamama». Un luogo intimo e banale che si apre sull'esterno.",
+   "tag": [
+    "dentro e fuori",
+    "angoli dimenticati",
+    "finestra",
+    "quotidiano"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "444": {
+   "lettura": "Uno spazzolone appoggiato in diagonale contro piastrelle bianche, sul pavimento nero. Un'immagine essenziale del lavoro di pulizia: la linea di chi tiene in ordine.",
+   "tag": [
+    "lavoro invisibile",
+    "cura",
+    "quotidiano",
+    "geometria"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "445": {
+   "lettura": "Una porta antica a due ante consumate e scritte, aperta su un corridoio luminoso. Il passaggio tra l'ombra e la luce, attraverso un legno che ha visto passare generazioni.",
+   "tag": [
+    "soglia",
+    "consumo",
+    "passaggio",
+    "antico e contemporaneo",
+    "luce"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "446": {
+   "lettura": "Un atrio con volte, una scala di pietra che sale verso una porta con un bassorilievo, e una vetrata coperta di tag e locandine. L'ingresso solenne attraversato dalla voce degli studenti.",
+   "tag": [
+    "soglia",
+    "antico e contemporaneo",
+    "segni lasciati",
+    "salire"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "447": {
+   "lettura": "Una scala di pietra sotto volte a crociera bianche, con una lampada al neon. Un passaggio spoglio e solenne, quasi monastico.",
+   "tag": [
+    "passaggio",
+    "salire",
+    "antico e contemporaneo",
+    "silenzio"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "448": {
+   "lettura": "Una vetrata coperta di graffiti («free Palestine»), locandine di premi e laboratori, «open call», sopra una balaustra di pietra. La bacheca viva di una comunità che si informa, protesta, si invita.",
+   "tag": [
+    "voce collettiva",
+    "protesta",
+    "invito",
+    "segni lasciati",
+    "comunità"
+   ],
+   "nucleo": "Noi"
+  },
+  "449": {
+   "lettura": "Il cartello «tecniche dell'incisione» su un muro annerito dal fuoco e coperto di tag, con scatoloni e un termosifone. Un angolo bruciato e vissuto: le tracce di un incidente, o di un fuoco di passione.",
+   "tag": [
+    "ferita e cura",
+    "segni lasciati",
+    "consumo",
+    "orientarsi"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "450": {
+   "lettura": "Una vecchia cassetta di metallo aperta e vuota, con fili e calcinacci dentro. Un oggetto svuotato dal tempo: quello che resta quando la funzione è finita.",
+   "tag": [
+    "consumo",
+    "vuoto",
+    "angoli dimenticati",
+    "rovina"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "451": {
+   "lettura": "Una porta socchiusa su una fuga di stanze bianche, fino a una sala con sedie colorate. Lo sguardo che attraversa porte una dopo l'altra: il luogo come labirinto di passaggi.",
+   "tag": [
+    "guardare attraverso",
+    "passaggio",
+    "profondità",
+    "soglia"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "452": {
+   "lettura": "Un grande portone scuro con locandine attaccate, in cima a pochi gradini di pietra, sotto un arco. La porta di un'aula importante, coperta di avvisi: l'istituzione e la vita che la riempie.",
+   "tag": [
+    "soglia",
+    "istituzione",
+    "invito",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "453": {
+   "lettura": "Un muro con un grosso pezzo di intonaco caduto che mostra il tufo, una crepa che scende verso la ringhiera. La ferita del palazzo, la sua pelle che si stacca: la fragilità della storia.",
+   "tag": [
+    "ferita e cura",
+    "consumo",
+    "fragilità",
+    "identità napoletana"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "454": {
+   "lettura": "Una vetrata a grata appannata accanto a un muro di pietra grezza. La luce che filtra opaca: un confine sottile tra dentro e fuori.",
+   "tag": [
+    "dentro e fuori",
+    "finestra",
+    "luce",
+    "silenzio"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "455": {
+   "lettura": "Una freccia verde su un muro crepato e rattoppato, sotto un tubo. L'indicazione chiara in mezzo alle crepe: anche un luogo ferito sa dove andare.",
+   "tag": [
+    "orientarsi",
+    "ferita e cura",
+    "regole condivise",
+    "consumo"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "456": {
+   "lettura": "Il lunghissimo corridoio di marmo con le volte, illuminato, vuoto fino in fondo. La prospettiva come promessa: il cammino che sembra infinito.",
+   "tag": [
+    "passaggio",
+    "profondità",
+    "attraversare",
+    "antico e contemporaneo",
+    "silenzio"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "457": {
+   "lettura": "Un piccolo foglio di carta stropicciato sul pavimento di marmo. Un dettaglio minuscolo che nessuno vedrebbe: anche ciò che si perde fa parte della memoria.",
+   "tag": [
+    "angoli dimenticati",
+    "casualità",
+    "scarto",
+    "dettaglio"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "458": {
+   "lettura": "Un'installazione di ruote di bicicletta dipinte, girandole colorate, fiamme di legno, appoggiata in un atrio di marmo. La gioia del colore e del movimento, il gioco che si fa scultura.",
+   "tag": [
+    "gioco",
+    "colore",
+    "riuso",
+    "movimento",
+    "installazione"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "459": {
+   "lettura": "Un mucchio di scatoloni aperti di monitor e fari nell'atrio di marmo. Le cose nuove appena arrivate, ancora da sistemare: un trasloco nel cuore della storia.",
+   "tag": [
+    "materia in attesa",
+    "tecnologia",
+    "preparare",
+    "antico e contemporaneo"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "460": {
+   "lettura": "Una scala di servizio con sacchi neri, un cavalletto, scaffali di scatole e una sedia. Il retro dell'edificio, dove si accumula ciò che non serve o che servirà.",
+   "tag": [
+    "materia in attesa",
+    "angoli dimenticati",
+    "disordine fertile",
+    "dietro le quinte"
+   ],
+   "nucleo": "Prima che accada"
+  },
+  "461": {
+   "lettura": "Da una porta a vetri, una sala con un pianoforte e una porta aperta su una stanza con un tavolo e luci. Lo spazio della musica e del lavoro, intravisto in un momento di calma.",
+   "tag": [
+    "musica",
+    "soglia",
+    "guardare attraverso",
+    "silenzio",
+    "attesa"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "462": {
+   "lettura": "Il cortile visto dall'alto nella pioggia, con il giardino verde e una persona con l'ombrello blu che lo attraversa. Una figura sola in un grande spazio: la vita che continua anche sotto la pioggia.",
+   "tag": [
+    "pioggia",
+    "natura",
+    "attraversare",
+    "solitudine",
+    "dentro e fuori"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "463": {
+   "lettura": "Le facciate del cortile con grandi finestre ad arco e una palma, viste dal basso sotto un cielo grigio. L'architettura che sovrasta, la storia che circonda.",
+   "tag": [
+    "antico e contemporaneo",
+    "natura",
+    "dentro e fuori",
+    "guardare in su"
+   ],
+   "nucleo": "Dentro e fuori"
+  },
+  "464": {
+   "lettura": "Una foto completamente mossa, con forme chiare e scure che scivolano. Un'immagine sbagliata che sembra un sogno: il movimento della memoria.",
+   "tag": [
+    "errore",
+    "movimento",
+    "casualità",
+    "sogno"
+   ],
+   "nucleo": "Trasfigurare"
+  },
+  "465": {
+   "lettura": "Una doppia porta aperta con il cartello «lasciare libere le vie di fuga», su una stanza in penombra con un tavolo e una lampada. Uno spazio di lavoro intravisto, raccolto, che si apre appena.",
+   "tag": [
+    "soglia",
+    "guardare attraverso",
+    "silenzio",
+    "regole condivise"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "466": {
+   "lettura": "Un angolo con l'idrante rosso, l'estintore, il divieto di fumo, un telefono e l'intonaco rattoppato attorno alla cassetta. Gli strumenti della sicurezza incastonati in un muro ferito.",
+   "tag": [
+    "regole condivise",
+    "proteggere",
+    "ferita e cura",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Il lavoro invisibile"
+  },
+  "467": {
+   "lettura": "Lo spigolo di un pilastro dove l'intonaco bianco si sfoglia sopra la pietra grigia. Il nuovo che si stacca e l'antico che riaffiora: la pelle del palazzo che cambia.",
+   "tag": [
+    "ferita e cura",
+    "antico e contemporaneo",
+    "consumo",
+    "dettaglio"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "468": {
+   "lettura": "Il corridoio con volte a crociera, una statua bianca e la luce calda in fondo. La solennità tranquilla del luogo nei momenti vuoti.",
+   "tag": [
+    "passaggio",
+    "profondità",
+    "antico e contemporaneo",
+    "silenzio",
+    "statua"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "469": {
+   "lettura": "Lo scalone visto dall'alto, con il David e lo stendardo rosso pieno di parole: balliamo, ridiamo, sbagliamo, uah, curi, sei vivo, leggi, viaggi. Le parole della comunità che scendono come una cascata lungo la storia.",
+   "tag": [
+    "voce collettiva",
+    "antico e contemporaneo",
+    "emozione",
+    "corpo",
+    "vertigine"
+   ],
+   "nucleo": "Noi"
+  },
+  "470": {
+   "lettura": "Lo scalone monumentale dal basso: statue, una lapide, una finestra luminosa e gli stendardi rossi «un futuro è possibile quando…». La salita come rito: si va verso la luce e verso il futuro.",
+   "tag": [
+    "salire",
+    "futuro",
+    "antico e contemporaneo",
+    "voce collettiva",
+    "luce"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "471": {
+   "lettura": "Un grande portale antico con ante intagliate aperto su armadi bianchi moderni. La cornice storica che custodisce oggetti di oggi: il passato che fa da porta al presente.",
+   "tag": [
+    "antico e contemporaneo",
+    "soglia",
+    "custodire",
+    "struttura"
+   ],
+   "nucleo": "Soglie e passaggi"
+  },
+  "472": {
+   "lettura": "Un ascensore nuovo montato dentro una struttura metallica, accanto a mobili bianchi. La modernità inserita nel palazzo: il bisogno di rendere il luogo accessibile a tutti.",
+   "tag": [
+    "tecnologia",
+    "antico e contemporaneo",
+    "accoglienza",
+    "struttura"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "473": {
+   "lettura": "Un vecchio sgabello rotondo da scultore, consumato, in un angolo bianco. Uno strumento umile su cui generazioni hanno girato le loro forme: la memoria del mestiere.",
+   "tag": [
+    "attrezzi",
+    "memoria",
+    "fare con le mani",
+    "consumo",
+    "angoli dimenticati"
+   ],
+   "nucleo": "Le mani che sanno"
+  },
+  "474": {
+   "lettura": "Il braccio spezzato di una statua di gesso, cavo, che sporge da un muro. Un frammento di corpo che rivela il vuoto interno: la fragilità delle forme.",
+   "tag": [
+    "corpo",
+    "fragilità",
+    "statua",
+    "rovina",
+    "dettaglio"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "475": {
+   "lettura": "Uno sguardo dentro un buco profondo nel muro o nella pietra, con frammenti in fondo. Una ferita che si apre come un pozzo: la materia del palazzo vista dall'interno.",
+   "tag": [
+    "ferita e cura",
+    "profondità",
+    "rovina",
+    "mistero",
+    "dettaglio"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "476": {
+   "lettura": "Una crepa sottile che attraversa il pavimento di marmo bianco, vicino alla cornice grigia. Un piccolo segno del tempo nel lusso della pietra: niente è intatto.",
+   "tag": [
+    "ferita e cura",
+    "consumo",
+    "dettaglio",
+    "tempo"
+   ],
+   "nucleo": "Ferite e cure"
+  },
+  "477": {
+   "lettura": "Gradini di marmo consumati e scheggiati agli spigoli, con le strisce antiscivolo. I passi di migliaia di persone incisi nella pietra: la memoria del passaggio.",
+   "tag": [
+    "consumo",
+    "passaggio",
+    "memoria",
+    "tempo",
+    "salire"
+   ],
+   "nucleo": "Soglie e passaggi"
+  }
+ }
+}
