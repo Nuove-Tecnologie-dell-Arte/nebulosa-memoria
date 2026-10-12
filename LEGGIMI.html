@@ -58,7 +58,7 @@ a{color:var(--acc)}
 
 <h2>Su un server, con un tunnel</h2>
 <p>Il server ascolta sulla porta <b>8002</b>. Un tunnel (per esempio cloudflared o ngrok) rivolto a <code>http://localhost:8002</code> rende la nebulosa raggiungibile da internet in <code>https</code>: così la webcam funziona e i telefoni possono mandare foto anche senza essere sulla stessa rete Wi-Fi.</p>
-<p>Su un server Linux (o su un Mac, senza aprire il browser) si accende con <code>avvia-server.sh</code>, dalla cartella <code>nebulosa-memoria</code>. La prima volta prepara da solo le librerie Python. Perché il QR porti i telefoni al tunnel, dagli l'indirizzo pubblico:</p>
+<p>Su Linux o in WSL (anche collegati via ssh) si accende con <code>bash avvia-server.sh</code> (oppure <code>bash avvia-server.sh mano</code>), dalla cartella <code>nebulosa-memoria</code>. Fa come il .command: se la nebulosa è già accesa apre solo la pagina; la prima volta prepara da solo le librerie Python; se c'è uno schermo apre Chrome, altrimenti scrive l'indirizzo da aprire. Perché il QR porti i telefoni al tunnel, dagli l'indirizzo pubblico:</p>
 <pre>INDIRIZZO=https://nebulosa.esempio.it bash avvia-server.sh</pre>
 <p class="nota">I file <code>.bat</code> sono solo per Windows (doppio clic): con <code>bash</code> o <code>sh</code> danno errori come «@echo: command not found».</p>
 <p>Su Windows, in «Apri la nebulosa.bat», togli <code>rem</code> dalla riga <code>set INDIRIZZO=…</code> e scrivi lì l'indirizzo. Se la nebulosa è aperta direttamente dall'indirizzo del tunnel, il QR lo trova da solo.</p>
@@ -67,7 +67,7 @@ a{color:var(--acc)}
 <h2>Le cartelle</h2>
 <pre>nebulosa-memoria/
   Apri la nebulosa.command   ← l'unica cosa da toccare (su Windows: Apri la nebulosa.bat)
-  avvia-server.sh            solo il server, per un server Linux con il tunnel
+  avvia-server.sh            come il .command, per Linux e WSL (anche via ssh, con il tunnel)
   LEGGIMI.html               ← questa pagina
   requirements.txt           le librerie Python da installare
   pagine/        la nebulosa (index.html) e la pagina del QR (carica.html)
