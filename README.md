@@ -1,4 +1,4 @@
-# La Nebulosa
+# Nebulosa
 
 Una memoria collettiva di foto dell'Accademia di Belle Arti di Napoli. Ogni foto viene letta per quello che rappresenta e diventa una sfera di luce in una nebulosa 3D, senza nomi né categorie. Chi inquadra il QR può aggiungere le proprie foto.
 

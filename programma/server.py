@@ -35,7 +35,7 @@ def main():
     srv = ThreadingHTTPServer(('0.0.0.0', PORTA), Gestore)
     srv.daemon_threads = True
     ip = ip_locale()
-    print('\n  La Nebulosa è accesa.')
+    print('\n  Nebulosa è accesa.')
     print(f'  Su questo computer:  http://localhost:{PORTA}')
     print(f'  Dai telefoni:        http://{ip}:{PORTA}/carica   (stessa rete Wi-Fi)')
     if INDIRIZZO:

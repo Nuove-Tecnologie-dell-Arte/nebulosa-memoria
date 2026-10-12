@@ -5,3 +5,9 @@ __pycache__/
 *.tmp
 .env
 servizio.log
+impeccable/
+node_modules/
+package.json
+package-lock.json
+.claude/
+.impeccable/
