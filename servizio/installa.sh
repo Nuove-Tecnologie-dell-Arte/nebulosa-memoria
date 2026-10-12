@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Da WSL: crea l'attività di Windows che accende la nebulosa a ogni accesso e la avvia subito.
+# Da WSL: crea l'attività di Windows che accende la nebulosa all'avvio di Windows e la avvia subito.
 # Uso, dalla cartella nebulosa-memoria:   bash servizio/installa.sh
 cd "$(dirname "$0")" || exit 1
 source ./wsl.sh

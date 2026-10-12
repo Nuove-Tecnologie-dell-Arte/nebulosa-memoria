@@ -1,4 +1,4 @@
-# Crea o toglie l'attività di Windows che accende la nebulosa (dentro WSL) a ogni accesso dell'utente.
+# Crea o toglie l'attività di Windows che accende la nebulosa (dentro WSL) all'avvio di Windows e a ogni accesso dell'utente, anche senza nessuno davanti al PC (o solo via ssh).
 # Non si lancia a mano: lo usano installa.sh e rimuovi.sh.
 param([Parameter(Mandatory)][ValidateSet('installa', 'rimuovi')][string]$Azione,
       [string]$Distro, [string]$Utente, [string]$Script)
@@ -17,10 +17,15 @@ $comando = "Start-Process -WindowStyle Hidden -Wait wsl.exe -ArgumentList '-d','
 # l'utente di Windows con il nome che il sistema riconosce (in ssh USERDOMAIN puo' essere sbagliato, per esempio WORKGROUP)
 $utente = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 $cosaFare = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile -WindowStyle Hidden -Command `"$comando`""
-$quando = New-ScheduledTaskTrigger -AtLogOn -User $utente
+# S4U: gira come l'utente anche se non e' collegato (senza chiedere la password). Vale solo sul computer, non in rete.
+$chi = New-ScheduledTaskPrincipal -UserId $utente -LogonType S4U -RunLevel Limited
+$quando = @((New-ScheduledTaskTrigger -AtStartup), (New-ScheduledTaskTrigger -AtLogOn -User $utente))
 $regole = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable `
   -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1)
-Register-ScheduledTask -TaskName $nome -Action $cosaFare -Trigger $quando -Settings $regole -Force `
+Register-ScheduledTask -TaskName $nome -Action $cosaFare -Trigger $quando -Principal $chi -Settings $regole -Force `
   -Description 'Accende il server della nebulosa in WSL' | Out-Null
 Start-ScheduledTask -TaskName $nome
-Write-Output "Attivita' '$nome' creata e avviata: parte da sola a ogni accesso a Windows."
+Start-Sleep -Seconds 4
+$stato = (Get-ScheduledTask -TaskName $nome).State
+if ($stato -eq 'Running') { Write-Output "Attivita' '$nome' creata e in esecuzione: parte da sola all'avvio di Windows." }
+else { Write-Output "Attivita' '$nome' creata, ma non risulta in esecuzione (stato: $stato). Guarda: bash servizio/stato.sh" }
