@@ -1,4 +1,4 @@
-:root{--bg:#06050a;--ink:#ece6e1;--dim:#8c8590;--amber:#d9a566;--trace:#f08a64;--line:rgba(236,230,225,.12)}
+:root{--bg:#06050a;--manoH:0px;--lato:24px;--alto:76px;--ink:#ece6e1;--dim:#8c8590;--amber:#d9a566;--trace:#f08a64;--line:rgba(236,230,225,.12)}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Jost',sans-serif;font-weight:300;overflow:hidden}
 button{font:inherit}
@@ -26,7 +26,7 @@ header.top{position:fixed;top:0;left:0;right:0;height:64px;display:flex;align-it
 #cronN{font-style:normal;color:var(--ink);margin-left:4px}
 #liveDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#5a5560;margin-right:8px;vertical-align:1px}
 #liveDot.on{background:#7fd38a;box-shadow:0 0 8px #7fd38a}
-#cron{position:fixed;top:76px;right:24px;bottom:110px;z-index:9;width:350px;background:rgba(10,9,13,.97);border:1px solid rgba(240,200,140,.4);display:none;flex-direction:column;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#cron{position:fixed;top:var(--alto);right:var(--lato);bottom:calc(28px + var(--manoH));z-index:9;width:350px;background:rgba(10,9,13,.97);border:1px solid rgba(240,200,140,.4);display:none;flex-direction:column;box-shadow:0 12px 50px rgba(0,0,0,.6)}
 #cron.open{display:flex}
 #cron .hd{padding:16px 18px 12px;border-bottom:1px solid var(--line);position:relative}
 #cron h3{font:italic 400 20px 'Playfair Display',serif;color:#f0c88c}
@@ -44,11 +44,13 @@ header.top{position:fixed;top:0;left:0;right:0;height:64px;display:flex;align-it
 .ci button,#cronAll{margin-top:6px;background:none;border:1px solid rgba(240,138,138,.45);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;cursor:pointer}
 #cronAll{margin-top:10px}
 #cron.open ~ #toasts{right:390px}
+#qr.open ~ #toasts{right:330px}
+body.infuoco #toasts{right:auto;left:24px}
 body.ov #cron{opacity:0;pointer-events:none}
-#inarr{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:9;background:rgba(10,9,13,.9);border:1px solid rgba(127,211,138,.5);color:#a9e6b1;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;display:none;pointer-events:none}
+#inarr{position:fixed;left:340px;right:400px;bottom:104px;margin-inline:auto;width:max-content;max-width:calc(100vw - 740px);z-index:9;background:rgba(10,9,13,.9);border:1px solid rgba(127,211,138,.5);color:#a9e6b1;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;display:none;pointer-events:none}
 #inarr.on{display:block;animation:pulsa 1.4s ease-in-out infinite}
 @keyframes pulsa{50%{opacity:.55}}
-#qr{position:fixed;top:76px;right:24px;z-index:9;width:280px;padding:18px;background:rgba(10,9,13,.97);border:1px solid rgba(170,161,242,.45);display:none;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+#qr{position:fixed;top:var(--alto);right:var(--lato);max-height:calc(100vh - var(--alto) - 28px - var(--manoH));overflow:auto;z-index:9;width:280px;padding:18px;background:rgba(10,9,13,.97);border:1px solid rgba(170,161,242,.45);display:none;box-shadow:0 12px 50px rgba(0,0,0,.6)}
 #qr.open{display:block}
 #qr h3{font:italic 400 20px 'Playfair Display',serif;color:#aaa1f2}
 #qr p{font-size:12px;line-height:1.55;color:#c9c1bb;margin-top:8px}
@@ -69,14 +71,14 @@ body.ov #toasts,body.ov #qr{opacity:0;pointer-events:none}
 .why{margin:12px auto 0;max-width:560px;padding:10px 14px;border:1px solid rgba(240,200,140,.35);background:rgba(10,9,13,.7);text-align:left;font-size:13px;line-height:1.5;color:#e2dbd5}
 .why b{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#f0c88c;text-transform:uppercase;margin-bottom:3px}
 .why button{margin-top:8px;background:none;border:1px solid rgba(240,138,138,.5);color:#f0a0a0;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;cursor:pointer}
-#arrivo{position:fixed;left:50%;z-index:8;width:min(560px,90vw);transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .5s;padding:14px 18px 16px;background:rgba(6,5,10,.86);border:1px solid rgba(240,200,140,.25);box-shadow:0 18px 60px rgba(0,0,0,.6)}
+#arrivo{position:fixed;left:340px;right:400px;bottom:150px;margin-inline:auto;z-index:8;width:auto;max-width:560px;text-align:center;pointer-events:none;opacity:0;transition:opacity .5s;padding:14px 18px 16px;background:rgba(6,5,10,.86);border:1px solid rgba(240,200,140,.25);box-shadow:0 18px 60px rgba(0,0,0,.6)}
 #arrivo.on{opacity:1}
 #arrivo .k{font:300 10px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#f0c88c;text-transform:uppercase;text-shadow:0 2px 12px #000}
 #arrivo .e{font:300 13px 'Jost',sans-serif;color:#c9c1bb;margin-top:10px;text-shadow:0 2px 12px #000}
 #arrivo .t{font:italic 400 40px/1.1 'Playfair Display',serif;margin-top:2px;text-shadow:0 2px 24px #000}
 #arrivo .w{font:300 14px/1.5 'Jost',sans-serif;color:#e6dfd9;margin:10px auto 0;max-width:480px}
 #arrivo .q{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#8c8590;text-transform:uppercase;margin-top:8px}
-#home{position:fixed;right:28px;bottom:44px;z-index:5;background:rgba(10,9,13,.8);border:1px solid var(--line);color:var(--dim);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:0 14px;height:46px;cursor:pointer}
+#home{position:fixed;right:28px;bottom:28px;z-index:5;background:rgba(10,9,13,.8);border:1px solid var(--line);color:var(--dim);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:0 14px;height:46px;cursor:pointer}
 #home:hover{color:var(--amber)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:11px;padding:4px 10px;border:1px solid var(--line);cursor:pointer;border-radius:20px;color:var(--ink);background:rgba(10,9,13,.5)}
@@ -124,8 +126,8 @@ body.ov #toasts,body.ov #qr{opacity:0;pointer-events:none}
 #sndbtn{background:none;border:0;border-left:1px solid var(--line);color:var(--amber);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
 #sndbtn:hover{color:var(--ink)}
 /* il volo: la foto scelta e la sua lettura */
-#fuoco{position:fixed;right:28px;top:50%;transform:translate(20px,-50%);z-index:8;width:min(360px,calc(100vw - 32px));padding:20px 22px 18px;background:rgba(8,7,12,.82);border:1px solid var(--c,rgba(240,200,140,.4));border-left-width:3px;box-shadow:0 18px 60px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .7s,transform .7s}
-#fuoco.on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+#fuoco{position:fixed;right:28px;top:84px;max-height:calc(100vh - 84px - 28px - var(--manoH));overflow:auto;transform:translateX(20px);z-index:8;width:min(360px,calc(100vw - 32px));padding:20px 22px 18px;background:rgba(8,7,12,.82);border:1px solid var(--c,rgba(240,200,140,.4));border-left-width:3px;box-shadow:0 18px 60px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .7s,transform .7s}
+#fuoco.on{opacity:1;transform:none;pointer-events:auto}
 #fuoco .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
 #fl{font:italic 400 18px/1.5 'Playfair Display',serif;color:var(--ink);margin-top:10px}
 #fl:empty{display:none}
@@ -136,7 +138,7 @@ body.ov #toasts,body.ov #qr{opacity:0;pointer-events:none}
 #fuoco .h{margin-top:14px;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;line-height:1.8}
 #fx{margin-top:12px;background:none;border:1px solid var(--c,var(--line));color:var(--ink);font:300 10px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;padding:8px 12px;cursor:pointer}
 #fx:hover{background:rgba(255,255,255,.05)}
-body.infuoco .hintbar,body.infuoco .intro{opacity:0!important}
+body.infuoco .hintbar,body.infuoco .intro,body:has(#qr.open) .hintbar,body:has(#cron.open) .hintbar{opacity:0!important}
 /* l'interfaccia si nasconde da sola dopo qualche secondo di quiete */
 .top,.intro,.hintbar,#home{transition:opacity 1.2s}
 body.calma .top,body.calma .intro,body.calma .hintbar,body.calma #home{opacity:0!important;pointer-events:none!important}
@@ -158,16 +160,43 @@ body.calma #fuoco .h,body.calma #fx{display:none}
 #manoCursore::after{content:'';position:absolute;left:-46px;top:-46px;width:92px;height:92px;border-radius:50%;background:conic-gradient(rgba(255,225,170,.95) var(--p),transparent 0);-webkit-mask:radial-gradient(circle,transparent 41px,#000 42px,#000 46px,transparent 47px);mask:radial-gradient(circle,transparent 41px,#000 42px,#000 46px,transparent 47px);opacity:0;transition:opacity .2s}
 #manoCursore.aggancio::before{left:-38px;top:-38px;width:76px;height:76px;border-color:rgba(255,225,170,.9);box-shadow:0 0 30px rgba(255,200,140,.6)}
 #manoCursore.aggancio::after{opacity:1}
-#manoAiuto{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);z-index:9;padding:9px 16px;background:rgba(8,7,12,.72);border:1px solid rgba(160,210,255,.3);font:300 12px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#dfe9f5;opacity:0;transition:opacity .5s;pointer-events:none;white-space:nowrap}
+#manoAiuto{position:fixed;left:340px;right:400px;bottom:34px;margin-inline:auto;width:max-content;max-width:calc(100vw - 740px);white-space:normal!important;text-align:center;z-index:9;padding:9px 16px;background:rgba(8,7,12,.72);border:1px solid rgba(160,210,255,.3);font:300 12px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#dfe9f5;opacity:0;transition:opacity .5s;pointer-events:none;white-space:nowrap}
 #manoAiuto.on{opacity:1}
 #manoDue{position:fixed;inset:0;pointer-events:none;z-index:9;opacity:0;transition:opacity .3s}
 #manoDue.on{opacity:1}
 #manoDue i{position:absolute;left:-17px;top:-17px;width:34px;height:34px;border-radius:50%;border:2px solid rgba(180,220,255,.85);box-shadow:0 0 22px rgba(150,200,255,.6)}
 #manoDue b{position:absolute;left:0;top:-1px;height:2px;background:linear-gradient(90deg,rgba(180,220,255,.25),rgba(255,225,170,.85),rgba(180,220,255,.25));transform-origin:0 50%}
-#mano{position:fixed;right:20px;bottom:20px;z-index:10;width:240px;background:rgba(8,7,12,.85);border:1px solid rgba(160,210,255,.35);font:300 10px 'JetBrains Mono',monospace;color:#c8d6e6}
+#mano{position:fixed;right:var(--lato);bottom:20px;z-index:10;width:240px;background:rgba(8,7,12,.85);border:1px solid rgba(160,210,255,.35);font:300 10px 'JetBrains Mono',monospace;color:#c8d6e6}
 #mano.nascosta,#mano.assente{display:none}
 #manoVideo{display:none}
-#manoCanvas{display:block;width:240px;height:180px;background:#000}
+#manoCanvas{position:static;inset:auto;cursor:default;display:block;width:240px;height:180px;background:#000}
 #manoStato{padding:8px 10px 4px;letter-spacing:.08em;text-transform:uppercase;color:#e6f3ff}
 #manoCamera{margin:4px 10px 8px;width:calc(100% - 20px);background:#14121a;color:#c8d6e6;border:1px solid rgba(255,255,255,.15);font:inherit}
-#mano .legenda{padding:6px 10px 10px;border-top:1px solid rgba(255,255,255,.08);line-height:1.9;color:#9aa6b4}
+#mano .legenda{padding:6px 10px 10px;border-top:1px solid rgba(255,255,255,.08);line-height:1.6;color:#9aa6b4}
+#mano .legenda summary{cursor:pointer;letter-spacing:.08em;text-transform:uppercase;color:#e6f3ff}
+#mano .legenda[open]{max-height:50vh;overflow:auto}
+
+/* con il riquadro della mano acceso, gli altri pannelli a destra gli lasciano il posto, e il tasto vista iniziale gli sta accanto */
+body:has(#mano:not(.nascosta):not(.assente)){--manoH:316px}
+body:has(#mano:not(.nascosta):not(.assente)) #home{right:calc(var(--lato) + 240px + 16px);bottom:20px}
+
+@media(max-width:900px){
+  :root{--lato:12px}
+  header.top{padding:0 14px}
+  .status > *+*{margin-left:10px;padding-left:10px}
+  .status,#sndbtn,#palbtn,#qrbtn,#cronbtn{letter-spacing:.08em}
+  #cron{left:12px;width:auto}
+  #qr{left:12px;width:auto}
+  #qr .code{margin-top:10px}
+  #arrivo,#inarr,#manoAiuto{left:12px;right:12px;max-width:none}
+  #arrivo{bottom:130px}
+  #inarr{bottom:84px}
+  #manoAiuto{bottom:20px}
+  body:has(#mano:not(.nascosta):not(.assente)){--manoH:0px}
+  body:has(#mano:not(.nascosta):not(.assente)) #home{right:12px;bottom:auto;top:76px}
+  #mano{display:none}
+  #toasts,body.infuoco #toasts,#qr.open ~ #toasts,#cron.open ~ #toasts{top:120px;right:12px;left:12px;width:auto}
+  #qr.open ~ #toasts,#cron.open ~ #toasts{display:none}
+  #fuoco{max-height:50vh}
+}
+@media(max-width:600px){#sndbtn,#palbtn{display:none}.brand small{display:none}}

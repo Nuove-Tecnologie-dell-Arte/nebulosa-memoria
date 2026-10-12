@@ -548,8 +548,7 @@ function nextArrival(now) {
   $('arrK').textContent = 'Nuova foto' + (a.nome ? ' · da ' + a.nome : ' · dal telefono');
   $('arrW').textContent = a.frase ? '«' + a.frase + '»' : '';
   $('arrQ').textContent = arrQueue.length ? '+ ' + arrQueue.length + ' in arrivo' : '';
-  $('arrivo').style.top = 'auto'; $('arrivo').style.bottom = '110px';
-  $('arrivo').classList.add('on');
+    $('arrivo').classList.add('on');
   urto();
   renderCron();
 }

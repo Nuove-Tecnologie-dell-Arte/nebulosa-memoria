@@ -44,7 +44,7 @@ def istruzioni(analisi):
     vocabolario = ', '.join(f'{t} ({n})' for t, n in conta.most_common())
     esempi = '\n'.join(f'- «{f["lettura"]}» → {", ".join(f["tag"])}' for f in foto[::max(1, len(foto) // 6)][:6])
     return (
-        f"Stai custodendo «La Nebulosa», una memoria collettiva di foto di un luogo ({analisi.get('luogo') or 'un luogo'}), "
+        f"Stai custodendo «Nebulosa», una memoria collettiva di foto di un luogo ({analisi.get('luogo') or 'un luogo'}), "
         "scattate e mandate da chi lo vive. Ogni foto viene letta a fondo: non ti fermare a quello che si vede in superficie "
         "(colori, scritte, oggetti), ma chiediti che cosa la foto rappresenta e vuole dire, che momento racconta, che rapporto "
         "c'è tra le persone e il luogo, che cosa custodisce.\n\n"
