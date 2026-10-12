@@ -6,7 +6,7 @@
 
 cd "$(dirname "$0")" || exit 1
 PAGINA="${PAGINA:-}"     # quale pagina aprire: vuoto = la nebulosa per l'installazione
-PORTA=8766
+PORTA=8002
 
 apri() {
   URL="http://localhost:$1/$PAGINA"
