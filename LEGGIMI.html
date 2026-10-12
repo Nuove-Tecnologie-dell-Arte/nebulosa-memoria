@@ -34,9 +34,9 @@ a{color:var(--acc)}
 <h2>Accendere</h2>
 <div class="box">
 <p><b>Doppio clic su «Apri la nebulosa.command».</b> Si apre una finestra del Terminale (è il server: lasciala aperta) e poco dopo la nebulosa in Chrome, con il suono già attivo.</p>
-<p><b>«Apri la nebulosa con la mano.command»</b> fa lo stesso ma apre la versione che si esplora con la mano (webcam). Se la nebulosa è già accesa, tutti e due aprono solo la pagina, senza accendere un secondo server.</p>
+<p>Se la nebulosa è già accesa, il file apre solo la pagina, senza accendere un secondo server.</p>
 <p>Per lo schermo intero: <code>Ctrl + Cmd + F</code>. Per spegnere: chiudi la finestra del Terminale.</p>
-<p><b>Su Windows</b> si usano «Apri la nebulosa.bat» e «Apri la nebulosa con la mano.bat». Serve Python, da <a href="https://www.python.org/downloads/">python.org</a>: durante l'installazione spunta «Add python.exe to PATH». La prima volta il file installa da solo le librerie che mancano. Per lo schermo intero: <code>F11</code>.</p>
+<p><b>Su Windows</b> si usano «Apri la nebulosa.bat». Serve Python, da <a href="https://www.python.org/downloads/">python.org</a>: durante l'installazione spunta «Add python.exe to PATH». La prima volta il file installa da solo le librerie che mancano. Per lo schermo intero: <code>F11</code>.</p>
 <p class="nota">Non aprire le pagine con un doppio clic sul file .html: senza il server compare «Mancano i dati della nebulosa» e la webcam non parte. La webcam funziona solo da <code>localhost</code> o da un indirizzo <code>https</code>, non da un indirizzo come <code>http://192.168…</code>.</p>
 <p class="nota">Il Terminale scrive anche l'indirizzo per i telefoni e se la lettura delle foto nuove è automatica o a mano.</p>
 </div>
@@ -45,9 +45,8 @@ a{color:var(--acc)}
 <p>Funzionano solo mentre la nebulosa è accesa.</p>
 <table>
 <tr><th>Indirizzo</th><th>Cosa si vede</th></tr>
-<tr><td><a href="http://localhost:8002/">localhost:8002</a></td><td>La nebulosa per l'installazione (gira piano; si muove da sola solo quando arriva una foto dal QR)</td></tr>
+<tr><td><a href="http://localhost:8002/">localhost:8002</a></td><td>La nebulosa per l'installazione (gira piano; si muove da sola solo quando arriva una foto dal QR). Si esplora con la mano davanti alla webcam, senza segni con le dita: la luce si aggancia alla foto più vicina; tenendo ferma la mano un secondo e mezzo si entra e la foto si apre intera; la mano verso i bordi fa girare la nebulosa; con due mani alzate, allargarle avvicina e stringerle allontana; abbassando la mano si torna. Va aperta in Chrome; il tasto V nasconde il riquadro della webcam. <b>Senza webcam</b> (assente, permesso negato, indirizzo non <code>https</code>) il riquadro sparisce e si naviga con il mouse: trascina per girare, rotella per avvicinarti, clicca una sfera per entrare.</td></tr>
 <tr><td><a href="http://localhost:8002/carica">localhost:8002/carica</a></td><td>La pagina che si apre sui telefoni inquadrando il QR</td></tr>
-<tr><td><a href="http://localhost:8002/versioni/mano">…/versioni/mano</a></td><td><b>In prova:</b> si esplora con la mano davanti alla webcam, senza segni con le dita. La luce si aggancia alla foto più vicina; tenendo ferma la mano un secondo e mezzo si entra e la foto si apre intera; la mano verso i bordi fa girare la nebulosa; con due mani alzate, allargarle avvicina e stringerle allontana; abbassando la mano si torna. Va aperta in Chrome (o con «Apri la nebulosa con la mano.command»); il tasto V nasconde il riquadro della webcam</td></tr>
 <tr><td><a href="http://localhost:8002/versioni/3d-regia">…/versioni/3d-regia</a></td><td>Versione con il viaggio guidato automatico</td></tr>
 <tr><td><a href="http://localhost:8002/versioni/3d-volo">…/versioni/3d-volo</a></td><td>3D con volo dentro le foto e suono, senza installazione</td></tr>
 <tr><td><a href="http://localhost:8002/versioni/3d-carosello">…/versioni/3d-carosello</a></td><td>La prima versione 3D: il clic apre un carosello</td></tr>
@@ -58,7 +57,7 @@ a{color:var(--acc)}
 
 <h2>Su un server, con un tunnel</h2>
 <p>Il server ascolta sulla porta <b>8002</b>. Un tunnel (per esempio cloudflared o ngrok) rivolto a <code>http://localhost:8002</code> rende la nebulosa raggiungibile da internet in <code>https</code>: così la webcam funziona e i telefoni possono mandare foto anche senza essere sulla stessa rete Wi-Fi.</p>
-<p>Su Linux o in WSL (anche collegati via ssh) si accende con <code>bash avvia-server.sh</code> (oppure <code>bash avvia-server.sh mano</code>), dalla cartella <code>nebulosa-memoria</code>. Fa come il .command: se la nebulosa è già accesa apre solo la pagina; la prima volta prepara da solo le librerie Python; se c'è uno schermo apre Chrome, altrimenti scrive l'indirizzo da aprire. Perché il QR porti i telefoni al tunnel, dagli l'indirizzo pubblico:</p>
+<p>Su Linux o in WSL (anche collegati via ssh) si accende con <code>bash avvia-server.sh</code>, dalla cartella <code>nebulosa-memoria</code>. Fa come il .command: se la nebulosa è già accesa apre solo la pagina; la prima volta prepara da solo le librerie Python; se c'è uno schermo apre Chrome, altrimenti scrive l'indirizzo da aprire. Perché il QR porti i telefoni al tunnel, dagli l'indirizzo pubblico:</p>
 <pre>INDIRIZZO=https://nebulosa.esempio.it bash avvia-server.sh</pre>
 <p class="nota">I file <code>.bat</code> sono solo per Windows (doppio clic): con <code>bash</code> o <code>sh</code> danno errori come «@echo: command not found».</p>
 <p>Su Windows, in «Apri la nebulosa.bat», togli <code>rem</code> dalla riga <code>set INDIRIZZO=…</code> e scrivi lì l'indirizzo. Se la nebulosa è aperta direttamente dall'indirizzo del tunnel, il QR lo trova da solo.</p>
