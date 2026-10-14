@@ -715,7 +715,7 @@ const MODELLO_MANO = 'https://storage.googleapis.com/mediapipe-models/hand_landm
 const OSSA_MANO = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]];
 const SOSTA_MANO = 1500;      // quanto tenere ferma la mano su una foto per entrarci (ms)
 const VIA_MANO = 2000;        // quanto tempo senza mano per tornare alla nebulosa (ms)
-const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, storia: [], storiaM: [], mx: null, my: null, px: null, py: null, ddPrima: 0, velZoom: 0, pesoTrascina: 1, ax: null, ay: null, d0: 1, r0: 34, dd: 1, pa: null, pb: null };
+const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, gesto: null, fermi: 0, grezzi: [], storia: [], mx: null, my: null, sp: null, px: null, py: null, scala: .1, ax: null, ay: null, d0: 1, r0: 34, pa: null, pb: null };
 let rilevatore = null, ultimoVideo = -1, ultimoPasso = 0;
 const video = $('manoVideo'), anteprima = $('manoCanvas'), ctxAnte = anteprima.getContext('2d');
 
@@ -774,10 +774,14 @@ function leggiMano(now) {
 }
 const taglia = m => Math.hypot(m[0].x - m[9].x, m[0].y - m[9].y);   // quanto e' grande una mano nell'inquadratura
 
-// ---------------- lo zoom con due mani: allargarle avvicina, stringerle allontana ----------------
-// conta solo la distanza tra i due palmi, misurata in «mani» (divisa per la grandezza delle mani): cosi' non cambia
-// se la persona si avvicina o si allontana dalla webcam. Nessuna forma delle dita
-const ENTRA_DUE = 120, ESCE_DUE = 500;   // ms: quanto devono vedersi due mani per entrare nello zoom, quanto una puo' sparire prima di uscirne
+// ---------------- le due mani: allargarle o stringerle fa lo zoom, muoverle insieme trascina ----------------
+// Un gesto alla volta: appena le mani si muovono si guarda che cosa cambia di piu'. Se cambia la distanza tra le mani e'
+// uno zoom, se si sposta il punto tra le mani e' un trascinamento; il gesto resta quello finche' le mani si fermano un attimo,
+// e intanto l'altro non fa niente (con le mani vere i due movimenti si mescolano sempre un po'). Nessuna forma delle dita
+const ENTRA_DUE = 120, ESCE_DUE = 500;   // ms: quanto devono vedersi due mani per cominciare, quanto una puo' sparire prima di smettere
+const FINESTRA = 6;                      // su quanti fotogrammi si guarda il movimento (circa un quinto di secondo)
+const PARTE = 14, FERMO = 5;             // pixel: oltre PARTE il gesto comincia; sotto FERMO (per FERMA_PER fotogrammi) le mani sono ferme
+const FERMA_PER = 8, TROPPO_VELOCE = 70; // fotogrammi da fermi per lasciare il gesto; pixel a fotogramma oltre cui e' una mano persa o abbassata
 function dueMani(mani, lati) {   // le due mani piu' grandi (le piu' vicine), con palmo, grandezza e lato
   return mani.map((m, i) => i).sort((a, b) => taglia(mani[b]) - taglia(mani[a])).slice(0, 2).map(i => ({ p: palmo(mani[i]), t: taglia(mani[i]), lato: lati && lati[i] }));
 }
@@ -786,65 +790,63 @@ function veraCoppia(c) {         // due mani vere, non la stessa vista due volte
   const d = Math.hypot(c[0].p.x - c[1].p.x, c[0].p.y - c[1].p.y);
   return d >= .07 && !(c[0].lato && c[0].lato === c[1].lato && d < .15);
 }
-const misura = c => Math.hypot(c[0].p.x - c[1].p.x, c[0].p.y - c[1].p.y) / Math.max(.02, (c[0].t + c[1].t) / 2);
+// dove cade un palmo sullo schermo (la webcam e' a specchio), senza fermarsi ai bordi
+const palmoSulloSchermo = q => ({ x: (1 - q.x - .18) / .64 * innerWidth, y: (q.y - .15) / .6 * innerHeight });
+const mediana3 = a => a.slice().sort((x, y) => x - y)[Math.floor(a.length / 2)];
 function aggiornaDueMani(mani, lati, now) {
   const c = dueMani(mani, lati), due = veraCoppia(c);
   if (due) { mano.vistaDue = mano.vistaDue || now; mano.ultimaDue = now; } else mano.vistaDue = 0;
   if (!mano.due && due && now - mano.vistaDue >= ENTRA_DUE) {
-    mano.due = true; mano.storia = []; mano.storiaM = []; mano.mx = mano.my = mano.px = mano.py = null; mano.ddPrima = 0; mano.velZoom = 0; mano.pesoTrascina = 1; mano.ax = mano.ay = null; mano.dd = mano.d0 = misura(c); mano.r0 = camera.position.distanceTo(controls.target);
-    mano.bersaglio = null; mano.carica = 0; setHover(null);
-  } else if (mano.due && !due && now - mano.ultimaDue > ESCE_DUE) mano.due = false;   // una mano persa per un attimo: lo zoom resta fermo, non esce
-  if (mano.due && due) {
-    // un valore isolato fuori posto (una mano persa o scambiata per un solo fotogramma) lo toglie la mediana degli ultimi tre;
-    // un cambiamento vero passa subito, solo ammorbidito
-    mano.storia.push(misura(c)); if (mano.storia.length > 3) mano.storia.shift();
-    const med = mano.storia.slice().sort((a, b) => a - b)[Math.floor(mano.storia.length / 2)];
-    mano.dd += (med - mano.dd) * .5;
-    mano.pa = c[0].p; mano.pb = c[1].p;
-    // il punto a meta' tra le mani, sullo schermo: anche lui senza il fotogramma sbagliato e ammorbidito (serve a trascinare)
-    const s = sulloSchermo({ x: (c[0].p.x + c[1].p.x) / 2, y: (c[0].p.y + c[1].p.y) / 2 });
-    mano.storiaM.push(s); if (mano.storiaM.length > 3) mano.storiaM.shift();
-    const mx = mano.storiaM.map(q => q.x).sort((a, b) => a - b)[Math.floor(mano.storiaM.length / 2)];
-    const my = mano.storiaM.map(q => q.y).sort((a, b) => a - b)[Math.floor(mano.storiaM.length / 2)];
-    if (mano.mx == null) { mano.mx = mx; mano.my = my; } else { mano.mx += (mx - mano.mx) * .5; mano.my += (my - mano.my) * .5; }
-  }
+    Object.assign(mano, { due: true, gesto: null, fermi: 0, grezzi: [], storia: [], mx: null, my: null, sp: null, px: null, py: null,
+      scala: (c[0].t + c[1].t) / 2, bersaglio: null, carica: 0 });
+    setHover(null);
+  } else if (mano.due && !due && now - mano.ultimaDue > ESCE_DUE) mano.due = false;   // una mano persa per un attimo: si resta fermi, non si esce
+  if (!(mano.due && due)) return;
+  mano.pa = c[0].p; mano.pb = c[1].p;
+  // la grandezza delle mani cambia molto se il polso si piega: si aggiorna solo piano (serve se la persona si avvicina o si allontana)
+  mano.scala += ((c[0].t + c[1].t) / 2 - mano.scala) * .02;
+  const a = palmoSulloSchermo(c[0].p), b = palmoSulloSchermo(c[1].p);
+  // il punto tra le mani e la loro distanza, in pixel: senza il fotogramma isolato sbagliato (mediana degli ultimi tre) e ammorbiditi
+  mano.grezzi.push({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, s: Math.hypot(a.x - b.x, a.y - b.y) }); if (mano.grezzi.length > 3) mano.grezzi.shift();
+  const mx = mediana3(mano.grezzi.map(q => q.x)), my = mediana3(mano.grezzi.map(q => q.y)), sp = mediana3(mano.grezzi.map(q => q.s));
+  if (mano.mx == null) { mano.mx = mx; mano.my = my; mano.sp = sp; }
+  else { mano.mx += (mx - mano.mx) * .5; mano.my += (my - mano.my) * .5; mano.sp += (sp - mano.sp) * .5; }
+  mano.storia.push({ x: mano.mx, y: mano.my, s: mano.sp }); if (mano.storia.length > FINESTRA) mano.storia.shift();
 }
 function zoomDueMani() {
   if (fuoco && (!fuoco.arrivato || fuoco.uscita)) return;   // durante un volo la camera e' gia' in movimento
-  // da quando le mani si sono alzate insieme: il doppio della distanza tra i palmi = quattro volte piu' vicino,
-  // cosi' basta aprire le mani poco piu' delle spalle e restano dentro l'inquadratura
+  if (mano.mx == null || mano.storia.length < 2) return;
   const vicino = fuoco ? 2.2 : 6, lontano = fuoco ? 14 : 48;
-  const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.dd, .05), 2), vicino, lontano);
-  const R = camera.position.distanceTo(controls.target), k = (R + (voluto - R) * .2) / R;
-  // muovere le due mani insieme trascina la nebulosa: quello che sta sotto le mani le segue, come trascinando con due dita.
-  // Ma mentre si allargano o si stringono le mani si sta zoomando: allora il trascinamento si spegne (piano, senza scatti),
-  // perche' le mani non si aprono mai in modo perfettamente simmetrico e il punto tra loro si sposta un po' da solo
-  // la velocita' dello zoom, con il segno e mediata su qualche fotogramma: il tremolio va avanti e indietro e si annulla,
-  // uno zoom vero va sempre nella stessa direzione e resta
-  mano.velZoom = mano.velZoom * .7 + (mano.ddPrima ? (mano.dd - mano.ddPrima) / mano.dd : 0) * .3; mano.ddPrima = mano.dd;
-  const velZoom = Math.abs(mano.velZoom), SOGLIA = .004;
-  mano.pesoTrascina += ((velZoom > SOGLIA ? 0 : 1) - mano.pesoTrascina) * (velZoom > SOGLIA ? .5 : .08);
-  if (!fuoco && mano.mx != null) {
-    if (mano.px != null) {
-      const ddx = (mano.mx - mano.px) * mano.pesoTrascina, ddy = (mano.my - mano.py) * mano.pesoTrascina;
-      if (Math.hypot(ddx, ddy) > 1.5) {   // sotto un pixel e mezzo e' solo il tremolio della webcam
-        const perPixel = 2 * R * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) / innerHeight;
-        camera.updateMatrixWorld(); camera.matrixWorld.extractBasis(zDir, zAvanti, zP);   // destra e su della camera
-        zP.copy(zDir).multiplyScalar(-ddx * perPixel).addScaledVector(zAvanti, ddy * perPixel);
-        camera.position.add(zP); controls.target.add(zP);
-      }
-    }
-    mano.px = mano.mx; mano.py = mano.my;
+  const R = camera.position.distanceTo(controls.target);
+  // quanto si sono mossi, negli ultimi fotogrammi, il punto tra le mani e la loro distanza (in pixel)
+  const v = mano.storia[0], dm = Math.hypot(mano.mx - v.x, mano.my - v.y), ds = Math.abs(mano.sp - v.s);
+  const salto = mano.px != null && Math.hypot(mano.mx - mano.px, mano.my - mano.py) > TROPPO_VELOCE;
+  // scegliere il gesto, e lasciarlo quando le mani si fermano
+  if (!mano.gesto && !salto && (dm > PARTE || ds > PARTE)) {
+    mano.gesto = ds > dm * .8 ? 'zoom' : 'trascina';
+    // lo zoom parte da qui: la distanza di adesso e la vista di adesso; si zooma verso il punto tra le mani
+    mano.d0 = mano.sp / mano.scala; mano.r0 = R; mano.ax = mano.mx; mano.ay = mano.my;
   }
-  // ci si avvicina al punto che le mani indicano (a meta' tra i due palmi), come allargando due dita su una foto:
-  // quel punto resta fermo sullo schermo e tutto il resto si allarga intorno. Dentro una foto aperta resta lei al centro
+  if (mano.gesto) { mano.fermi = dm < FERMO && ds < FERMO ? mano.fermi + 1 : 0; if (mano.fermi >= FERMA_PER) mano.gesto = null; }
+  // trascinare: quello che sta sotto le mani le segue, come trascinando con due dita (dentro una foto aperta no: resta lei al centro)
+  if (mano.gesto === 'trascina' && !fuoco && mano.px != null && !salto) {
+    const ddx = mano.mx - mano.px, ddy = mano.my - mano.py;
+    const perPixel = 2 * R * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) / innerHeight;
+    camera.updateMatrixWorld(); camera.matrixWorld.extractBasis(zDir, zAvanti, zP);   // destra e su della camera
+    zP.copy(zDir).multiplyScalar(-ddx * perPixel).addScaledVector(zAvanti, ddy * perPixel);
+    camera.position.add(zP); controls.target.add(zP);
+  }
+  mano.px = mano.mx; mano.py = mano.my;
+  if (mano.gesto !== 'zoom') return;
+  // lo zoom: il doppio della distanza tra le mani = quattro volte piu' vicino (basta aprirle poco piu' delle spalle)
+  const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.sp / mano.scala, .05), 2), vicino, lontano);
+  const k = (R + (voluto - R) * .2) / R;
+  // ci si avvicina al punto tra le mani di quando lo zoom e' cominciato: resta fermo sullo schermo e il resto si allarga intorno.
+  // Dentro una foto aperta resta lei al centro
   zP.copy(controls.target);
-  // il punto verso cui si zooma si fissa quando si comincia ad allargare o stringere: se le mani si aprono storte non scivola via
-  if (mano.mx != null && (mano.ax == null || mano.pesoTrascina > .9)) { mano.ax = mano.mx; mano.ay = mano.my; }
-  if (!fuoco && mano.ax != null) {
-    const s = { x: mano.ax, y: mano.ay };
+  if (!fuoco) {
     camera.updateMatrixWorld();   // la camera com'e' adesso, non com'era all'ultimo disegno
-    zDir.set(s.x / innerWidth * 2 - 1, 1 - s.y / innerHeight * 2, .5).unproject(camera).sub(camera.position).normalize();
+    zDir.set(clamp(mano.ax / innerWidth, 0, 1) * 2 - 1, 1 - clamp(mano.ay / innerHeight, 0, 1) * 2, .5).unproject(camera).sub(camera.position).normalize();
     camera.getWorldDirection(zAvanti);
     zP.copy(camera.position).addScaledVector(zDir, R / Math.max(.2, zDir.dot(zAvanti)));   // il punto indicato, alla profondita' del centro della vista
   }
