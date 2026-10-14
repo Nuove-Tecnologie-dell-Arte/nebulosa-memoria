@@ -4,14 +4,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
-import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
-import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 
-// LA BARRIERA CORALLINA: ogni gruppo di senso (i nuclei della lettura) e' una colonia di corallo che cresce dal fondo,
-// in un anello intorno a una laguna; le colonie che si somigliano crescono accanto. I rami sono i tag condivisi:
-// tronco, ramo, rametto dicono a cosa appartiene ogni foto. Passando su una foto si accende il suo ramo, e dei fili dritti
-// portano alle foto con dei tag in comune. Una piccola mappa in basso a sinistra dice dove sei e porta alle colonie.
+// LE VENATURE: tutte le foto hanno qualcosa in comune con almeno un'altra. Ogni foto e' legata a quella con cui ha
+// piu' tag in comune, e i legami formano un'unica rete che si dirama come le venature di una foglia, le radici,
+// il micelio di un fungo: dalla radice, in basso nella luce, si apre a ventaglio verso l'alto. Le vene sono tanto piu'
+// grosse quante piu' foto portano; qualche filo sottile chiude un anello tra foto vicine e molto simili.
+// Passando su una foto si accende il suo cammino fino alla radice. La mappa in basso a sinistra mostra il ventaglio e dove guardi.
 
 const D = window.NEBULOSA;
 const $ = id => document.getElementById(id);
@@ -39,10 +37,10 @@ const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06050a);
 const camera = new THREE.PerspectiveCamera(52, 1, .1, 500);
-const CASA = new THREE.Vector3(0, 40, 70);   // dall'alto e di lato: si vede tutto l'anello
+const CASA = new THREE.Vector3(0, 20, 66);   // di fronte al ventaglio: si vede tutta la rete
 camera.position.copy(CASA);
 const controls = new OrbitControls(camera, cv);
-controls.target.set(0, 4, 0);
+controls.target.set(0, 18, 0);
 Object.assign(controls, { enableDamping: true, dampingFactor: .06, autoRotate: !reduced, autoRotateSpeed: .35, minDistance: 1.2, maxDistance: 130, rotateSpeed: .6, zoomSpeed: .8 });
 let fermo = 0;
 const riprendiGiro = () => { clearTimeout(fermo); fermo = setTimeout(() => { if (!fuoco) controls.autoRotate = !reduced; }, 9000); };
@@ -52,8 +50,7 @@ const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), .8, .45, .82);
 composer.addPass(bloom); composer.addPass(new OutputPass());
-const materialiFili = [];   // le linee spesse devono sapere quanto e' grande lo schermo
-function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); materialiFili.forEach(m => m.resolution.set(w, h)); }
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize); resize();
 
 // le stelle lontane
@@ -79,11 +76,10 @@ const alone = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLuce([[0, 'rgb
 const centroOpaco = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLuce([[0, 'rgba(255,255,255,.9)'], [.3, 'rgba(255,255,255,.35)'], [1, 'rgba(255,255,255,0)']]), depthWrite: false, transparent: true }));
 centroOpaco.scale.setScalar(3.2);
 scene.add(alone, nucleo, centroOpaco);
-[alone, nucleo, centroOpaco].forEach(s => s.position.set(0, 3, 0));   // la luce sta nella laguna, in mezzo all'anello
 
 // ---------------- i colori: quattro modi di vedere la stessa memoria ----------------
 // temperatura e spettro sono quelli di sempre (luminosi, con il bagliore); notte opaca e carta sono calmi:
-// niente bagliore, un colore tenue per ogni colonia
+// niente bagliore, un colore tenue per ogni gruppo di senso
 const FUOCO = [[0, [70, 120, 255]], [.25, [150, 150, 235]], [.45, [230, 60, 40]], [.7, [255, 140, 30]], [.88, [255, 215, 90]], [1, [255, 250, 230]]];
 function temperatura(t) {
   for (let k = 1; k < FUOCO.length; k++) if (t <= FUOCO[k][0] || k === FUOCO.length - 1) {
@@ -97,14 +93,14 @@ let palette = PALETTE.includes(memo('nebulosa-colori')) ? memo('nebulosa-colori'
 const chiaro = () => palette === 'carta';
 const opaco = () => palette === 'notte' || palette === 'carta';
 const FONDO = { fuoco: 0x06050a, spettro: 0x06050a, notte: 0x0d0c11, carta: 0xefe8dc };
-// un colore tenue per colonia: le tinte saltano di 5/12 di giro, cosi' colonie vicine nell'elenco non si confondono
-function coloreColonia(k) {
+// un colore tenue per gruppo: le tinte saltano di 5/12 di giro, cosi' gruppi vicini nell'elenco non si confondono
+function coloreGruppo(k) {
   const h = (k * 5 % 12) / 12;
   return chiaro() ? new THREE.Color().setHSL(h, .4, .42, THREE.SRGBColorSpace) : new THREE.Color().setHSL(h, .32, .7, THREE.SRGBColorSpace);
 }
 function colore(p) {
   const f = p.f; let c;
-  if (opaco()) c = p.colonia >= 0 ? coloreColonia(p.colonia) : chiaro() ? new THREE.Color(.42, .4, .37) : new THREE.Color(.8, .78, .74);
+  if (opaco()) c = p.gruppo >= 0 ? coloreGruppo(p.gruppo) : chiaro() ? new THREE.Color(.42, .4, .37) : new THREE.Color(.8, .78, .74);
   else {
     const [vi, qu, , sc] = f.mv;
     c = palette === 'spettro' ? new THREE.Color().setHSL(f.h / 360, .78, clamp(f.l / 100, .45, .68), THREE.SRGBColorSpace) : temperatura(clamp(.5 + .55 * vi - .5 * qu + .1 * sc, 0, 1));
@@ -112,241 +108,121 @@ function colore(p) {
   return f.provv ? c.lerp(chiaro() ? new THREE.Color(.66, .64, .6) : new THREE.Color(.78, .77, .75), .6) : c;   // non ancora letta: quasi grigia
 }
 
-// ---------------- la barriera: ogni gruppo di senso e' una colonia di corallo ----------------
-// Le colonie crescono dal fondo, in un anello (un atollo) intorno a una laguna; quelle che si somigliano crescono accanto.
-// In ogni colonia i rami sono i tag che le sue foto condividono: una foto sta sul ramo del suo tag piu' condiviso
-// nella colonia; chi non ne condivide nessuno sta in cima, sulla corona. Tronco, ramo, rametto: ogni linea dice a cosa appartiene una foto.
+// ---------------- la rete: ogni foto e' legata a quella con cui ha piu' in comune ----------------
+// Tutte le foto hanno qualcosa in comune con almeno un'altra. Si parte dai legami piu' forti e si aggiungono
+// finche' tutte sono collegate, senza anelli (un albero di somiglianze): ne nasce una rete che si dirama
+// come le venature di una foglia, le radici, il micelio di un fungo. La radice sta in basso, nella luce;
+// le vene si aprono a ventaglio verso l'alto e sono tanto piu' grosse quante piu' foto portano.
 const NUCLEI = (D.nuclei || []).map(n => n.id);
 const datiDi = id => (photoById[id] && photoById[id].f) || D.foto[id];
-// la colonia di una foto: il suo gruppo di senso; se non e' ancora stata letta, quello delle foto che le somigliano.
-// -1 = nessun indizio: galleggia nella laguna, vicino alla luce
-function trovaColonia(f) {
+function trovaGruppo(f) {   // il gruppo di senso (serve solo ai colori «notte opaca» e «carta»)
   const k = NUCLEI.indexOf(f.nucleo); if (k >= 0) return k;
   const voti = NUCLEI.map(() => 0);
   for (const [id, w] of f.vicine || []) { const g = datiDi(id), j = g ? NUCLEI.indexOf(g.nucleo) : -1; if (j >= 0) voti[j] += w; }
   const m = Math.max(0, ...voti);
   return m > 0 ? voti.indexOf(m) : -1;
 }
-// quanto si somigliano due gruppi: i tag che hanno in comune (coseno tra i conteggi)
-function somiglianzaNuclei() {
-  const conti = NUCLEI.map(() => new Map());
-  for (const id of D.tutte) { const f = D.foto[id], k = f ? NUCLEI.indexOf(f.nucleo) : -1; if (k >= 0) for (const t of f.tag || []) conti[k].set(t, (conti[k].get(t) || 0) + 1); }
-  const norma = conti.map(m => Math.sqrt([...m.values()].reduce((s, v) => s + v * v, 0)) || 1);
-  return conti.map((a, i) => conti.map((b, j) => { let s = 0; for (const [t, v] of a) s += v * (b.get(t) || 0); return i === j ? 0 : s / norma[i] / norma[j]; }));
+// quanto si somigliano due foto: i tag in comune, pesati (i primi tag contano di piu', quelli rari di piu' di quelli comuni).
+// Una foto non ancora letta non ha tag: valgono le somiglianze nell'aspetto o nella frase che ha gia'
+const PESO_POS = [1.3, 1.15, 1, .9, .85, .8];
+let rarita = new Map();
+function pesaTag() {
+  const df = new Map(); photos.forEach(p => new Set(p.f.tag || []).forEach(t => df.set(t, (df.get(t) || 0) + 1)));
+  rarita = new Map([...df].map(([t, n]) => [t, Math.log(1 + photos.length / n)]));
+  photos.forEach(vettore);
 }
-const R_ANELLO = 28;
-// dove cresce ogni colonia: intorno all'anello, ognuna accanto a quelle che le somigliano di piu'; le piu' grandi hanno piu' spazio
-const BASI = (() => {
-  const n = NUCLEI.length, S = somiglianzaNuclei();
-  const quante = NUCLEI.map(id => D.tutte.filter(x => D.foto[x] && D.foto[x].nucleo === id).length);
-  if (!n) return [];
-  const ord = [quante.indexOf(Math.max(...quante))];
-  while (ord.length < n) { const u = ord[ord.length - 1]; let best = -1, bv = -1; for (let k = 0; k < n; k++) if (!ord.includes(k) && S[u][k] > bv) { bv = S[u][k]; best = k; } ord.push(best); }
-  const valore = o => o.reduce((s, k, i) => s + S[k][o[(i + 1) % n]], 0);
-  for (let meglio = true, giri = 0; meglio && giri < 40; giri++) {   // si girano dei tratti dell'anello finche' migliora
-    meglio = false;
-    for (let i = 1; i < n - 1; i++) for (let j = i + 1; j < n; j++) {
-      const prova = [...ord.slice(0, i), ...ord.slice(i, j + 1).reverse(), ...ord.slice(j + 1)];
-      if (valore(prova) > valore(ord) + 1e-9) { ord.splice(0, n, ...prova); meglio = true; }
-    }
+function vettore(p) {
+  p.vt = new Map((p.f.tag || []).map((t, i) => [t, PESO_POS[Math.min(i, 5)] * (rarita.get(t) || Math.log(1 + photos.length))]));
+  p.nt = Math.sqrt([...p.vt.values()].reduce((s, v) => s + v * v, 0)) || 1;
+  p.vic = new Map(p.f.vicine || []);
+}
+function somiglianza(p, q) {
+  if (p.vt.size && q.vt.size) { let s = 0; for (const [t, v] of p.vt) s += v * (q.vt.get(t) || 0); return s / p.nt / q.nt; }
+  return p.vic.get(q.id) || q.vic.get(p.id) || 0;
+}
+// l'albero: dai legami piu' forti, finche' tutte sono collegate (algoritmo di Prim)
+function costruisciAlbero() {
+  const ps = photos.filter(p => !p.hold), n = ps.length; if (!n) return;
+  const best = new Float64Array(n).fill(-1), da = new Int32Array(n).fill(-1), dentro = new Uint8Array(n);
+  best[0] = 0;
+  for (let giro = 0; giro < n; giro++) {
+    let u = -1; for (let i = 0; i < n; i++) if (!dentro[i] && (u < 0 || best[i] > best[u])) u = i;
+    dentro[u] = 1;
+    for (let v = 0; v < n; v++) if (!dentro[v]) { const s = somiglianza(ps[u], ps[v]); if (s > best[v]) { best[v] = s; da[v] = u; } }
   }
-  const peso = ord.map(k => Math.sqrt(quante[k]) + 2), tot = peso.reduce((a, b) => a + b, 0), basi = [];
-  let a = -Math.PI / 2;
-  ord.forEach((k, i) => { const da = peso[i] / tot * TAU; basi[k] = new THREE.Vector3(Math.cos(a + da / 2) * R_ANELLO, 0, Math.sin(a + da / 2) * R_ANELLO); a += da; });
-  return basi;
-})();
-const LAGUNA = new THREE.Vector3(0, 3, 0);
-const altezza = n => 3.5 + .8 * Math.sqrt(Math.max(1, n));
-const DMIN = 1.15;                                       // la distanza minima tra due foto: nessuna copre l'altra
-const SU = new THREE.Vector3(0, 1, 0);
-const colonie = NUCLEI.map((_, k) => ({ k, H: 0, tronco: null, rami: [], cima: null, col: new THREE.Color() }));
+  ps.forEach(p => { p.vicini = []; });
+  ps.forEach((p, i) => { if (da[i] >= 0) { p.vicini.push(ps[da[i]]); ps[da[i]].vicini.push(p); p.forza = best[i]; } });
+  // la radice: la foto al centro della rete (a meta' del cammino piu' lungo), cosi' i rami sono il piu' corti possibile
+  const lontano = s => { const d = new Map([[s, 0]]), q = [s]; for (const u of q) for (const w of u.vicini) if (!d.has(w)) { d.set(w, d.get(u) + 1); q.push(w); } return d; };
+  const d0 = lontano(ps[0]), a = [...d0].sort((x, y) => y[1] - x[1])[0][0], da2 = lontano(a), b = [...da2].sort((x, y) => y[1] - x[1])[0][0], db = lontano(b);
+  radice = ps.reduce((m, p) => Math.max(da2.get(p), db.get(p)) < Math.max(da2.get(m), db.get(m)) ? p : m, ps[0]);
+  // da radice in su: padri, figli, profondita', quante foto porta ogni vena
+  ps.forEach(p => { p.padre = null; p.figli = []; });
+  const coda = [radice]; radice.prof = 0;
+  for (const u of coda) for (const w of u.vicini) if (w !== u.padre && w !== radice && !w.padre) { w.padre = u; w.prof = u.prof + 1; u.figli.push(w); coda.push(w); }
+  [...coda].reverse().forEach(p => { p.porta = 1 + p.figli.reduce((s, c) => s + c.porta, 0); });
+  ordine = coda;
+}
+let radice = null, ordine = [];
+const BASE = new THREE.Vector3(0, 0, 0);
+const APERTURA = 1.35;                                   // mezzo ventaglio, in radianti (circa 77 gradi per parte)
+const R0 = 4, PASSO = 1.55, CURVA = 60;                  // altezza della radice, distanza tra un livello e l'altro, quanto il ventaglio e' incurvato
+const DMIN = 1.1;                                        // la distanza minima tra due foto: nessuna copre l'altra
 const dx = new THREE.Vector3(), dy = new THREE.Vector3();
-function spingi(ps, giri, mobili) {                      // le foto troppo vicine si allontanano un po', senza scappare dal loro ramo
+// il ventaglio: ogni vena prende uno spicchio grande quanto le foto che porta; le piu' grandi stanno in mezzo
+function disponi() {
+  if (!radice) return;
+  const spicchio = new Map([[radice, [-APERTURA, APERTURA]]]);
+  for (const p of ordine) {
+    const [a0, a1] = spicchio.get(p), fig = p.figli.slice().sort((x, y) => y.porta - x.porta);
+    const ord = []; fig.forEach((c, i) => i % 2 ? ord.push(c) : ord.unshift(c));   // la piu' grande in mezzo, le altre ai lati
+    const tot = ord.reduce((s, c) => s + Math.pow(c.porta, .85), 0); let a = a0;
+    ord.forEach(c => { const w = (a1 - a0) * Math.pow(c.porta, .85) / tot; spicchio.set(c, [a, a + w]); a += w; });
+    const th = (a0 + a1) / 2, r = R0 + PASSO * Math.pow(p.prof, .95), r0 = seme(p.id);
+    const x = Math.sin(th) * r * 1.05, y = Math.cos(th) * r;
+    p.fine.set(x, y, -(x * x) / (2 * CURVA) + (r0() - .5) * (.6 + p.prof * .06));   // un ventaglio un po' incurvato, come quelli di mare
+    p.nido = p.fine.clone();
+  }
+  spingi(photos.filter(p => !p.hold), 60);
+}
+function spingi(ps, giri, mobili) {                      // le foto troppo vicine si allontanano (anche in profondita'), restando vicine al loro posto
   for (let g = 0; g < giri; g++) {
     for (let a = 0; a < ps.length; a++) for (let b = a + 1; b < ps.length; b++) {
-      const A = ps[a].fine, B = ps[b].fine, d = A.distanceTo(B);
-      if (d >= DMIN) continue;
+      const A = ps[a].fine, B = ps[b].fine;
+      const ex = A.x - B.x, ey = A.y - B.y, ez = A.z - B.z; if (ex * ex + ey * ey + ez * ez >= DMIN * DMIN) continue;
       const ma = !mobili || mobili.has(ps[a]), mb = !mobili || mobili.has(ps[b]); if (!ma && !mb) continue;
-      dx.subVectors(A, B); if (d < 1e-4) dx.set(Math.sin(a + g), Math.cos(b), Math.sin(a * b + 1)); dx.setLength((DMIN - d) / (ma && mb ? 2 : 1));
+      const d = Math.sqrt(ex * ex + ey * ey + ez * ez);
+      dx.set(ex, ey, ez * 2.5); if (d < 1e-4) dx.set(Math.sin(a + g), Math.cos(b), 1); dx.setLength((DMIN - d) / (ma && mb ? 2 : 1));
       if (ma) A.add(dx); if (mb) B.sub(dx);
     }
-    for (const p of ps) if ((!mobili || mobili.has(p)) && p.nido) p.fine.lerp(p.nido, .03);
+    for (const p of ps) if ((!mobili || mobili.has(p)) && p.nido) p.fine.lerp(p.nido, .02);
   }
 }
-// il ramo di una foto: il suo tag piu' condiviso tra quelli che nella colonia sono gia' un ramo
-function ramoPer(p, C, conti) {
-  let best = -1, bn = 0;
-  (p.f.tag || []).forEach(t => { const j = C.rami.findIndex(R => R.tag === t), n = conti ? conti.get(t) || 0 : C.rami[j] ? C.rami[j].membri.length : 0; if (j >= 0 && n > bn) { bn = n; best = j; } });
-  return best;
-}
-function suRamo(p, R, i, n) {                           // il posto di una foto lungo il ramo: verso la punta, in giro intorno al ramo
-  const s = n <= 1 ? 1 : .45 + .55 * i / (n - 1);
-  const A = R.curva.getPoint(Math.min(1, s)), tg = R.curva.getTangent(Math.min(1, s));
-  const a1 = new THREE.Vector3().crossVectors(tg, SU); if (a1.lengthSq() < 1e-4) a1.set(1, 0, 0); a1.normalize();
-  const a2 = new THREE.Vector3().crossVectors(tg, a1).normalize(), ang = i * 2.39996 + R.giro, rr = .85 + .25 * (i % 3);
-  p.ancora = A.clone(); p.fine.copy(A).addScaledVector(a1, Math.cos(ang) * rr).addScaledVector(a2, Math.sin(ang) * rr).addScaledVector(tg, .25);
-  p.ordine = R.ord0 + s * R.lung;
-}
-function inCima(p, C, i, m) {                           // la corona: una cupola di foto in cima al tronco
-  const rc = 1.1 + .4 * Math.sqrt(m), y = .2 + .8 * (i + .5) / m, a = i * 2.39996, r = Math.sqrt(1 - y * y);
-  p.ancora = C.cima.clone(); p.fine.set(Math.cos(a) * r, y, Math.sin(a) * r).multiplyScalar(rc).add(C.cima);
-  p.ordine = C.H + rc;
-}
-function costruisciColonia(k) {
-  const C = colonie[k], B = BASI[k], ps = photos.filter(p => p.colonia === k);
-  const conti = new Map(); ps.forEach(p => (p.f.tag || []).forEach(t => conti.set(t, (conti.get(t) || 0) + 1)));
-  const H = C.H = altezza(ps.length), r0 = seme('colonia ' + NUCLEI[k]);
-  const piega = B.clone().normalize().multiplyScalar(H * .1).add(new THREE.Vector3(r0() - .5, 0, r0() - .5).multiplyScalar(H * .18));
-  C.tronco = new THREE.QuadraticBezierCurve3(B.clone(), B.clone().add(new THREE.Vector3(0, H * .5, 0)).addScaledVector(piega, .15), B.clone().add(new THREE.Vector3(0, H, 0)).add(piega));
-  C.cima = C.tronco.getPoint(1);
-  // i rami: i tag condivisi da almeno due foto; ogni foto sceglie il suo piu' condiviso; restano i rami che hanno foto (al massimo 9)
-  const candidati = [...conti].filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1]).map(x => x[0]);
-  C.rami = candidati.map(tag => ({ tag, membri: [] }));
-  ps.forEach(p => { p.ramo = ramoPer(p, C, conti); if (p.ramo >= 0) C.rami[p.ramo].membri.push(p); });
-  let usati = C.rami.filter(R => R.membri.length).sort((a, b) => b.membri.length - a.membri.length);
-  const tenuti = usati.slice(0, 9); usati.slice(9).forEach(R => R.membri.forEach(p => { p.ramo = -1; }));
-  C.rami = tenuti;
-  // chi non ha ramo ma somiglia a foto che ce l'hanno (le foto non ancora lette) va sul loro ramo
-  ps.forEach(p => {
-    p.ramo = C.rami.findIndex(R => R.membri.includes(p));
-    if (p.ramo >= 0 || (p.f.tag || []).length) return;
-    const voti = C.rami.map(() => 0);
-    (p.f.vicine || []).forEach(([id, w]) => { const q = photoById[id]; const j = q ? C.rami.findIndex(R => R.membri.includes(q)) : -1; if (j >= 0) voti[j] += w; });
-    const m = Math.max(0, ...voti); if (m > 0) { p.ramo = voti.indexOf(m); C.rami[p.ramo].membri.push(p); }
-  });
-  C.rami.forEach((R, j) => {
-    const u = .12 + .7 * ((j * .618 + r0() * .2) % 1);
-    const S0 = C.tronco.getPoint(u), ang = j * 2.39996 + r0() * TAU, d = new THREE.Vector3(Math.cos(ang), 0, Math.sin(ang));
-    const L = 2.4 + .6 * Math.sqrt(R.membri.length) + (1 - u) * 1.4;
-    R.curva = new THREE.QuadraticBezierCurve3(S0, S0.clone().addScaledVector(d, L * .55).add(new THREE.Vector3(0, L * .1, 0)), S0.clone().addScaledVector(d, L).add(new THREE.Vector3(0, L * .55, 0)));
-    R.lung = R.curva.getLength(); R.ord0 = u * C.tronco.getLength(); R.giro = r0() * TAU;
-    // i rametti: dentro un ramo, le foto che condividono anche un secondo tag si staccano insieme (al massimo tre rametti)
-    R.figli = [];
-    const c2 = new Map(); R.membri.forEach(p => (p.f.tag || []).forEach(t => { if (t !== R.tag) c2.set(t, (c2.get(t) || 0) + 1); }));
-    const gruppi = new Map();
-    if (R.membri.length >= 4) R.membri.forEach(p => {
-      let best = null, bn = 1; (p.f.tag || []).forEach(t => { const n = c2.get(t) || 0; if (t !== R.tag && n > bn) { bn = n; best = t; } });
-      if (best) { if (!gruppi.has(best)) gruppi.set(best, []); gruppi.get(best).push(p); }
-    });
-    [...gruppi].filter(([, ps]) => ps.length >= 2).sort((a, b) => b[1].length - a[1].length).slice(0, 3).forEach(([tag, ps], i, tutti) => {
-      const s0 = .3 + .55 * (i + 1) / (tutti.length + 1), P0 = R.curva.getPoint(s0), tg = R.curva.getTangent(s0);
-      const lato = new THREE.Vector3().crossVectors(tg, SU); if (lato.lengthSq() < 1e-4) lato.set(1, 0, 0); lato.normalize();
-      const dir = tg.clone().multiplyScalar(.5).addScaledVector(lato, i % 2 ? .9 : -.9).addScaledVector(SU, .55).normalize(), L2 = 1.3 + .5 * Math.sqrt(ps.length);
-      const curva = new THREE.QuadraticBezierCurve3(P0, P0.clone().addScaledVector(dir, L2 * .5), P0.clone().addScaledVector(dir, L2).addScaledVector(SU, L2 * .3));
-      R.figli.push({ tag, curva, lung: curva.getLength(), ord0: R.ord0 + s0 * R.lung, giro: r0() * TAU, membri: ps });
-    });
-    const sulRamo = R.membri.filter(p => !R.figli.some(F => F.membri.includes(p))).sort((a, b) => a.id < b.id ? -1 : 1);
-    sulRamo.forEach((p, i) => suRamo(p, R, i, sulRamo.length));
-    R.figli.forEach(F => F.membri.sort((a, b) => a.id < b.id ? -1 : 1).forEach((p, i) => suRamo(p, F, i, F.membri.length)));
-  });
-  const corona = ps.filter(p => p.ramo < 0);
-  corona.forEach((p, i) => inCima(p, C, i, corona.length));
-  ps.forEach(p => { p.nido = p.fine.clone(); });
-  spingi(ps, 120);
-}
-// una foto sola che arriva (o viene letta): trova il suo ramo e un posto libero, senza spostare le altre
-const staccaDaiRami = p => colonie.forEach(C => C.rami.forEach(R => { const i = R.membri.indexOf(p); if (i >= 0) R.membri.splice(i, 1); }));
+// una foto nuova: si attacca alla foto con cui ha piu' in comune, un po' piu' in fuori (la rete intera si rifa' solo dopo una lettura)
 function posizionaUna(p) {
-  staccaDaiRami(p);
-  p.colonia = trovaColonia(p.f);
-  if (p.colonia < 0) {                                   // nessun indizio: aspetta nella laguna
-    const r0 = seme(p.id); p.ancora = null; p.ordine = 0;
-    p.fine.set(r0() - .5, 0, r0() - .5).setLength(2 + r0() * 3).add(LAGUNA); p.nido = p.fine.clone(); return;
-  }
-  const C = colonie[p.colonia];
-  if (!C.tronco) { costruisciColonia(p.colonia); return; }
-  p.ramo = ramoPer(p, C, null);
-  if (p.ramo < 0 && !(p.f.tag || []).length) {          // non ancora letta: sul ramo delle foto che le somigliano
-    const voti = C.rami.map(() => 0);
-    (p.f.vicine || []).forEach(([id, w]) => { const q = photoById[id]; const j = q ? C.rami.findIndex(R => R.membri.includes(q)) : -1; if (j >= 0) voti[j] += w; });
-    const m = Math.max(0, ...voti); if (m > 0) p.ramo = voti.indexOf(m);
-  }
-  if (p.ramo >= 0) { const R = C.rami[p.ramo]; R.membri.push(p); suRamo(p, R, R.membri.length - 1, R.membri.length); p.fine.addScaledVector(R.curva.getTangent(1), .6); }
-  else { const m = photos.filter(q => q.colonia === p.colonia && q.ramo < 0).length; inCima(p, C, m - 1, Math.max(m, 1)); }
+  vettore(p); p.figli = []; p.vicini = []; p.porta = 1;
+  let best = null, bs = -1;
+  photos.forEach(q => { if (q !== p && !q.hold && q.vt) { const s = somiglianza(p, q); if (s > bs) { bs = s; best = q; } } });
+  if (!best) { p.padre = null; p.prof = 0; p.fine.set(0, R0, 0); p.nido = p.fine.clone(); return; }
+  p.padre = best; p.forza = bs; p.prof = best.prof + 1; best.figli.push(p); best.vicini.push(p); p.vicini.push(best);
+  for (let a = best; a; a = a.padre) a.porta++;          // le vene che la portano si ingrossano
+  const fuori = best.fine.clone().sub(best.padre ? best.padre.fine : BASE).normalize(), r0 = seme(p.id);
+  p.fine.copy(best.fine).addScaledVector(fuori, 1.6).add(new THREE.Vector3(r0() - .5, r0() - .5, r0() - .5).multiplyScalar(1.2));
   p.nido = p.fine.clone();
-  spingi(photos.filter(q => q.colonia === p.colonia), 80, new Set([p]));
+  spingi(photos.filter(q => !q.hold || q === p), 50, new Set([p]));
 }
-
-// ---------------- le linee del corallo: tronchi, rami, rametti ----------------
-// tutte insieme, in tre spessori; crescono dal fondo all'apertura e ondeggiano piano, come nella corrente
-const LIVELLI = [3.4, 2, 1];                             // spessore in pixel: tronco, ramo, rametto
-const linee = LIVELLI.map(w => {
-  const m = new LineMaterial({ vertexColors: true, linewidth: w, transparent: true, depthWrite: false });
-  materialiFili.push(m);
-  const l = new LineSegments2(new LineSegmentsGeometry(), m); l.frustumCulled = false; scene.add(l);
-  return l;
-});
-let segmenti = [[], [], []], ORD_MAX = 1;                // per livello: { a, b, k, ramo, p, ord }
-function ricostruisci() {
-  segmenti = [[], [], []];
-  colonie.forEach(C => {
-    if (!C.tronco) return;
-    const ps = photos.filter(p => p.colonia === C.k && !p.hold);
-    C.col = opaco() ? coloreColonia(C.k) : ps.reduce((c, p) => c.add(p.col), new THREE.Color(0, 0, 0)).multiplyScalar(1 / Math.max(1, ps.length));
-    const pt = C.tronco.getPoints(14), lt = C.tronco.getLength();
-    for (let i = 0; i < 14; i++) segmenti[0].push({ a: pt[i], b: pt[i + 1], k: C.k, ramo: -1, ord: i / 14 * lt });
-    C.rami.forEach((R, j) => [R, ...(R.figli || [])].forEach(X => { const q = X.curva.getPoints(8); for (let i = 0; i < 8; i++) segmenti[1].push({ a: q[i], b: q[i + 1], k: C.k, ramo: j, ord: X.ord0 + i / 8 * X.lung }); }));
-  });
-  photos.forEach(p => { if (!p.hold && p.ancora) segmenti[2].push({ a: p.ancora, b: null, k: p.colonia, ramo: p.ramo, p, ord: p.ordine - .5 }); });
-  ORD_MAX = Math.max(1, ...segmenti.flat().map(x => x.ord));
-  segmenti.forEach((ss, i) => {
-    ss.sort((a, b) => a.ord - b.ord);
-    const g = linee[i].geometry; g.setPositions(new Float32Array(Math.max(1, ss.length) * 6)); g.setColors(new Float32Array(Math.max(1, ss.length) * 6));
-    g.instanceCount = ss.length;
-  });
-  coloraLinee();
+const vicineDi = p => legami(p);
+// le sorelle (quelle che girano intorno alla foto aperta): prima quelle legate a lei nella rete, poi le piu' simili
+function legami(p) {
+  const vicini = [p.padre, ...(p.figli || [])].filter(q => q && !q.hold);
+  const altri = photos.filter(q => q !== p && !q.hold && !vicini.includes(q)).map(q => [q, somiglianza(p, q)]).sort((a, b) => b[1] - a[1]).slice(0, Math.max(0, 10 - vicini.length)).map(x => x[0]);
+  return [...vicini, ...altri].slice(0, 10);
 }
-// i colori delle linee: piene sulla foto indicata (il suo rametto, il suo ramo, il suo tronco), tenui sul resto
-function coloraLinee() {
-  const fp = fuoco ? fuoco.p : hover, kk = fp ? fp.colonia : -2, rr = fp ? fp.ramo : -2;
-  const base = chiaro() ? [.85, .8, .75] : [.4, .34, .3];
-  segmenti.forEach((ss, i) => {
-    const a = linee[i].geometry.attributes.instanceColorStart.data.array;
-    ss.forEach((s, n) => {
-      const c = s.p ? s.p.col : colonie[s.k].col;
-      let f = base[i];
-      const pieno = chiaro() ? 1 : .62;   // con il bagliore la luce piena abbaglia
-      if (fp) f = i === 0 ? (s.k === kk ? pieno : .12) : i === 1 ? (s.k === kk && s.ramo === rr ? pieno * 1.1 : s.k === kk ? .3 : .08) : (accese && accese.has(s.p.id) ? pieno * 1.1 : .06);
-      for (const o of [0, 3]) { a[n * 6 + o] = c.r * f; a[n * 6 + o + 1] = c.g * f; a[n * 6 + o + 2] = c.b * f; }
-    });
-    linee[i].geometry.attributes.instanceColorStart.data.needsUpdate = true;
-  });
-}
-function temaLinee() {
-  linee.forEach(l => { l.material.blending = chiaro() ? THREE.NormalBlending : THREE.AdditiveBlending; l.material.opacity = chiaro() ? .9 : 1; l.material.needsUpdate = true; });
-}
-// la corrente: piu' in alto, piu' si ondeggia
-const ov = new THREE.Vector3();
-function onda(v, k, t, out) {
-  const H = k >= 0 && colonie[k] ? colonie[k].H || 10 : 10, h = Math.max(0, v.y), amp = reduced ? 0 : .02 * h * h / H;
-  return out.set(v.x + Math.sin(t * .55 + k * 1.7 + v.y * .22) * amp, v.y, v.z + Math.cos(t * .47 + k * 2.3 + v.y * .19) * amp);
-}
-// ogni fotogramma: le linee seguono la corrente e, all'apertura, crescono dal fondo fino al fronte
-function muoviLinee(t, fronte) {
-  segmenti.forEach((ss, i) => {
-    const a = linee[i].geometry.attributes.instanceStart.data.array; let vis = 0;
-    ss.forEach((s, n) => {
-      if (s.ord <= fronte) vis = n + 1;
-      onda(s.a, s.k, t, ov); a[n * 6] = ov.x; a[n * 6 + 1] = ov.y; a[n * 6 + 2] = ov.z;
-      if (s.p) ov.copy(s.p.casa); else onda(s.b, s.k, t, ov);
-      a[n * 6 + 3] = ov.x; a[n * 6 + 4] = ov.y; a[n * 6 + 5] = ov.z;
-    });
-    linee[i].geometry.instanceCount = vis; linee[i].geometry.attributes.instanceStart.data.needsUpdate = true;
-  });
-}
-
-// ---------------- il fondo del mare ----------------
-const fondale = (() => {
-  const n = 6000, a = new Float32Array(n * 3), r0 = seme('fondale');
-  for (let i = 0; i < n; i++) { const r = 62 * Math.sqrt(r0()), ang = r0() * TAU; a.set([Math.cos(ang) * r, -.15 - .5 * r0() * r0(), Math.sin(ang) * r], i * 3); }
-  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(a, 3));
-  const pts = new THREE.Points(g, new THREE.PointsMaterial({ size: .14, transparent: true, depthWrite: false }));
-  scene.add(pts); return pts;
-})();
+const SU = new THREE.Vector3(0, 1, 0);
 
 // ---------------- le foto ----------------
 // la sfera: la foto dentro, il vetro intorno; e' sempre rivolta verso chi guarda, da qualsiasi lato.
-// Nei colori opachi e' una stampa rotonda: la foto e un bordo sottile del colore della sua colonia
+// Nei colori opachi e' una stampa rotonda: la foto e un bordo sottile del colore del suo gruppo di senso
 function disegnaSfera(c, S, col, im) {
   c.width = c.height = S; const x = c.getContext('2d'), k = S / 160;
   const [r, g, b] = col.toArray().map(v => Math.round(v * 255)), rgba = a => `rgba(${r},${g},${b},${a})`, R = S / 2 - 3 * k;
@@ -383,7 +259,7 @@ const luceSfera = () => opaco() ? 0xffffff : 0xd8d8d8;   // con il bagliore le s
 const photos = [], photoById = {}, sprites = [];
 const DUR_MOSSA = 2600;
 function makePhoto(id, f) {
-  const p = { id, f, ph: seme(id)() * TAU, uPrev: 0, colonia: trovaColonia(f), fine: new THREE.Vector3(), da: new THREE.Vector3(), casa: new THREE.Vector3(), ancora: null, ramo: -1, ordine: 0, t0: -1e9, dur: DUR_MOSSA };
+  const p = { id, f, ph: seme(id)() * TAU, uPrev: 0, gruppo: trovaGruppo(f), fine: new THREE.Vector3(), da: new THREE.Vector3(), t0: -1e9, dur: DUR_MOSSA, padre: null, figli: [], vicini: [], prof: 0, porta: 1 };
   p.col = colore(p);
   p.can = document.createElement('canvas'); disegnaSfera(p.can, 160, p.col, null);
   p.tex = new THREE.CanvasTexture(p.can); p.tex.colorSpace = THREE.SRGBColorSpace;
@@ -393,69 +269,112 @@ function makePhoto(id, f) {
   scene.add(p.sprite); photos.push(p); photoById[id] = p; sprites.push(p.sprite);
   return p;
 }
-function aggiornaFoto(p, f) {   // la foto e' stata letta: va sul ramo del suo tag, nella sua colonia, con il suo colore
-  p.f = f;
-  p.da.copy(p.casa); posizionaUna(p); p.t0 = performance.now();
+function aggiornaFoto(p, f) {   // la foto e' stata letta: ha i suoi tag, e la rete si rifa' con lei dentro
+  p.f = f; p.gruppo = trovaGruppo(f);
   p.col = colore(p); p.base = .62 * (f.s || .9); ridisegna(p); p.lampo = performance.now() + 2200;
-  ricostruisci();
+  rifaiTutto();
 }
 D.tutte.forEach(id => { if (D.foto[id]) makePhoto(id, D.foto[id]); });
-NUCLEI.forEach((_, k) => costruisciColonia(k));
-photos.filter(p => p.colonia < 0).forEach(posizionaUna);
-photos.forEach(p => { p.da.copy(p.fine); p.casa.copy(p.fine); });
+pesaTag(); costruisciAlbero(); disponi();
+photos.forEach(p => p.da.copy(p.fine));
 
-// ---------------- i fili: i tag in comune ----------------
-// un solo tipo di linea, un solo significato: due foto hanno dei tag in comune. Piu' tag, linea piu' spessa.
-// Si vedono solo dalla foto indicata (o aperta) verso le foto con cui ha piu' in comune
-const MAX_FILI = 12;
-function legami(p) {
-  const ta = new Set(p.f.tag || []), w = new Map((p.f.vicine || []).map(([id, v]) => [id, v]));
-  let out = ta.size ? photos.filter(q => q !== p && !q.hold && q.f.tag).map(q => [q, q.f.tag.reduce((n, t) => n + ta.has(t), 0)]).filter(x => x[1] > 0) : [];
-  if (!out.length) out = [...w.keys()].map(id => photoById[id]).filter(q => q && !q.hold && q !== p).map(q => [q, 1]);   // non ancora letta: le foto che le somigliano
-  return out.sort((a, b) => b[1] - a[1] || (w.get(b[0].id) || 0) - (w.get(a[0].id) || 0)).slice(0, MAX_FILI);
-}
-const vicineDi = p => legami(p).map(x => x[0]);
-const fili = [1, 2, 3].map(n => {
-  const g = new LineSegmentsGeometry(); g.setPositions(new Float32Array(MAX_FILI * 6));
-  const m = new LineMaterial({ linewidth: [1.2, 2.4, 4][n - 1], transparent: true, depthWrite: false });
-  materialiFili.push(m);
-  const l = new LineSegments2(g, m); l.frustumCulled = false; l.visible = false; scene.add(l);
-  return l;
-});
-resize();
-function temaFili() {
-  fili.forEach((l, i) => {
-    const m = l.material;
-    m.color.set(chiaro() ? 0x2a2420 : 0xfff4e6); m.opacity = chiaro() ? [.3, .5, .75][i] : opaco() ? [.3, .5, .8][i] : [.2, .34, .55][i];   // con il bagliore le linee spesse abbagliano: piu' tenui
-    m.blending = chiaro() ? THREE.NormalBlending : THREE.AdditiveBlending; m.needsUpdate = true;
-  });
-}
-let filiDa = null, filiA = [];   // filiA: [[foto, tag in comune], ...]
+// ---------------- le vene: tubi che si assottigliano verso le punte ----------------
+// ogni legame e' una vena che parte dalla foto padre e continua la sua direzione, curvando verso la foto figlia;
+// lo spessore dice quante foto porta. In piu' qualche filo sottile chiude un anello tra due foto vicine e molto simili
+const LATI = 6, TRATTI = 10;
+const vene = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide }));
+vene.renderOrder = -1; vene.frustumCulled = false; scene.add(vene);
+let archi = [], PROF_MAX = 1;
 let accese = null;   // le foto accese (la foto indicata o aperta e quelle legate a lei), oppure null = tutte
-function aggiornaFili() {
-  const quanti = [0, 0, 0];
-  if (filiDa) {
-    const o = filiDa.sprite.position;
-    for (const [q, n] of filiA) {
-      const i = Math.min(3, n) - 1, a = fili[i].geometry.attributes.instanceStart.data.array, v = q.sprite.position;
-      a.set([o.x, o.y, o.z, v.x, v.y, v.z], quanti[i]++ * 6);
+const spessore = p => .03 + .026 * Math.sqrt(p.porta || 1);
+function arcoDi(da, a, r0, r1) {
+  const P0 = da ? da.fine : BASE, dir = da ? da.fine.clone().sub(da.padre ? da.padre.fine : BASE).normalize() : SU.clone();
+  const len = P0.distanceTo(a.fine);
+  return { da, a, r0, r1, prof: a.prof, curva: new THREE.QuadraticBezierCurve3(P0.clone(), P0.clone().addScaledVector(dir, len * .45), a.fine.clone()) };
+}
+function costruisciVene() {
+  archi = [];
+  if (radice) archi.push(arcoDi(null, radice, spessore(radice) * 1.5, spessore(radice)));
+  for (const p of photos) if (!p.hold && p.padre) archi.push(arcoDi(p.padre, p, spessore(p), spessore(p) * .8));
+  // gli anelli della rete (come nel micelio): fili sottili tra foto vicine e molto simili che non sono gia' legate
+  const cand = [];
+  photos.forEach(p => { if (p.hold || !p.vt.size) return; photos.forEach(q => {
+    if (q.id <= p.id || q.hold || !q.vt.size || q.padre === p || p.padre === q) return;
+    if (p.fine.distanceTo(q.fine) < 6.5) { const s = somiglianza(p, q); if (s > .62) cand.push([s, p, q]); }
+  }); });
+  cand.sort((a, b) => b[0] - a[0]).slice(0, 140).forEach(([, p, q]) => {
+    const m = p.fine.clone().add(q.fine).multiplyScalar(.5).add(new THREE.Vector3(0, .5, .5));
+    archi.push({ da: p, a: q, r0: .02, r1: .02, prof: Math.max(p.prof, q.prof) + .5, sottile: true, curva: new THREE.QuadraticBezierCurve3(p.fine.clone(), m, q.fine.clone()) });
+  });
+  archi.sort((a, b) => a.prof - b.prof);
+  const nv = archi.length * (TRATTI + 1) * (LATI + 1), pos = new Float32Array(nv * 3), col = new Float32Array(nv * 3), idx = new Uint32Array(archi.length * TRATTI * LATI * 6);
+  const P = new THREE.Vector3(), N = new THREE.Vector3();
+  let v = 0, k = 0;
+  archi.forEach(ar => {
+    ar.v0 = v; const fr = ar.curva.computeFrenetFrames(TRATTI, false);
+    for (let i = 0; i <= TRATTI; i++) {
+      const t = i / TRATTI, r = ar.r0 + (ar.r1 - ar.r0) * t; ar.curva.getPointAt(t, P);
+      for (let j = 0; j <= LATI; j++) {
+        const a = j / LATI * TAU; N.copy(fr.normals[i]).multiplyScalar(Math.cos(a)).addScaledVector(fr.binormals[i], Math.sin(a));
+        pos[v * 3] = P.x + N.x * r; pos[v * 3 + 1] = P.y + N.y * r; pos[v * 3 + 2] = P.z + N.z * r; v++;
+      }
     }
-  }
-  fili.forEach((l, i) => { l.visible = quanti[i] > 0; l.geometry.instanceCount = quanti[i]; l.geometry.attributes.instanceStart.data.needsUpdate = true; });
+    for (let i = 0; i < TRATTI; i++) for (let j = 0; j < LATI; j++) { const a = ar.v0 + i * (LATI + 1) + j, b = a + LATI + 1; idx.set([a, b, a + 1, b, b + 1, a + 1], k); k += 6; }
+    ar.v1 = v; ar.k1 = k;
+  });
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setIndex(new THREE.BufferAttribute(idx, 1));
+  vene.geometry.dispose(); vene.geometry = g;
+  PROF_MAX = Math.max(1, ...archi.map(a => a.prof));
+  bordi = null;
+  coloraVene();
+}
+// i colori: da quello della foto padre a quello della figlia. Sulla foto indicata (o aperta) si accende il suo cammino
+// fino alla radice, le vene verso le sue figlie e i suoi fili sottili; il resto si abbassa
+function coloraVene() {
+  const c = vene.geometry.getAttribute('color'); if (!c) return;
+  const fp = fuoco ? fuoco.p : hover, cammino = new Set();
+  for (let a = fp; a; a = a.padre) cammino.add(a);
+  const inch = new THREE.Color(0x2a2420), ca = new THREE.Color(), cb = new THREE.Color(), tmp = new THREE.Color();
+  const base = chiaro() ? .9 : opaco() ? .8 : .5;
+  archi.forEach(ar => {
+    ca.copy(ar.da ? ar.da.col : ar.a.col); cb.copy(ar.a.col);
+    if (chiaro()) { ca.lerp(inch, .35); cb.lerp(inch, .35); }
+    let f = base * (ar.sottile ? .55 : 1);
+    if (fp) {
+      const acceso = ar.sottile ? ar.da === fp || ar.a === fp : (cammino.has(ar.a) && (!ar.da || cammino.has(ar.da))) || ar.da === fp;
+      f = acceso ? (chiaro() ? 1 : opaco() ? .95 : .7) : chiaro() ? .22 : .08;
+    }
+    for (let v = ar.v0; v < ar.v1; v++) { tmp.copy(ca).lerp(cb, Math.floor((v - ar.v0) / (LATI + 1)) / TRATTI).multiplyScalar(f); c.setXYZ(v, tmp.r, tmp.g, tmp.b); }
+  });
+  c.needsUpdate = true;
+}
+function temaVene() {
+  const m = vene.material; m.blending = opaco() ? THREE.NormalBlending : THREE.AdditiveBlending; m.opacity = chiaro() ? .92 : opaco() ? .85 : .9; m.needsUpdate = true;
+}
+// all'apertura le vene crescono dalla radice verso le punte
+function crescita(fronte) {
+  let k = 0; for (const ar of archi) { if (ar.prof > fronte) break; k = ar.k1; }
+  vene.geometry.setDrawRange(0, fronte >= PROF_MAX + 1 ? Infinity : k);
+}
+// dopo una lettura o un'eliminazione: la rete si rifa' e le foto vanno piano al loro nuovo posto
+function rifaiTutto() {
+  const ora = performance.now();
+  photos.forEach(p => { if (!p.hold) { p.da.copy(p.sprite.position); p.t0 = ora; } });
+  pesaTag(); costruisciAlbero(); disponi(); costruisciVene();
 }
 
 // ---------------- il tema: fondo, bagliore, stelle, centro ----------------
 function applicaTema() {
   scene.background = new THREE.Color(FONDO[palette]);
-  scene.fog = new THREE.Fog(FONDO[palette], 70, chiaro() ? 150 : 170);   // le colonie lontane sfumano: si capisce cosa e' vicino
+  scene.fog = new THREE.Fog(FONDO[palette], 70, chiaro() ? 150 : 170);   // le parti lontane sfumano: si capisce cosa e' vicino
   bloom.enabled = !opaco();
   stelle.visible = !chiaro(); stelle.material.opacity = palette === 'notte' ? .28 : .55;
   nucleo.visible = alone.visible = !opaco(); centroOpaco.visible = opaco();
   centroOpaco.material.color.set(chiaro() ? 0x8a7f72 : 0xd9d2c8); centroOpaco.material.opacity = chiaro() ? .55 : .3;
   document.body.classList.toggle('tema-carta', chiaro()); document.body.classList.toggle('tema-opaco', opaco());
   for (const p of photos) { p.col = colore(p); ridisegna(p); if (!p.hi) p.sprite.material.color.set(luceSfera()); }
-  fondale.material.color.set(chiaro() ? 0x8f8270 : 0x8a97b3); fondale.material.opacity = chiaro() ? .5 : palette === 'notte' ? .22 : .3;
-  ricostruisci(); temaFili(); temaLinee();
+  costruisciVene(); temaVene();
 }
 
 // ---------------- il suono: nasce dal senso ----------------
@@ -537,9 +456,9 @@ $('sndbtn').onclick = () => {
 };
 scritteSuono();
 
-// ---------------- nascita: all'apertura i coralli crescono dal fondo, e le foto si aprono quando il loro rametto le raggiunge ----------------
+// ---------------- nascita: all'apertura la rete cresce dalla radice verso le punte, e le foto si aprono quando la loro vena arriva ----------------
 let nascita = reduced ? -1e9 : performance.now();
-const DUR_NASCITA = 4200;
+const DUR_NASCITA = 6500;
 
 // ---------------- il volo: cliccando una sfera ci si entra dentro, e le sue sorelle le girano intorno ----------------
 let fuoco = null;
@@ -581,8 +500,7 @@ function vola(p) {
   const camDest = p.fine.clone().addScaledVector(out, 6.4).add(new THREE.Vector3(0, .9, 0));
   fuoco = { p, sorelle, t0: performance.now(), cam0: camera.position.clone(), tgt0: controls.target.clone(), camDest, tgtDest: centro.clone(), back, uscita: false, arrivato: false };
   controls.enabled = false; controls.autoRotate = false; clearTimeout(fermo);
-  accese = new Set([p.id, ...sorelle.map(q => q.id)]);
-  filiDa = p; filiA = legami(p).slice(0, 10); coloraLinee();
+  accese = new Set([p.id, ...sorelle.map(q => q.id)]); coloraVene();
   alta(p);
   document.body.classList.add('infuoco');
   mostraPannello(p);
@@ -593,7 +511,7 @@ function torna() {
   Object.assign(fuoco, { uscita: true, arrivato: false, t0: performance.now(), cam0: camera.position.clone(), tgt0: controls.target.clone(), camDest: fuoco.back.pos, tgtDest: fuoco.back.target });
   fuoco.sorelle.forEach(q => { if (q.orbita) q.orbita.su = false; });
   controls.enabled = false;
-  accese = null; filiDa = null; filiA = []; coloraLinee();
+  accese = null; coloraVene();
   $('fuoco').classList.remove('on'); document.body.classList.remove('infuoco');
 }
 function passoVolo(now) {
@@ -612,7 +530,7 @@ function passoVolo(now) {
 }
 function mostraPannello(p) {
   const a = cron.get(p.id), n = fuoco.sorelle.length, qui = ['localhost', '127.0.0.1'].includes(location.hostname);
-  $('fk').innerHTML = (p === ultimaArrivata ? '<span class="nuova">appena arrivata</span> · ' : 'una foto · ') + (n ? `e le ${n} foto con cui ha più tag in comune, che le girano intorno` : '');
+  $('fk').innerHTML = (p === ultimaArrivata ? '<span class="nuova">appena arrivata</span> · ' : 'una foto · ') + (n ? `e le ${n} foto legate a lei, che le girano intorno` : '');
   $('fl').textContent = p.f.lettura || '';
   $('fa').innerHTML = a ? `<b>Arrivata dal telefono${a.nome ? ' · foto di ' + esc(a.nome) : ''} · ${quando(a.quando)}</b>${a.frase ? '«' + esc(a.frase) + '»' : ''}` +
     (p.f.provv ? `<br><span class="nota">Non ancora letta: per ora sta vicino alle foto che le somigliano ${p.f.come === 'frase' ? 'per la sua frase' : 'nell\'aspetto'}.</span>` : '') +
@@ -640,7 +558,7 @@ function passoRegia(now) {
   }
   const libera = now - ultimoTocco > RIPOSO;
   if (fuoco && fuoco.arrivato && !fuoco.uscita) { controls.autoRotate = libera && !reduced; controls.autoRotateSpeed = .9; }   // gira piano intorno alla foto
-  else if (!fuoco) controls.autoRotateSpeed = .35;
+  else if (!fuoco) controls.autoRotateSpeed = Math.sign(controls.autoRotateSpeed || 1) * .35;
   if (regia.ritorno && now > regia.ritorno && libera && fuoco && fuoco.arrivato && !fuoco.uscita) { regia.ritorno = 0; torna(); }
 }
 
@@ -659,9 +577,8 @@ function setHover(p) {
   hover = p;
   cv.style.cursor = p ? 'pointer' : 'grab';
   if (fuoco) return;   // durante il volo restano accese la foto e le sue sorelle
-  filiA = p ? legami(p) : [];
-  accese = p ? new Set([p.id, ...filiA.map(x => x[0].id)]) : null;
-  filiDa = p; coloraLinee();
+  accese = p ? new Set([p.id, ...[p.padre, ...p.figli].filter(Boolean).map(q => q.id)]) : null;
+  coloraVene();
 }
 function pick() {
   if (!mossoMouse || mpx.x < 0 || arrivo) return;
@@ -670,7 +587,7 @@ function pick() {
   const hit = ray.intersectObjects(sprites, false).find(h => !h.object.userData.p.hold && h.object.material.opacity > .5);
   setHover(hit ? hit.object.userData.p : null);
 }
-$('home').onclick = () => { if (fuoco) { torna(); return; } verso(new THREE.Vector3(0, 4, 0), CASA.clone()); };
+$('home').onclick = () => { if (fuoco) { torna(); return; } verso(new THREE.Vector3(0, 18, 0), CASA.clone()); };
 $('palbtn').onclick = () => {
   palette = PALETTE[(PALETTE.indexOf(palette) + 1) % PALETTE.length]; memo('nebulosa-colori', palette); scritteColori();
   applicaTema();
@@ -688,17 +605,13 @@ function sveglia() {
 ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev => addEventListener(ev, sveglia, { passive: true }));
 sveglia();
 
-// ---------------- viaggiare tra le colonie: la camera vola piano verso un punto ----------------
+// ---------------- viaggiare nella rete: la camera vola piano verso un punto ----------------
 let viaggioCam = null;
 const DUR_VIAGGIO = 2200;
 function verso(tgt, cam) {
   if (fuoco) return;
   viaggioCam = { t0: performance.now(), cam0: camera.position.clone(), tgt0: controls.target.clone(), cam, tgt };
   controls.autoRotate = false; clearTimeout(fermo);
-}
-function versoColonia(k) {   // ci si ferma fuori dall'anello, davanti alla colonia; poi la camera le gira intorno piano
-  const B = BASI[k], H = colonie[k].H || 10, fuori = B.clone().setY(0).normalize();
-  verso(B.clone().add(new THREE.Vector3(0, H * .55, 0)), B.clone().addScaledVector(fuori, H * 1.2 + 9).add(new THREE.Vector3(0, H * .75 + 3, 0)));
 }
 function passoViaggio(now) {
   if (!viaggioCam) return;
@@ -708,57 +621,45 @@ function passoViaggio(now) {
 }
 controls.addEventListener('start', () => { viaggioCam = null; });
 
-// ---------------- la mappa: dove sei, e dove sono le colonie ----------------
-// vista dall'alto: l'anello del corallo, ogni colonia e' un punto del suo colore (piu' grande se ha piu' foto), tu sei la freccia.
-// Toccando una colonia ci si vola davanti
+// ---------------- la mappa: il ventaglio visto di fronte, e dove stai guardando ----------------
+// ogni foto e' un puntino del suo colore; il cerchio e' il punto che guardi. Toccando la mappa ci si vola davanti
 const mappa = $('mappa'), cm = mappa.getContext('2d');
-const MAPPA_R = 46;   // quanto mondo copre la mappa (dal centro al bordo)
-function suMappa(v) { const W = mappa.width, k = W / 2 / MAPPA_R * .92; return { x: W / 2 + v.x * k, y: W / 2 + v.z * k }; }
+// la mappa si adatta alla rete: quanto e' larga e alta (si ricalcola quando la rete cambia)
+let bordi = null;
+function misuraRete() {
+  let x0 = 0, x1 = 0, y0 = 0, y1 = 1; photos.forEach(p => { x0 = Math.min(x0, p.fine.x); x1 = Math.max(x1, p.fine.x); y1 = Math.max(y1, p.fine.y); });
+  bordi = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, lato: Math.max(x1 - x0, y1 - y0) * 1.12 };
+}
+function suMappa(v) { if (!bordi) misuraRete(); const W = mappa.width, k = W * .78 / bordi.lato; return { x: W / 2 + (v.x - bordi.cx) * k, y: W / 2 - (v.y - bordi.cy) * k }; }
 let ultimaMappa = 0;
 function disegnaMappa(now) {
-  if (now - ultimaMappa < 90) return; ultimaMappa = now;
+  if (now - ultimaMappa < 120) return; ultimaMappa = now;
   const dpr = Math.min(devicePixelRatio || 1, 2), L = Math.round(mappa.clientWidth * dpr);
   if (!L) return;
   if (mappa.width !== L) mappa.width = mappa.height = L;
-  const W = L, k = dpr;
+  const W = L, k = dpr, inchiostro = chiaro() ? '42,36,30' : '236,230,225';
   cm.clearRect(0, 0, W, W);
-  const inchiostro = chiaro() ? '42,36,30' : '236,230,225';
   cm.fillStyle = chiaro() ? 'rgba(239,232,220,.86)' : 'rgba(8,7,12,.72)'; cm.beginPath(); cm.arc(W / 2, W / 2, W / 2 - k, 0, TAU); cm.fill();
   cm.strokeStyle = `rgba(${inchiostro},.22)`; cm.lineWidth = k; cm.stroke();
-  cm.fillStyle = `rgba(${inchiostro},.5)`; cm.beginPath(); cm.arc(W / 2, W / 2, 2 * k, 0, TAU); cm.fill();   // la luce nella laguna
-  const ra = R_ANELLO / MAPPA_R * W / 2 * .92;   // l'anello del corallo
-  cm.strokeStyle = `rgba(${inchiostro},.14)`; cm.lineWidth = 5 * k; cm.beginPath(); cm.arc(W / 2, W / 2, ra, 0, TAU); cm.stroke();
-  const vicina = coloniaVicina();
-  NUCLEI.forEach((_, i) => {
-    const q = suMappa(BASI[i]), n = photos.filter(p => p.colonia === i).length, c = colonie[i].col;
-    const rr = (2.5 + Math.sqrt(n) * .55) * k;
-    cm.fillStyle = `rgba(${c.toArray().map(v => Math.round(v * 255)).join(',')},${opaco() ? .95 : .85})`;
-    cm.beginPath(); cm.arc(q.x, q.y, rr, 0, TAU); cm.fill();
-    if (i === vicina) { cm.strokeStyle = `rgba(${inchiostro},.8)`; cm.lineWidth = 1.2 * k; cm.beginPath(); cm.arc(q.x, q.y, rr + 3 * k, 0, TAU); cm.stroke(); }
-  });
-  // tu: un punto con la direzione in cui guardi
-  const io = suMappa(camera.position), dir = controls.target.clone().sub(camera.position).setY(0);
-  const a = Math.atan2(dir.z, dir.x), fuoriMappa = Math.hypot(io.x - W / 2, io.y - W / 2) > W / 2 - 8 * k;
-  let px = io.x, py = io.y;
-  if (fuoriMappa) { const b = Math.atan2(io.y - W / 2, io.x - W / 2); px = W / 2 + Math.cos(b) * (W / 2 - 8 * k); py = W / 2 + Math.sin(b) * (W / 2 - 8 * k); }
-  cm.save(); cm.translate(px, py); cm.rotate(a);
-  cm.fillStyle = chiaro() ? '#2a2420' : '#fff4e6';
-  cm.beginPath(); cm.moveTo(7 * k, 0); cm.lineTo(-4 * k, 4.2 * k); cm.lineTo(-2 * k, 0); cm.lineTo(-4 * k, -4.2 * k); cm.closePath(); cm.fill();
+  cm.save(); cm.beginPath(); cm.arc(W / 2, W / 2, W / 2 - 2 * k, 0, TAU); cm.clip();
+  for (const p of photos) {   // la rete in piccolo: le vene come linee sottili, le foto come puntini
+    if (p.hold || !p.padre) continue;
+    const a = suMappa(p.padre.fine), b = suMappa(p.fine);
+    cm.strokeStyle = `rgba(${p.col.toArray().map(v => Math.round(v * 255)).join(',')},${opaco() ? .7 : .55})`; cm.lineWidth = Math.max(.6, Math.sqrt(p.porta) * .35) * k;
+    cm.beginPath(); cm.moveTo(a.x, a.y); cm.lineTo(b.x, b.y); cm.stroke();
+  }
+  const b0 = suMappa(BASE), r = radice ? suMappa(radice.fine) : b0;
+  cm.strokeStyle = `rgba(${inchiostro},.5)`; cm.lineWidth = 2 * k; cm.beginPath(); cm.moveTo(b0.x, b0.y); cm.lineTo(r.x, r.y); cm.stroke();
+  const t = suMappa(fuoco ? fuoco.p.fine : controls.target);
+  cm.strokeStyle = chiaro() ? '#2a2420' : '#fff4e6'; cm.lineWidth = 1.6 * k; cm.beginPath(); cm.arc(t.x, t.y, 6 * k, 0, TAU); cm.stroke();
   cm.restore();
 }
-// la colonia piu' vicina al punto che stai guardando (o -1 se guardi tutto l'anello da lontano)
-function coloniaVicina() {
-  const t = fuoco ? fuoco.p.fine : controls.target; let best = -1, bd = 1e9;
-  BASI.forEach((B, i) => { const d = Math.hypot(B.x - t.x, B.z - t.z); if (d < bd) { bd = d; best = i; } });
-  return bd < 10 ? best : -1;
-}
 mappa.addEventListener('click', e => {
-  const r = mappa.getBoundingClientRect(), dpr = mappa.width / r.width, x = (e.clientX - r.left) * dpr, y = (e.clientY - r.top) * dpr;
-  let best = -1, bd = 14 * dpr;
-  BASI.forEach((B, i) => { const q = suMappa(B), d = Math.hypot(q.x - x, q.y - y); if (d < bd) { bd = d; best = i; } });
-  if (fuoco) torna();
-  if (best >= 0) setTimeout(() => versoColonia(best), fuoco ? DUR_VOLO + 50 : 0);
-  else if (Math.hypot(x - mappa.width / 2, y - mappa.width / 2) < 14 * dpr) setTimeout(() => $('home').click(), fuoco ? DUR_VOLO + 50 : 0);
+  const rr = mappa.getBoundingClientRect(), dpr = mappa.width / rr.width, x = (e.clientX - rr.left) * dpr, y = (e.clientY - rr.top) * dpr;
+  let best = null, bd = 1e9;
+  photos.forEach(p => { if (p.hold) return; const q = suMappa(p.fine), d = Math.hypot(q.x - x, q.y - y); if (d < bd) { bd = d; best = p; } });
+  const vai = () => { if (best) verso(best.fine.clone(), best.fine.clone().add(new THREE.Vector3(0, 2, 15))); };
+  if (fuoco) { torna(); setTimeout(vai, DUR_VOLO + 50); } else vai();
 });
 
 // ---------------- ogni fotogramma ----------------
@@ -770,8 +671,11 @@ function frame(now) {
   passoVolo(now);
   passoViaggio(now);
   passoMano(now);
+  // il ventaglio e' quasi piatto: da solo non gira tutto intorno (di taglio sarebbe un groviglio), oscilla piano di qua e di la'
+  if (controls.autoRotate && !fuoco) { const az = controls.getAzimuthalAngle(); if ((controls.autoRotateSpeed > 0 && az < -.75) || (controls.autoRotateSpeed < 0 && az > .75)) controls.autoRotateSpeed *= -1; }
   controls.update();
-  const nb = clamp((now - nascita) / DUR_NASCITA, 0, 1), eb = easeIO(nb);
+  const nb = clamp((now - nascita) / DUR_NASCITA, 0, 1), eb = easeIO(nb), fronte = nb < 1 ? eb * (PROF_MAX + 1.5) - .5 : Infinity;
+  crescita(fronte);
   // il nucleo respira; quando arriva una foto si accende
   const lampo = arrivo ? Math.max(0, 1 - Math.abs((now - arrivo.t0) - 500) / 900) : 0;
   nucleo.scale.setScalar(4.2 * (1 + .05 * Math.sin(t * 2)) * (1 + 1.4 * lampo) * (nb < 1 ? .6 + .4 * eb + .8 * (1 - nb) : 1));
@@ -782,20 +686,18 @@ function frame(now) {
   // le orbite delle sorelle, rivolte verso chi guarda
   camera.matrixWorld.extractBasis(dx, dy, orb);
   let note = 0;
-  const fronte = nb < 1 ? eb * (ORD_MAX + 3) : Infinity;   // all'apertura il corallo cresce dal fondo fino a qui
   photos.forEach(p => {
     if (p.hold) return;   // la foto che sta arrivando la muove passoArrivo
     const [vi, qu, tr] = p.f.mv;
-    const m = easeIO(clamp((now - p.t0) / p.dur, 0, 1));   // dal posto di prima verso il suo ramo (dopo la lettura)
-    p.casa.lerpVectors(p.da, p.fine, m); onda(p.casa, p.colonia, t, p.casa);   // la corrente
-    p.sprite.position.copy(p.casa);
+    const m = easeIO(clamp((now - p.t0) / p.dur, 0, 1));   // dal posto di prima verso quello nuovo (dopo una lettura)
+    p.sprite.position.lerpVectors(p.da, p.fine, m);
     if (!reduced && m >= 1) {   // un respiro leggero: chi e' piena di vita si muove un po' di piu', chi e' ferita trema
-      const a = .02 + .04 * vi;
+      const a = .015 + .035 * vi;
       p.sprite.position.x += Math.sin(t * (.4 + vi) + p.ph) * a + (tr ? Math.sin(t * 19 + p.ph * 5) * .015 * tr : 0);
       p.sprite.position.y += Math.cos(t * (.33 + vi * .8) + p.ph * 1.3) * a;
     }
-    let sc = p.base * (1 + .06 * vi * Math.sin(t * 2.4 + p.ph)) * (m < 1 ? .4 + .6 * m : 1) * sstep(p.ordine - .5, p.ordine + 1.5, fronte);
-    if (p.orbita) {   // sorella: si stacca dal suo ramo e gira intorno alla foto scelta
+    let sc = p.base * (1 + .06 * vi * Math.sin(t * 2.4 + p.ph)) * (m < 1 ? .4 + .6 * m : 1) * sstep(p.prof - .3, p.prof + .7, fronte);
+    if (p.orbita) {   // sorella: si stacca dalla rete e gira intorno alla foto scelta
       const o = p.orbita; o.k = clamp(o.k + (o.su ? .022 : -.03), 0, 1);
       const e = easeIO(o.k), ang = o.i / o.n * TAU + t * .12, R = (fuoco && fuoco.p.hi ? 1.5 * Math.max(1, fuoco.p.hi.asp) + 1.1 : 2.35) + .25 * Math.sin(t * .7 + o.i);   // con la foto aperta l'orbita si allarga: le sorelle le girano intorno senza coprirla
       orb.copy(o.centro).addScaledVector(dx, Math.cos(ang) * R).addScaledVector(dy, Math.sin(ang) * R * .82);
@@ -822,8 +724,6 @@ function frame(now) {
       p.uPrev = u;
     }
   });
-  muoviLinee(t, fronte);
-  aggiornaFili();
   pick();
   passoArrivo(now);
   passoRegia(now);
@@ -859,22 +759,23 @@ const PAUSA = 1200;
 function counts() {
   const n = photos.length, prov = photos.filter(p => p.f.provv).length;
   $('st').textContent = n + ' foto';
-  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Crescono come una barriera corallina: ogni gruppo di senso è una colonia, e le colonie che si somigliano crescono accanto. I rami sono i tag che le foto condividono: ogni foto sta sul ramo del suo tag più comune. Passa su una foto: si accende il suo ramo, e dei fili dritti portano alle foto con cui ha dei tag in comune. La mappa in basso a sinistra ti dice dove sei.` +
+  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Ogni foto ha qualcosa in comune con almeno un'altra, ed è legata a quella con cui ne ha di più: così la memoria cresce come le venature di una foglia, le radici, il micelio di un fungo. Le vene sono tanto più grosse quante più foto portano. Passa su una foto: si accende il suo cammino fino alla radice.` +
     (prov ? ` ${prov === 1 ? '1 foto, quasi grigia, ha' : prov + ' foto, quasi grigie, hanno'} ancora un posto provvisorio, vicino alle foto che le somigliano: aspetta${prov === 1 ? '' : 'no'} di essere lett${prov === 1 ? 'a' : 'e'}.` : '');
   $('qrmeta').textContent = arrivate + ' foto arrivate dai telefoni';
 }
 function addArrival(a, animate) {
   if (!a.dato || photoById[a.id] || arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id)) return;
   if (animate) { arrQueue.push(a); return; }
-  const p = makePhoto(a.id, a.dato); posizionaUna(p); p.da.copy(p.fine); ricostruisci(); counts();
+  const p = makePhoto(a.id, a.dato); posizionaUna(p); p.da.copy(p.fine); costruisciVene(); counts();
 }
 function nextArrival(now) {
   if (arrivo || !arrQueue.length || now < fineUltimo + PAUSA) return;
   if (fuoco) { torna(); return; }   // l'arrivo deve vedersi: prima si torna alla nebulosa
   const a = arrQueue.shift(), p = makePhoto(a.id, a.dato); p.hold = true; posizionaUna(p); counts();
-  // la strada: dalla luce della laguna al suo ramo, con un arco
-  const su = new THREE.Vector3(0, 6 + p.fine.length() * .25, 0), curva = new THREE.QuadraticBezierCurve3(LAGUNA.clone(), p.fine.clone().add(LAGUNA).multiplyScalar(.5).add(su), p.fine.clone());
-  p.pts = new Float32Array(curva.getPoints(80).flatMap(v => [v.x, v.y, v.z])); p.n = p.pts.length / 3;
+  // la strada: dalla luce alla radice, poi lungo le vene fino alla foto a cui si attacca
+  const tappe = []; for (let q = p.padre; q; q = q.padre) tappe.unshift(q.fine.clone());
+  const curva = new THREE.CatmullRomCurve3([BASE.clone(), ...tappe, p.fine.clone()]);
+  p.pts = new Float32Array(curva.getPoints(40 + 8 * tappe.length).flatMap(v => [v.x, v.y, v.z])); p.n = p.pts.length / 3;
   setHover(null);
   const coda = arrQueue.length, f = coda === 0 ? 1 : coda <= 2 ? .72 : .5;
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p.pts, 3)); g.setDrawRange(0, 0);
@@ -896,8 +797,8 @@ function passoArrivo(now) {
   const { p, linea, onda, T1, T2, T3 } = arrivo, el = now - arrivo.t0, s = p.sprite;
   s.material.opacity = 1;
   if (el < T1) {                                            // 1. nasce nel nucleo, grande
-    s.position.copy(LAGUNA); s.scale.setScalar(p.base * 5.5 * sstep(0, T1 * .7, el));
-  } else if (el < T2) {                                     // 2. vola verso il suo ramo, lasciando una scia
+    s.position.set(0, 0, 0); s.scale.setScalar(p.base * 5.5 * sstep(0, T1 * .7, el));
+  } else if (el < T2) {                                     // 2. risale le vene fino al suo posto, lasciando una scia
     if (!arrivo.partita) { arrivo.partita = true; $('arrivo').classList.remove('on'); }
     const u = easeIO((el - T1) / (T2 - T1)), j = Math.floor(u * (p.n - 1));
     s.position.set(p.pts[j * 3], p.pts[j * 3 + 1], p.pts[j * 3 + 2]);
@@ -908,9 +809,9 @@ function passoArrivo(now) {
     if (!arrivo.posata) { arrivo.posata = true; accordo(p, .8); }
     s.position.copy(p.fine); s.scale.setScalar(p.base * (1.4 - .4 * v));
     onda.position.copy(p.fine); onda.scale.setScalar(p.base * (1 + 5 * v)); onda.material.opacity = .9 * (1 - v);
-    linea.material.opacity = 1 - v;                         // la scia sparisce: resta la foto, attaccata al suo ramo
+    linea.material.opacity = 1 - v;                         // la scia sparisce: resta la foto, con la sua vena
     if (el >= T3) {
-      p.hold = false; p.da.copy(p.fine); p.casa.copy(p.fine); p.t0 = -1e9; scene.remove(linea, onda); linea.geometry.dispose(); ricostruisci();
+      p.hold = false; p.da.copy(p.fine); p.t0 = -1e9; scene.remove(linea, onda); linea.geometry.dispose(); costruisciVene();
       p.lampo = now + 2200; toast(arrivo.a); arrivo = null; fineUltimo = now; renderCron(); regia.nuova = p; return;
     }
   }
@@ -921,7 +822,7 @@ function removePhoto(id) {
   scene.remove(p.sprite); p.tex.dispose(); p.sprite.material.dispose(); if (p.hi) p.hi.tex.dispose();
   photos.splice(photos.indexOf(p), 1); sprites.splice(sprites.indexOf(p.sprite), 1); delete photoById[id];
   if (hover === p) setHover(null);
-  staccaDaiRami(p); ricostruisci();
+  rifaiTutto();
 }
 function removeArrival(id) {
   cron.delete(id); const qi = arrQueue.findIndex(x => x.id === id); if (qi >= 0) arrQueue.splice(qi, 1);
@@ -1253,4 +1154,4 @@ function disegnaAnteprima(mani, principale) {
 avviaMano();
 
 window.__mano = { mano, piuVicina, palmo, passoMano };   // per provare dalla console
-window.__nebulosa = { photos, photoById, camera, controls, setHover, vola, torna, regia, versoColonia, legami, BASI, NUCLEI, colonie, get fuoco() { return fuoco; }, get palette() { return palette; } };   // per provare dalla console
+window.__nebulosa = { photos, photoById, camera, controls, setHover, vola, torna, regia, legami, NUCLEI, get radice() { return radice; }, archi: () => archi, get fuoco() { return fuoco; }, get palette() { return palette; } };   // per provare dalla console

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nebulosa · Corallo</title>
+<title>Nebulosa · Venature</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/nebulosa.css?v=2">
 <style>
@@ -25,7 +25,7 @@ body.tema-carta #qrbtn:hover,body.tema-carta #palbtn:hover,body.tema-carta #cron
 </head>
 <body>
 <canvas id="c"></canvas>
-<canvas id="mappa" title="La mappa: tocca una colonia per andarci, il centro per tornare alla vista iniziale"></canvas>
+<canvas id="mappa" title="La mappa: la rete vista di fronte; toccala per andare in quel punto"></canvas>
 <header class="top">
   <div class="brand"><small>Memoria collettiva</small><b>NEBULOSA</b></div>
   <div class="status"><span id="luogo"></span><span id="st"></span><button id="sndbtn">Suono</button><button id="palbtn">Colori</button><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
@@ -34,7 +34,7 @@ body.tema-carta #qrbtn:hover,body.tema-carta #palbtn:hover,body.tema-carta #cron
   <h1>Una memoria<br><em>che esplode.</em></h1>
   <p id="introp"></p>
 </div>
-<div class="hintbar" id="hintbar">Trascina per girare · rotella per avvicinarti<br>Passa su una foto: i fili portano alle foto con tag in comune<br>Clicca una foto per entrarci · la mappa porta alle colonie</div>
+<div class="hintbar" id="hintbar">Trascina per girare · rotella per avvicinarti<br>Passa su una foto: si accende il suo cammino nella rete<br>Clicca una foto per entrarci · la mappa porta in ogni punto</div>
 <button id="home">↺ Vista iniziale</button>
 <div id="pv"></div>
 <div id="qr"><button id="qrx" aria-label="Chiudi">×</button><h3>Carica dal telefono</h3><p>Inquadra il codice con la fotocamera del telefono, oppure scrivi l'indirizzo nel browser. Il telefono deve essere sulla stessa rete Wi-Fi di questo computer.</p><div class="code" id="qrcode"></div><div class="url" id="qrurl">…</div><div class="meta" id="qrmeta"></div></div>
@@ -60,6 +60,6 @@ body.tema-carta #qrbtn:hover,body.tema-carta #palbtn:hover,body.tema-carta #cron
 
 <script src="/dati.js"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-<script type="module" src="/js/corallo.js?v=1"></script>
+<script type="module" src="/js/venature.js?v=1"></script>
 </body>
 </html>
