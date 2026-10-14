@@ -62,8 +62,11 @@ class Gestore(SimpleHTTPRequestHandler):
         if not f:
             self.send_error(404, 'non trovato')
             return False
-        self.path = '/' + f
+        self.path = self.file = f   # il percorso completo: puo' stare nel progetto o nella cartella dei dati vivi
         return True
+
+    def translate_path(self, path):
+        return getattr(self, 'file', None) or super().translate_path(path)
 
     def do_HEAD(self):
         if self.mostra(self.path.split('?')[0]):

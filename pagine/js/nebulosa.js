@@ -609,7 +609,7 @@ function toast(a) {
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-elimina]'); if (!b) return;
   e.stopPropagation();
-  if (!confirm('Rimuovere questa foto dalla nebulosa? Verrà cancellata anche dal computer, insieme al suo originale.')) return;
+  if (!confirm('Rimuovere questa foto dalla nebulosa? Verrà cancellata anche dal computer.')) return;
   await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.elimina }) });
 }, true);
 
@@ -636,7 +636,7 @@ $('cronx').onclick = () => $('cron').classList.remove('open');
 $('cronL').addEventListener('click', e => { if (e.target.closest('button')) return; const it = e.target.closest('[data-apri]'); if (!it) return; const p = photoById[it.dataset.apri]; if (p && !p.hold) { $('cron').classList.remove('open'); vola(p); } });
 $('cron').addEventListener('click', async e => {
   if (e.target.id !== 'cronAll') return;
-  if (!confirm('Rimuovere tutte le ' + cron.size + ' foto arrivate dai telefoni? Verranno cancellate anche dal computer, insieme ai loro originali.')) return;
+  if (!confirm('Rimuovere tutte le ' + cron.size + ' foto arrivate dai telefoni? Verranno cancellate anche dal computer.')) return;
   for (const id of [...cron.keys()]) await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }).catch(() => {});
 });
 let inViaggio = 0, chiViaggia = '';
@@ -715,7 +715,7 @@ const MODELLO_MANO = 'https://storage.googleapis.com/mediapipe-models/hand_landm
 const OSSA_MANO = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]];
 const SOSTA_MANO = 1500;      // quanto tenere ferma la mano su una foto per entrarci (ms)
 const VIA_MANO = 2000;        // quanto tempo senza mano per tornare alla nebulosa (ms)
-const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, contaDue: 0, d0: 1, r0: 34, dd: 1, pa: null, pb: null };
+const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, storia: [], d0: 1, r0: 34, dd: 1, pa: null, pb: null };
 let rilevatore = null, ultimoVideo = -1, ultimoPasso = 0;
 const video = $('manoVideo'), anteprima = $('manoCanvas'), ctxAnte = anteprima.getContext('2d');
 
@@ -728,7 +728,7 @@ async function avviaMano() {
     const files = await FilesetResolver.forVisionTasks(MP + '/wasm');
     rilevatore = await HandLandmarker.createFromOptions(files, {
       baseOptions: { modelAssetPath: MODELLO_MANO, delegate: 'GPU' },
-      runningMode: 'VIDEO', numHands: 2, minHandDetectionConfidence: .55, minHandPresenceConfidence: .55, minTrackingConfidence: .5,
+      runningMode: 'VIDEO', numHands: 2, minHandDetectionConfidence: .4, minHandPresenceConfidence: .4, minTrackingConfidence: .4,   // soglie basse: una mano di lato o in ombra non sparisce per un attimo
     });
     await apriCamera(memo('nebulosa-camera'));
   } catch (e) {
@@ -737,7 +737,7 @@ async function avviaMano() {
 }
 async function apriCamera(id) {
   if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-  const vincoli = { width: 640, height: 480, ...(id ? { deviceId: { exact: id } } : { facingMode: 'user' }) };
+  const vincoli = { width: { ideal: 1280 }, height: { ideal: 720 }, ...(id ? { deviceId: { exact: id } } : { facingMode: 'user' }) };   // piu' definita: anche da lontano le mani hanno abbastanza pixel
   let flusso;
   try { flusso = await navigator.mediaDevices.getUserMedia({ video: vincoli, audio: false }); }
   catch (e) { if (id) return apriCamera(null); return senzaMano(); }
@@ -760,7 +760,7 @@ function palmo(L) {
 function leggiMano(now) {
   if (window.__manoFinta !== undefined) {   // per provare senza webcam: una mano finta (o due) messa dalla console (null = nessuna mano)
     const f = window.__manoFinta, mani = !f ? [] : Array.isArray(f[0]) ? f : [f];
-    return { L: mani.slice().sort((a, b) => taglia(b) - taglia(a))[0] || null, mani };
+    return { L: mani.slice().sort((a, b) => taglia(b) - taglia(a))[0] || null, mani, lati: window.__latiFinti || [] };
   }
   if (!rilevatore || video.readyState < 2 || video.currentTime === ultimoVideo) return null;
   ultimoVideo = video.currentTime;
@@ -769,39 +769,46 @@ function leggiMano(now) {
   let L = null, best = 0;
   (r.landmarks || []).forEach(m => { const s = Math.hypot(m[0].x - m[9].x, m[0].y - m[9].y); if (s > best) { best = s; L = m; } });
   disegnaAnteprima(r.landmarks || [], L);
-  return { L, mani: r.landmarks || [] };
+  const lati = (r.handedness || r.handednesses || []).map(h => h && h[0] ? h[0].categoryName : null);   // «Left» o «Right»
+  return { L, mani: r.landmarks || [], lati };
 }
 const taglia = m => Math.hypot(m[0].x - m[9].x, m[0].y - m[9].y);   // quanto e' grande una mano nell'inquadratura
 
 // ---------------- lo zoom con due mani: allargarle avvicina, stringerle allontana ----------------
-// conta solo la distanza tra i due palmi: nessuna forma delle dita
-function dueMani(mani) { return mani.slice().sort((a, b) => taglia(b) - taglia(a)).slice(0, 2).map(palmo); }
-function aggiornaDueMani(mani) {
-  // due palmi quasi sovrapposti sono la stessa mano vista due volte: non contano come due mani
-  let due = mani.length >= 2;
-  if (due) { const [a, b] = dueMani(mani); if (Math.hypot(a.x - b.x, a.y - b.y) < .07) due = false; }
-  // con un po' di pazienza: la webcam a volte perde una mano per un attimo
-  mano.contaDue = due === mano.due ? 0 : mano.contaDue + 1;
-  if (mano.contaDue >= (due ? 3 : 6)) {
-    mano.due = due; mano.contaDue = 0;
-    if (due) {
-      const [a, b] = dueMani(mani);
-      mano.d0 = Math.hypot(a.x - b.x, a.y - b.y); mano.r0 = camera.position.distanceTo(controls.target);
-      mano.bersaglio = null; mano.carica = 0; setHover(null);
-    }
-  }
+// conta solo la distanza tra i due palmi, misurata in «mani» (divisa per la grandezza delle mani): cosi' non cambia
+// se la persona si avvicina o si allontana dalla webcam. Nessuna forma delle dita
+const ENTRA_DUE = 120, ESCE_DUE = 500;   // ms: quanto devono vedersi due mani per entrare nello zoom, quanto una puo' sparire prima di uscirne
+function dueMani(mani, lati) {   // le due mani piu' grandi (le piu' vicine), con palmo, grandezza e lato
+  return mani.map((m, i) => i).sort((a, b) => taglia(mani[b]) - taglia(mani[a])).slice(0, 2).map(i => ({ p: palmo(mani[i]), t: taglia(mani[i]), lato: lati && lati[i] }));
+}
+function veraCoppia(c) {         // due mani vere, non la stessa vista due volte (stesso lato e quasi nello stesso punto)
+  if (c.length < 2) return false;
+  const d = Math.hypot(c[0].p.x - c[1].p.x, c[0].p.y - c[1].p.y);
+  return d >= .07 && !(c[0].lato && c[0].lato === c[1].lato && d < .15);
+}
+const misura = c => Math.hypot(c[0].p.x - c[1].p.x, c[0].p.y - c[1].p.y) / Math.max(.02, (c[0].t + c[1].t) / 2);
+function aggiornaDueMani(mani, lati, now) {
+  const c = dueMani(mani, lati), due = veraCoppia(c);
+  if (due) { mano.vistaDue = mano.vistaDue || now; mano.ultimaDue = now; } else mano.vistaDue = 0;
+  if (!mano.due && due && now - mano.vistaDue >= ENTRA_DUE) {
+    mano.due = true; mano.storia = []; mano.dd = mano.d0 = misura(c); mano.r0 = camera.position.distanceTo(controls.target);
+    mano.bersaglio = null; mano.carica = 0; setHover(null);
+  } else if (mano.due && !due && now - mano.ultimaDue > ESCE_DUE) mano.due = false;   // una mano persa per un attimo: lo zoom resta fermo, non esce
   if (mano.due && due) {
-    const [a, b] = dueMani(mani), d = Math.hypot(a.x - b.x, a.y - b.y);
-    // un salto improvviso della distanza (una mano persa o scambiata per un attimo) non e' un gesto vero: lo ignoro
-    if (!mano.pa || Math.abs(d - mano.dd) < Math.max(.06, mano.dd * .3)) { mano.pa = a; mano.pb = b; mano.dd = d; }
+    // un valore isolato fuori posto (una mano persa o scambiata per un solo fotogramma) lo toglie la mediana degli ultimi tre;
+    // un cambiamento vero passa subito, solo ammorbidito
+    mano.storia.push(misura(c)); if (mano.storia.length > 3) mano.storia.shift();
+    const med = mano.storia.slice().sort((a, b) => a - b)[Math.floor(mano.storia.length / 2)];
+    mano.dd += (med - mano.dd) * .5;
+    mano.pa = c[0].p; mano.pb = c[1].p;
   }
 }
 function zoomDueMani() {
   if (fuoco && (!fuoco.arrivato || fuoco.uscita)) return;   // durante un volo la camera e' gia' in movimento
-  // da quando le mani si sono alzate insieme: il doppio della distanza tra i palmi = circa due volte e mezzo piu' vicino
-  // limiti dello zoom con le mani: non si entra nel nucleo luminoso al centro, e non ci si allontana oltre un po' piu' della vista iniziale
+  // da quando le mani si sono alzate insieme: il doppio della distanza tra i palmi = quattro volte piu' vicino,
+  // cosi' basta aprire le mani poco piu' delle spalle e restano dentro l'inquadratura
   const vicino = fuoco ? 2.2 : 6, lontano = fuoco ? 14 : 48;
-  const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.dd, .02), 1.2), vicino, lontano);
+  const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.dd, .05), 2), vicino, lontano);
   scarto.copy(camera.position).sub(controls.target); sferica.setFromVector3(scarto);
   sferica.radius += (voluto - sferica.radius) * .2;
   scarto.setFromSpherical(sferica); camera.position.copy(controls.target).add(scarto);
@@ -850,13 +857,13 @@ function passoMano(now) {
       mano.vista = true; mano.ultima = now; ultimoTocco = now;
       controls.autoRotate = false; clearTimeout(fermo);
     } else if (mano.vista && now - mano.ultima > 350) {
-      mano.vista = false; mano.due = false; mano.contaDue = 0; mano.bersaglio = null; mano.carica = 0; setHover(null); riprendiGiro();
+      mano.vista = false; mano.due = false; mano.vistaDue = 0; mano.bersaglio = null; mano.carica = 0; setHover(null); riprendiGiro();
     }
   }
   // senza mano per un po': si torna alla nebulosa (solo se ci si era entrati con la mano)
   // vale anche per la foto appena arrivata dal QR, se mentre si e' dentro una mano e' stata vista (se nessuno c'e', la foto nuova resta i suoi 20 secondi)
   if (!mano.vista && fuoco && !fuoco.uscita && fuoco.arrivato && mano.ultima >= fuoco.t0 - 500 && now - mano.ultima > VIA_MANO) { torna(); }
-  if (r && r.L) aggiornaDueMani(r.mani || []);
+  if (r) aggiornaDueMani(r.mani || [], r.lati, now);   // anche quando una mano sparisce: serve a capire quanto e' stata via
   if (mano.vista && !arrivo && mano.due) zoomDueMani();
   else if (mano.vista && !arrivo) {
     giraVersoLaMano(dt);
