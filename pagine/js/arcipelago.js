@@ -11,7 +11,7 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 // L'ARCIPELAGO: le foto non partono piu' tutte dal nucleo. Ogni gruppo di senso (i nuclei della lettura) e' un'isola,
 // separata dalle altre; dentro l'isola le foto stanno distanziate e le piu' simili vicine. Le isole che si somigliano
 // sono vicine tra loro. Le linee hanno un solo significato: i tag in comune (piu' tag, linea piu' spessa), e si vedono
-// solo sulla foto indicata o aperta. Una piccola mappa in basso a sinistra dice dove sei e porta alle isole.
+// solo sulla foto indicata o aperta.
 
 const D = window.NEBULOSA;
 const $ = id => document.getElementById(id);
@@ -577,57 +577,6 @@ function passoViaggio(now) {
 }
 controls.addEventListener('start', () => { viaggioCam = null; });
 
-// ---------------- la mappa: dove sei, e dove sono le isole ----------------
-// vista dall'alto: ogni isola e' un punto del suo colore (piu' grande se ha piu' foto), tu sei la freccia.
-// Toccando un'isola ci si vola davanti
-const mappa = $('mappa'), cm = mappa.getContext('2d');
-const MAPPA_R = 34;   // quanto mondo copre la mappa (dal centro al bordo)
-function suMappa(v) { const W = mappa.width, k = W / 2 / MAPPA_R * .92; return { x: W / 2 + v.x * k, y: W / 2 + v.z * k }; }
-let ultimaMappa = 0;
-function disegnaMappa(now) {
-  if (now - ultimaMappa < 90) return; ultimaMappa = now;
-  const dpr = Math.min(devicePixelRatio || 1, 2), L = Math.round(mappa.clientWidth * dpr);
-  if (!L) return;
-  if (mappa.width !== L) mappa.width = mappa.height = L;
-  const W = L, k = dpr;
-  cm.clearRect(0, 0, W, W);
-  const inchiostro = chiaro() ? '42,36,30' : '236,230,225';
-  cm.fillStyle = chiaro() ? 'rgba(239,232,220,.86)' : 'rgba(8,7,12,.72)'; cm.beginPath(); cm.arc(W / 2, W / 2, W / 2 - k, 0, TAU); cm.fill();
-  cm.strokeStyle = `rgba(${inchiostro},.22)`; cm.lineWidth = k; cm.stroke();
-  cm.fillStyle = `rgba(${inchiostro},.5)`; cm.beginPath(); cm.arc(W / 2, W / 2, 2 * k, 0, TAU); cm.fill();   // il centro
-  const vicina = isolaVicina();
-  NUCLEI.forEach((_, i) => {
-    const q = suMappa(CENTRI[i]), n = photos.filter(p => p.isola === i).length, c = nebbie[i].material.color;
-    const rr = (2.5 + Math.sqrt(n) * .55) * k;
-    cm.fillStyle = `rgba(${c.toArray().map(v => Math.round(v * 255)).join(',')},${opaco() ? .95 : .85})`;
-    cm.beginPath(); cm.arc(q.x, q.y, rr, 0, TAU); cm.fill();
-    if (i === vicina) { cm.strokeStyle = `rgba(${inchiostro},.8)`; cm.lineWidth = 1.2 * k; cm.beginPath(); cm.arc(q.x, q.y, rr + 3 * k, 0, TAU); cm.stroke(); }
-  });
-  // tu: un punto con la direzione in cui guardi
-  const io = suMappa(camera.position), dir = controls.target.clone().sub(camera.position).setY(0);
-  const a = Math.atan2(dir.z, dir.x), fuoriMappa = Math.hypot(io.x - W / 2, io.y - W / 2) > W / 2 - 8 * k;
-  let px = io.x, py = io.y;
-  if (fuoriMappa) { const b = Math.atan2(io.y - W / 2, io.x - W / 2); px = W / 2 + Math.cos(b) * (W / 2 - 8 * k); py = W / 2 + Math.sin(b) * (W / 2 - 8 * k); }
-  cm.save(); cm.translate(px, py); cm.rotate(a);
-  cm.fillStyle = chiaro() ? '#2a2420' : '#fff4e6';
-  cm.beginPath(); cm.moveTo(7 * k, 0); cm.lineTo(-4 * k, 4.2 * k); cm.lineTo(-2 * k, 0); cm.lineTo(-4 * k, -4.2 * k); cm.closePath(); cm.fill();
-  cm.restore();
-}
-// l'isola piu' vicina al punto che stai guardando (o -1 se guardi tutto l'arcipelago da lontano)
-function isolaVicina() {
-  const t = fuoco ? fuoco.p.fine : controls.target; let best = -1, bd = 1e9;
-  CENTRI.forEach((C, i) => { const d = C.distanceTo(t); if (d < bd) { bd = d; best = i; } });
-  return bd < 9 ? best : -1;
-}
-mappa.addEventListener('click', e => {
-  const r = mappa.getBoundingClientRect(), dpr = mappa.width / r.width, x = (e.clientX - r.left) * dpr, y = (e.clientY - r.top) * dpr;
-  let best = -1, bd = 14 * dpr;
-  CENTRI.forEach((C, i) => { const q = suMappa(C), d = Math.hypot(q.x - x, q.y - y); if (d < bd) { bd = d; best = i; } });
-  if (fuoco) torna();
-  if (best >= 0) setTimeout(() => versoIsola(best), fuoco ? DUR_VOLO + 50 : 0);
-  else if (Math.hypot(x - mappa.width / 2, y - mappa.width / 2) < 14 * dpr) setTimeout(() => $('home').click(), fuoco ? DUR_VOLO + 50 : 0);
-});
-
 // ---------------- ogni fotogramma ----------------
 const orb = new THREE.Vector3();
 let ultimoDrone = 0;
@@ -692,7 +641,6 @@ function frame(now) {
   passoArrivo(now);
   passoRegia(now);
   composer.render();
-  disegnaMappa(now);
   $('intro').classList.toggle('hide', camera.position.distanceTo(controls.target) < 35 || !!fuoco);
   updatePreview();
 }
@@ -723,7 +671,7 @@ const PAUSA = 1200;
 function counts() {
   const n = photos.length, prov = photos.filter(p => p.f.provv).length;
   $('st').textContent = n + ' foto';
-  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Le foto che raccontano la stessa cosa formano un'isola; le isole che si somigliano stanno vicine. Passa su una foto: i fili la legano alle foto con cui ha dei tag in comune, più spessi quanti più ne condividono. La mappa in basso a sinistra ti dice dove sei e ti porta alle isole.` +
+  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Le foto che raccontano la stessa cosa formano un'isola; le isole che si somigliano stanno vicine. Passa su una foto: i fili la legano alle foto con cui ha dei tag in comune, più spessi quanti più ne condividono.` +
     (prov ? ` ${prov === 1 ? '1 foto, quasi grigia, ha' : prov + ' foto, quasi grigie, hanno'} ancora un posto provvisorio, vicino alle foto che le somigliano: aspetta${prov === 1 ? '' : 'no'} di essere lett${prov === 1 ? 'a' : 'e'}.` : '');
   $('qrmeta').textContent = arrivate + ' foto arrivate dai telefoni';
 }
