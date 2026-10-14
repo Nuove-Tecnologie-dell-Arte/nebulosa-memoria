@@ -17,9 +17,10 @@ label.f{display:block;font-size:13px;color:var(--dim);margin:16px 0 6px}
 input[type=text],textarea{width:100%;background:#121016;border:1px solid var(--line);color:var(--ink);padding:12px 14px;font:inherit;border-radius:10px;outline:none}
 input[type=text]:focus,textarea:focus{border-color:var(--amber)}
 textarea{min-height:70px;resize:vertical}
-.pick{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;margin-top:22px;padding:30px 16px;border:1.5px dashed rgba(240,138,100,.6);border-radius:18px;background:rgba(240,138,100,.06);cursor:pointer;text-align:center}
+.picks{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.pick{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:26px 10px;border:1.5px dashed rgba(240,138,100,.6);border-radius:18px;background:rgba(240,138,100,.06);cursor:pointer;text-align:center}
 .pick:active{background:rgba(240,138,100,.14)}
-.pick b{font-size:19px;font-weight:500}
+.pick b{font-size:17px;font-weight:500;line-height:1.25}
 .pick span{font-size:13px;color:var(--dim)}
 .pick svg{width:40px;height:40px;stroke:var(--trace);fill:none;stroke-width:1.5}
 input[type=file]{display:none}
@@ -33,9 +34,11 @@ input[type=file]{display:none}
 .bar{height:3px;background:rgba(236,230,225,.1);border-radius:3px;margin-top:8px;overflow:hidden}
 .bar i{display:block;height:100%;width:30%;background:var(--amber);animation:go 1.2s infinite ease-in-out}
 @keyframes go{0%{transform:translateX(-100%)}100%{transform:translateX(330%)}}
-.pick.small{padding:16px;margin-top:16px;flex-direction:row;gap:10px}
-.pick.small svg{width:26px;height:26px}
-.pick.small b{font-size:16px}
+.picks.small{margin-top:16px}
+.picks.small .pick{padding:14px 8px;flex-direction:row;gap:8px}
+.picks.small .pick svg{width:24px;height:24px;flex:none}
+.picks.small .pick b{font-size:15px}
+.picks.small .pick span{display:none}
 #scelte{display:none;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:12px;margin-top:20px}
 #scelte.on{display:grid}
 .th{position:relative;aspect-ratio:1}
@@ -60,12 +63,21 @@ input[type=file]{display:none}
   <label class="f" for="frase">Cosa racconta questa foto per te? (facoltativo)</label>
   <textarea id="frase" maxlength="200" placeholder="Un ricordo, un momento, perché l'hai scattata…"></textarea>
 
-  <label class="pick" for="file" id="pick">
-    <svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-    <b id="pickB">Scatta o scegli foto</b>
-    <span id="pickS">Puoi sceglierne più di una</span>
-  </label>
-  <input type="file" id="file" accept="image/*" multiple>
+  <!-- due pulsanti: con un solo campo «scegli immagini» molti Android (Chrome su Android 14 e 15) mostrano solo la galleria, senza fotocamera -->
+  <div class="picks" id="picks">
+    <label class="pick" for="fotocamera">
+      <svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      <b id="camB">Scatta una foto</b>
+      <span>Con la fotocamera</span>
+    </label>
+    <label class="pick" for="galleria">
+      <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4"/></svg>
+      <b id="galB">Scegli dalla galleria</b>
+      <span>Anche più di una</span>
+    </label>
+  </div>
+  <input type="file" id="fotocamera" accept="image/*" capture="environment">
+  <input type="file" id="galleria" accept="image/*" multiple>
 
   <div id="scelte"></div>
   <button id="invia"></button>
@@ -100,11 +112,12 @@ function mostra() {
   $('scelte').classList.toggle('on', scelte.length > 0);
   $('invia').classList.toggle('on', scelte.length > 0);
   $('invia').innerHTML = `Invia ${scelte.length === 1 ? 'la foto' : scelte.length + ' foto'} alla nebulosa<small>Tocca × per togliere una foto</small>`;
-  $('pick').classList.toggle('small', scelte.length > 0);
-  $('pickB').textContent = scelte.length ? 'Aggiungi altre foto' : 'Scatta o scegli foto';
-  $('pickS').style.display = scelte.length ? 'none' : '';
+  $('picks').classList.toggle('small', scelte.length > 0);
+  $('camB').textContent = scelte.length ? 'Scatta un’altra' : 'Scatta una foto';
+  $('galB').textContent = scelte.length ? 'Dalla galleria' : 'Scegli dalla galleria';
 }
-$('file').addEventListener('change', e => {
+// la fotocamera e la galleria finiscono nello stesso elenco
+for (const id of ['fotocamera', 'galleria']) $(id).addEventListener('change', e => {
   [...e.target.files].forEach(f => scelte.push({ file: f, url: URL.createObjectURL(f) }));
   e.target.value = ''; mostra();
 });
