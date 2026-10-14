@@ -809,10 +809,21 @@ function zoomDueMani() {
   // cosi' basta aprire le mani poco piu' delle spalle e restano dentro l'inquadratura
   const vicino = fuoco ? 2.2 : 6, lontano = fuoco ? 14 : 48;
   const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.dd, .05), 2), vicino, lontano);
-  scarto.copy(camera.position).sub(controls.target); sferica.setFromVector3(scarto);
-  sferica.radius += (voluto - sferica.radius) * .2;
-  scarto.setFromSpherical(sferica); camera.position.copy(controls.target).add(scarto);
+  const R = camera.position.distanceTo(controls.target), k = (R + (voluto - R) * .2) / R;
+  // ci si avvicina al punto che le mani indicano (a meta' tra i due palmi), come allargando due dita su una foto:
+  // quel punto resta fermo sullo schermo e tutto il resto si allarga intorno. Dentro una foto aperta resta lei al centro
+  zP.copy(controls.target);
+  if (!fuoco && mano.pa) {
+    const s = sulloSchermo({ x: (mano.pa.x + mano.pb.x) / 2, y: (mano.pa.y + mano.pb.y) / 2 });
+    camera.updateMatrixWorld();   // la camera com'e' adesso, non com'era all'ultimo disegno
+    zDir.set(s.x / innerWidth * 2 - 1, 1 - s.y / innerHeight * 2, .5).unproject(camera).sub(camera.position).normalize();
+    camera.getWorldDirection(zAvanti);
+    zP.copy(camera.position).addScaledVector(zDir, R / Math.max(.2, zDir.dot(zAvanti)));   // il punto indicato, alla profondita' del centro della vista
+  }
+  controls.target.sub(zP).multiplyScalar(k).add(zP);
+  camera.position.sub(zP).multiplyScalar(k).add(zP);
 }
+const zP = new THREE.Vector3(), zDir = new THREE.Vector3(), zAvanti = new THREE.Vector3();
 const sulloSchermo = q => ({ x: clamp((1 - q.x - .18) / .64, 0, 1) * innerWidth, y: clamp((q.y - .15) / .6, 0, 1) * innerHeight });
 
 // la calamita: la foto (visibile) piu' vicina al punto della mano, sullo schermo
