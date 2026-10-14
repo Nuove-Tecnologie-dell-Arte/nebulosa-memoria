@@ -886,7 +886,7 @@ const MODELLO_MANO = 'https://storage.googleapis.com/mediapipe-models/hand_landm
 const OSSA_MANO = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]];
 const SOSTA_MANO = 1500;      // quanto tenere ferma la mano su una foto per entrarci (ms)
 const VIA_MANO = 2000;        // quanto tempo senza mano per tornare alla nebulosa (ms)
-const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, storia: [], storiaM: [], mx: null, my: null, px: null, py: null, d0: 1, r0: 34, dd: 1, pa: null, pb: null };
+const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, storia: [], storiaM: [], mx: null, my: null, px: null, py: null, ddPrima: 0, velZoom: 0, pesoTrascina: 1, ax: null, ay: null, d0: 1, r0: 34, dd: 1, pa: null, pb: null };
 let rilevatore = null, ultimoVideo = -1, ultimoPasso = 0;
 const video = $('manoVideo'), anteprima = $('manoCanvas'), ctxAnte = anteprima.getContext('2d');
 
@@ -962,7 +962,7 @@ function aggiornaDueMani(mani, lati, now) {
   const c = dueMani(mani, lati), due = veraCoppia(c);
   if (due) { mano.vistaDue = mano.vistaDue || now; mano.ultimaDue = now; } else mano.vistaDue = 0;
   if (!mano.due && due && now - mano.vistaDue >= ENTRA_DUE) {
-    mano.due = true; mano.storia = []; mano.storiaM = []; mano.mx = mano.my = mano.px = mano.py = null; mano.dd = mano.d0 = misura(c); mano.r0 = camera.position.distanceTo(controls.target);
+    mano.due = true; mano.storia = []; mano.storiaM = []; mano.mx = mano.my = mano.px = mano.py = null; mano.ddPrima = 0; mano.velZoom = 0; mano.pesoTrascina = 1; mano.ax = mano.ay = null; mano.dd = mano.d0 = misura(c); mano.r0 = camera.position.distanceTo(controls.target);
     mano.bersaglio = null; mano.carica = 0; setHover(null);
   } else if (mano.due && !due && now - mano.ultimaDue > ESCE_DUE) mano.due = false;   // una mano persa per un attimo: lo zoom resta fermo, non esce
   if (mano.due && due) {
@@ -987,10 +987,17 @@ function zoomDueMani() {
   const vicino = fuoco ? 2.2 : 4, lontano = fuoco ? 14 : 110;
   const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.dd, .05), 2), vicino, lontano);
   const R = camera.position.distanceTo(controls.target), k = (R + (voluto - R) * .2) / R;
-  // muovere le due mani insieme trascina la nebulosa: quello che sta sotto le mani le segue, come trascinando con due dita
+  // muovere le due mani insieme trascina la nebulosa: quello che sta sotto le mani le segue, come trascinando con due dita.
+  // Ma mentre si allargano o si stringono le mani si sta zoomando: allora il trascinamento si spegne (piano, senza scatti),
+  // perche' le mani non si aprono mai in modo perfettamente simmetrico e il punto tra loro si sposta un po' da solo
+  // la velocita' dello zoom, con il segno e mediata su qualche fotogramma: il tremolio va avanti e indietro e si annulla,
+  // uno zoom vero va sempre nella stessa direzione e resta
+  mano.velZoom = mano.velZoom * .7 + (mano.ddPrima ? (mano.dd - mano.ddPrima) / mano.dd : 0) * .3; mano.ddPrima = mano.dd;
+  const velZoom = Math.abs(mano.velZoom), SOGLIA = .004;
+  mano.pesoTrascina += ((velZoom > SOGLIA ? 0 : 1) - mano.pesoTrascina) * (velZoom > SOGLIA ? .5 : .08);
   if (!fuoco && mano.mx != null) {
     if (mano.px != null) {
-      const ddx = mano.mx - mano.px, ddy = mano.my - mano.py;
+      const ddx = (mano.mx - mano.px) * mano.pesoTrascina, ddy = (mano.my - mano.py) * mano.pesoTrascina;
       if (Math.hypot(ddx, ddy) > 1.5) {   // sotto un pixel e mezzo e' solo il tremolio della webcam
         const perPixel = 2 * R * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) / innerHeight;
         camera.updateMatrixWorld(); camera.matrixWorld.extractBasis(zDir, zAvanti, zP);   // destra e su della camera
@@ -1003,8 +1010,10 @@ function zoomDueMani() {
   // ci si avvicina al punto che le mani indicano (a meta' tra i due palmi), come allargando due dita su una foto:
   // quel punto resta fermo sullo schermo e tutto il resto si allarga intorno. Dentro una foto aperta resta lei al centro
   zP.copy(controls.target);
-  if (!fuoco && mano.pa) {
-    const s = sulloSchermo({ x: (mano.pa.x + mano.pb.x) / 2, y: (mano.pa.y + mano.pb.y) / 2 });
+  // il punto verso cui si zooma si fissa quando si comincia ad allargare o stringere: se le mani si aprono storte non scivola via
+  if (mano.mx != null && (mano.ax == null || mano.pesoTrascina > .9)) { mano.ax = mano.mx; mano.ay = mano.my; }
+  if (!fuoco && mano.ax != null) {
+    const s = { x: mano.ax, y: mano.ay };
     camera.updateMatrixWorld();   // la camera com'e' adesso, non com'era all'ultimo disegno
     zDir.set(s.x / innerWidth * 2 - 1, 1 - s.y / innerHeight * 2, .5).unproject(camera).sub(camera.position).normalize();
     camera.getWorldDirection(zAvanti);
