@@ -27,15 +27,13 @@ def disponibile():
     return True
 
 
-SCHEMA = {
-    'type': 'object',
-    'properties': {
-        'lettura': {'type': 'string'},
-        'tag': {'type': 'array', 'items': {'type': 'string'}},
-    },
-    'required': ['lettura', 'tag'],
-    'additionalProperties': False,
-}
+def schema(analisi):
+    """La forma della risposta: lettura, tag e, se la nebulosa ha i suoi gruppi di senso (nuclei), il gruppo della foto."""
+    nuclei = [n['id'] for n in analisi.get('nuclei', [])]
+    proprieta = {'lettura': {'type': 'string'}, 'tag': {'type': 'array', 'items': {'type': 'string'}}}
+    if nuclei:
+        proprieta['nucleo'] = {'type': 'string', 'enum': nuclei}
+    return {'type': 'object', 'properties': proprieta, 'required': list(proprieta), 'additionalProperties': False}
 
 
 def istruzioni(analisi):
@@ -55,11 +53,13 @@ def istruzioni(analisi):
         "Inventa un tag nuovo solo se nessuno di quelli esistenti va bene, con lo stesso stile (parole semplici, minuscole).\n\n"
         f"Alcune letture già fatte, come esempio di stile:\n{esempi}\n\n"
         f"I tag che esistono già:\n{vocabolario}"
+        + (("\n\n- nucleo: il gruppo di senso a cui la foto appartiene di più, scelto tra questi (scrivi il nome esatto):\n"
+            + '\n'.join(f"- {n['id']}: {n.get('testo', '')}" for n in analisi['nuclei'])) if analisi.get('nuclei') else '')
     )
 
 
 def leggi_foto(jpeg, frase, analisi):
-    """Restituisce {'lettura': ..., 'tag': [...]}, oppure None se non e' stato possibile leggerla."""
+    """Restituisce {'lettura': ..., 'tag': [...], 'nucleo': ...}, oppure None se non e' stato possibile leggerla."""
     if not disponibile():
         return None
     testo = 'Ecco una foto appena arrivata nella nebulosa.' + (f' Chi l\'ha mandata ha scritto: «{frase}».' if frase else '')
@@ -67,7 +67,7 @@ def leggi_foto(jpeg, frase, analisi):
         r = _client.beta.messages.create(
             model=MODELLO, max_tokens=16000,
             betas=['server-side-fallback-2026-07-01'], fallbacks='default',
-            output_config={'effort': 'high', 'format': {'type': 'json_schema', 'schema': SCHEMA}},
+            output_config={'effort': 'high', 'format': {'type': 'json_schema', 'schema': schema(analisi)}},
             system=istruzioni(analisi),
             messages=[{'role': 'user', 'content': [
                 {'type': 'image', 'source': {'type': 'base64', 'media_type': 'image/jpeg', 'data': base64.standard_b64encode(jpeg).decode()}},
@@ -92,4 +92,7 @@ def leggi_foto(jpeg, frase, analisi):
     tag = [t.strip().lower() for t in j.get('tag', []) if t.strip()][:5]
     if not j.get('lettura') or not tag:
         return None
-    return {'lettura': j['lettura'].strip(), 'tag': tag}
+    res = {'lettura': j['lettura'].strip(), 'tag': tag}
+    if j.get('nucleo') in {n['id'] for n in analisi.get('nuclei', [])}:
+        res['nucleo'] = j['nucleo']   # cosi' entra nella sua isola, come le altre
+    return res
