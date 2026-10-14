@@ -7,6 +7,6 @@ echo "--- attività di Windows"
 echo "--- processi dentro WSL"
 ps -eo pid,args | grep -E "esegui.sh|avvia.py" | grep -v grep || echo "nessuno"
 echo "--- porta"
-if curl -s --max-time 2 "http://localhost:${PORTA:-8002}/api/info" | grep -q carica; then echo "il server risponde"; else echo "il server non risponde"; fi
+if curl -s --max-time 2 "http://localhost:$PORTA/api/info" | grep -q carica; then echo "il server risponde (porta $PORTA)"; else echo "il server non risponde (porta $PORTA)"; fi
 echo "--- ultime righe di servizio.log"
 tail -n 8 ../servizio.log 2>/dev/null || echo "(non c'è ancora)"

@@ -20,14 +20,11 @@ Uso (dalla cartella nebulosa-memoria):
 import json, math, os, re, sys, zlib
 import numpy as np
 
-PROGETTO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # la cartella nebulosa-memoria
-DATI = os.path.join(PROGETTO, 'dati')
+from config import DATI, FULL, THUMB   # dentro il progetto, o in CARTELLA_DATI se impostata in .env
 ANALISI = os.path.join(DATI, 'analisi.json')
 MAPPA = os.path.join(DATI, 'mappa.json')
 ARRIVI = os.path.join(DATI, 'arrivi.json')
 DATI_JS = os.path.join(DATI, 'dati.js')
-FULL = os.path.join(PROGETTO, 'foto', 'full')
-THUMB = os.path.join(PROGETTO, 'foto', 'thumb')
 
 # il carattere del movimento: quali letture fanno muovere una foto in quale modo
 MOTI = [

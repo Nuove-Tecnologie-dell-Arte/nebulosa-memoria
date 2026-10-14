@@ -33,13 +33,24 @@ a{color:var(--acc)}
 
 <h2>Accendere</h2>
 <div class="box">
-<p><b>Doppio clic su «Apri la nebulosa.command».</b> Si apre una finestra del Terminale (è il server: lasciala aperta) e poco dopo la nebulosa in Chrome, con il suono già attivo.</p>
-<p>Se la nebulosa è già accesa, il file apre solo la pagina, senza accendere un secondo server.</p>
-<p>Per lo schermo intero: <code>Ctrl + Cmd + F</code>. Per spegnere: chiudi la finestra del Terminale.</p>
-<p><b>Su Windows</b> si usano «Apri la nebulosa.bat». Serve Python, da <a href="https://www.python.org/downloads/">python.org</a>: durante l'installazione spunta «Add python.exe to PATH». La prima volta il file installa da solo le librerie che mancano. Per lo schermo intero: <code>F11</code>.</p>
-<p class="nota">Non aprire le pagine con un doppio clic sul file .html: senza il server compare «Mancano i dati della nebulosa» e la webcam non parte. La webcam funziona solo da <code>localhost</code> o da un indirizzo <code>https</code>, non da un indirizzo come <code>http://192.168…</code>.</p>
-<p class="nota">Il Terminale scrive anche l'indirizzo per i telefoni e se la lettura delle foto nuove è automatica o a mano.</p>
+<p><b>Mac: doppio clic su «Apri la nebulosa.command».</b> Si apre una finestra del Terminale (è il server: lasciala aperta) e poco dopo la nebulosa in Chrome, con il suono già attivo. Per lo schermo intero: <code>Ctrl + Cmd + F</code>. Per spegnere: chiudi la finestra del Terminale.</p>
+<p><b>Windows: doppio clic su «Apri la nebulosa.bat».</b> Serve Python, da <a href="https://www.python.org/downloads/">python.org</a>: durante l'installazione spunta «Add python.exe to PATH». La prima volta il file installa da solo le librerie che mancano. Per lo schermo intero: <code>F11</code>.</p>
+<p><b>Linux o WSL</b> (anche collegati via ssh), dalla cartella <code>nebulosa-memoria</code>: <code>bash avvia-server.sh</code>. Se c'è uno schermo apre Chrome, altrimenti scrive l'indirizzo da aprire. Per spegnere: <code>Ctrl + C</code>.</p>
+<p>Tutti e tre, se la nebulosa è già accesa, aprono solo la pagina, senza accendere un secondo server. Passano tutti da <code>avvia.py</code>, che si può anche lanciare a mano: <code>python3 avvia.py</code>.</p>
+<p class="nota">I file <code>.bat</code> sono solo per Windows: con <code>bash</code> o <code>sh</code> danno errori come «@echo: command not found». Non aprire le pagine con un doppio clic sul file .html: senza il server compare «Mancano i dati della nebulosa» e la webcam non parte. La webcam funziona solo da <code>localhost</code> o da un indirizzo <code>https</code>, non da un indirizzo come <code>http://192.168…</code>.</p>
 </div>
+
+<h2>Le impostazioni: il file .env</h2>
+<p>Porta, indirizzo del tunnel e cartella dei dati stanno in un file <code>.env</code> nella cartella <code>nebulosa-memoria</code>. Valgono per tutti i modi di accendere. La prima volta si crea copiando il modello:</p>
+<pre>cp .env.example .env</pre>
+<table>
+<tr><th>Riga</th><th>A cosa serve</th></tr>
+<tr><td><code>PORTA=8002</code></td><td>La porta del server: il tunnel deve puntare qui</td></tr>
+<tr><td><code>INDIRIZZO=</code></td><td>L'indirizzo pubblico del tunnel (<code>https://…</code>): il QR porterà i telefoni lì. Vuoto se non c'è un tunnel</td></tr>
+<tr><td><code>CARTELLA_DATI=</code></td><td>Dove tenere le foto che arrivano e i dati della nebulosa. Vuoto = dentro <code>nebulosa-memoria</code>. Su un server conviene fuori, per esempio <code>~/nebulosa-dati</code>: vedi sotto</td></tr>
+<tr><td><code>ANTHROPIC_API_KEY=</code></td><td>La chiave per leggere da sole le foto nuove (facoltativa)</td></tr>
+</table>
+<p class="nota"><code>.env</code> resta solo sul computer: non va su GitHub.</p>
 
 <h2>Gli indirizzi</h2>
 <p>Funzionano solo mentre la nebulosa è accesa.</p>
@@ -56,56 +67,62 @@ a{color:var(--acc)}
 <p class="nota">I telefoni usano lo stesso indirizzo ma con il numero del computer al posto di «localhost» (lo scrive il Terminale, ed è nel QR).</p>
 
 <h2>Su un server, con un tunnel</h2>
-<p>Il server ascolta sulla porta <b>8002</b>. Un tunnel (per esempio cloudflared o ngrok) rivolto a <code>http://localhost:8002</code> rende la nebulosa raggiungibile da internet in <code>https</code>: così la webcam funziona e i telefoni possono mandare foto anche senza essere sulla stessa rete Wi-Fi.</p>
-<p>Su Linux o in WSL (anche collegati via ssh) si accende con <code>bash avvia-server.sh</code>, dalla cartella <code>nebulosa-memoria</code>. Fa come il .command: se la nebulosa è già accesa apre solo la pagina; la prima volta prepara da solo le librerie Python; se c'è uno schermo apre Chrome, altrimenti scrive l'indirizzo da aprire. Perché il QR porti i telefoni al tunnel, dagli l'indirizzo pubblico:</p>
-<pre>INDIRIZZO=https://nebulosa.esempio.it bash avvia-server.sh</pre>
-<p class="nota">I file <code>.bat</code> sono solo per Windows (doppio clic): con <code>bash</code> o <code>sh</code> danno errori come «@echo: command not found».</p>
-<p>Su Windows, in «Apri la nebulosa.bat», togli <code>rem</code> dalla riga <code>set INDIRIZZO=…</code> e scrivi lì l'indirizzo. Se la nebulosa è aperta direttamente dall'indirizzo del tunnel, il QR lo trova da solo.</p>
+<p>Un tunnel (per esempio cloudflared o ngrok) rivolto a <code>http://localhost:8002</code> rende la nebulosa raggiungibile da internet in <code>https</code>: così la webcam funziona e i telefoni possono mandare foto anche senza essere sulla stessa rete Wi-Fi. Scrivi l'indirizzo pubblico in <code>.env</code> (<code>INDIRIZZO=</code>); se la nebulosa è aperta direttamente dall'indirizzo del tunnel, il QR lo trova anche da solo.</p>
 <p class="nota">Da internet si possono guardare la nebulosa e mandare foto, ma <b>eliminare foto si può solo dal computer del server</b>, aprendo <code>localhost:8002</code>.</p>
+<p><b>Sempre accesa, in WSL su Windows.</b> Dalla cartella <code>nebulosa-memoria</code>, dentro WSL (anche via ssh):</p>
+<table>
+<tr><th>Comando</th><th>Cosa fa</th></tr>
+<tr><td><code>bash servizio/installa.sh</code></td><td>Crea l'attività di Windows «Nebulosa»: il server parte da solo all'avvio di Windows, anche senza nessuno davanti al PC, e si riaccende se si ferma. Se manca, crea <code>.env</code> e mette le foto in <code>~/nebulosa-dati</code></td></tr>
+<tr><td><code>bash servizio/stato.sh</code></td><td>Dice se è acceso e, se no, perché (con le ultime righe di <code>servizio.log</code>)</td></tr>
+<tr><td><code>bash servizio/rimuovi.sh</code></td><td>Lo ferma e toglie l'attività</td></tr>
+</table>
+<p><b>Aggiornare il programma sul server</b> con <code>git pull</code>. Se le foto e i dati stanno in <code>CARTELLA_DATI</code>, fuori dal repository, le foto che arrivano non bloccano l'aggiornamento e i nomi di chi le manda non possono finire per sbaglio su GitHub. La prima volta che il server parte con <code>CARTELLA_DATI</code>, la cartella viene riempita con le foto e i dati che ci sono in quel momento in <code>nebulosa-memoria</code>.</p>
 
 <h2>Le cartelle</h2>
 <pre>nebulosa-memoria/
-  Apri la nebulosa.command   ← l'unica cosa da toccare (su Windows: Apri la nebulosa.bat)
-  avvia-server.sh            come il .command, per Linux e WSL (anche via ssh, con il tunnel)
+  Apri la nebulosa.command   accende e apre la nebulosa sul Mac
+  Apri la nebulosa.bat       lo stesso su Windows
+  avvia-server.sh            lo stesso su Linux e WSL (anche via ssh)
+  avvia.py                   quello che lanciano tutti e tre: accende il server
+  .env.example               il modello delle impostazioni (da copiare in .env)
   LEGGIMI.html               ← questa pagina
   requirements.txt           le librerie Python da installare
+  servizio/      per tenerla sempre accesa in WSL: installa.sh, stato.sh, rimuovi.sh
   pagine/        la nebulosa (index.html, con css/nebulosa.css e js/nebulosa.js) e la pagina del QR (carica.html)
     versioni/    le versioni precedenti, conservate
-  foto/
-    full/        tutte le foto, ridotte per lo schermo
+  foto/          (oppure in CARTELLA_DATI)
+    full/        tutte le foto, compresse per lo schermo
     thumb/       le miniature
-    originali/   i file originali arrivati dai telefoni, a piena risoluzione
-  dati/
+  dati/          (oppure in CARTELLA_DATI)
     analisi.json la lettura di ogni foto (cosa rappresenta + i suoi tag)
     mappa.json   il posto e il colore di ogni foto nella nebulosa
     arrivi.json  le foto arrivate dai telefoni: chi, quando, con quale frase
     dati.js      tutto questo pronto per la pagina (si rigenera da solo)
   programma/
-    server.py       si accende da qui: avvia il server
+    server.py       il server
+    config.py       le impostazioni: legge .env; porta, cartelle, limiti, compressione
     gestore.py      le richieste: pagine, QR, foto in arrivo, cronologia
-    foto.py         cosa succede a una foto: arriva, viene letta, si elimina
+    foto.py         cosa succede a una foto: arriva, viene compressa e letta, si elimina
     indirizzi.py    cosa si può vedere in rete
     stato.py        dati condivisi e eventi in tempo reale
-    config.py       porta, cartelle, limiti
     genera_dati.py  calcola posti, colori e movimenti dalle letture
-    lettore.py      legge le foto nuove con Claude (se c'è la chiave)</pre>
+    lettore.py      legge le foto nuove con Claude (se c'è la chiave)
+    comprimi.py     ricomprime le foto già presenti (python3 programma/comprimi.py --prova per vedere prima)</pre>
 
 <h2>Le foto dai telefoni</h2>
 <p>Chi inquadra il QR può mandare una o più foto, con il proprio nome e una frase (facoltativi). Ogni foto:</p>
-<p>1. entra subito nella nebulosa, con un posto <b>provvisorio</b> vicino alle foto che le somigliano per la frase (o per l'aspetto); è quasi grigia finché non viene letta;<br>
-2. viene salvata in <code>foto/full</code> e <code>foto/thumb</code>, e il suo originale intatto in <code>foto/originali</code>;<br>
-3. compare nella <b>Cronologia</b>; dal computer della nebulosa si può rimuovere (viene cancellata davvero, originale compreso).</p>
-<p class="nota">In rete il server mostra solo le pagine, le foto ridotte e dati.js. Gli originali (che possono contenere la posizione GPS), i programmi e i file di dati restano sul computer.</p>
+<p>1. viene compressa subito (1400 pixel sul lato lungo, più una miniatura) e perde i dati nascosti del telefono, posizione GPS compresa; l'originale non viene conservato;<br>
+2. entra subito nella nebulosa, con un posto <b>provvisorio</b> vicino alle foto che le somigliano per la frase (o per l'aspetto); è quasi grigia finché non viene letta;<br>
+3. compare nella <b>Cronologia</b>; dal computer della nebulosa si può rimuovere (viene cancellata davvero).</p>
+<p class="nota">In rete il server mostra solo le pagine, le foto compresse e dati.js. I programmi, <code>.env</code> e i file di dati (con i nomi di chi ha mandato le foto) restano sul computer.</p>
 
 <h2>La lettura delle foto nuove</h2>
-<p><b>Automatica</b>, se sul Mac ci sono il pacchetto <code>anthropic</code> e la chiave: la foto viene letta pochi secondi dopo l'arrivo e prende il suo posto definitivo. Per attivarla, nel Terminale:</p>
-<pre>pip3 install anthropic
-echo 'export ANTHROPIC_API_KEY="sk-ant-..."' >> ~/.zshrc</pre>
+<p><b>Automatica</b>, se sul computer del server ci sono il pacchetto <code>anthropic</code> (è in <code>requirements.txt</code>) e la chiave, scritta in <code>.env</code> alla riga <code>ANTHROPIC_API_KEY=</code>: la foto viene letta pochi secondi dopo l'arrivo e prende il suo posto definitivo. La chiave è come una password: non incollarla in chat e non metterla su GitHub.</p>
 <p><b>A mano</b>, altrimenti: chiedi a Claude di leggere le foto in attesa. Per vedere quali sono, dalla cartella <code>nebulosa-memoria</code>:</p>
 <pre>python3 programma/genera_dati.py --da-leggere</pre>
 
 <h2>Salvare tutto</h2>
-<p>Basta copiare l'intera cartella <code>nebulosa-memoria</code> (per esempio su una chiavetta).</p>
+<p>Basta copiare l'intera cartella <code>nebulosa-memoria</code> (per esempio su una chiavetta), e anche la cartella <code>CARTELLA_DATI</code> se l'hai impostata: lì ci sono le foto arrivate dai telefoni.</p>
 </main>
 </body>
 </html>

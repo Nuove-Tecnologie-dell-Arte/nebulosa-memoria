@@ -609,7 +609,7 @@ function toast(a) {
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-elimina]'); if (!b) return;
   e.stopPropagation();
-  if (!confirm('Rimuovere questa foto dalla nebulosa? Verrà cancellata anche dal computer, insieme al suo originale.')) return;
+  if (!confirm('Rimuovere questa foto dalla nebulosa? Verrà cancellata anche dal computer.')) return;
   await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.elimina }) });
 }, true);
 
@@ -636,7 +636,7 @@ $('cronx').onclick = () => $('cron').classList.remove('open');
 $('cronL').addEventListener('click', e => { if (e.target.closest('button')) return; const it = e.target.closest('[data-apri]'); if (!it) return; const p = photoById[it.dataset.apri]; if (p && !p.hold) { $('cron').classList.remove('open'); vola(p); } });
 $('cron').addEventListener('click', async e => {
   if (e.target.id !== 'cronAll') return;
-  if (!confirm('Rimuovere tutte le ' + cron.size + ' foto arrivate dai telefoni? Verranno cancellate anche dal computer, insieme ai loro originali.')) return;
+  if (!confirm('Rimuovere tutte le ' + cron.size + ' foto arrivate dai telefoni? Verranno cancellate anche dal computer.')) return;
   for (const id of [...cron.keys()]) await fetch('/api/elimina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }).catch(() => {});
 });
 let inViaggio = 0, chiViaggia = '';

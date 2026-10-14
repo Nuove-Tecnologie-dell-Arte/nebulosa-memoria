@@ -1,18 +1,20 @@
 @echo off
-rem Accende il server della nebulosa (porta 8002) e la apre in Chrome. Per Windows.
+rem Accende il server della nebulosa e la apre in Chrome. Per Windows (doppio clic, oppure dal Prompt dei comandi).
 rem Se la nebulosa e' gia' accesa, apre solo la pagina (non accende un secondo server).
+rem Le impostazioni (porta, indirizzo del tunnel, cartella dei dati) sono in .env: vedi .env.example.
 rem Per spegnere, chiudi questa finestra.
 setlocal
 if "%~1"==":apri" goto apri
 cd /d "%~dp0"
-set PORTA=8002
+rem la porta: da .env, altrimenti 8002
+if not defined PORTA if exist .env for /f "usebackq tokens=1,* delims==" %%a in (".env") do if /i "%%a"=="PORTA" set PORTA=%%b
+if not defined PORTA set PORTA=8002
+set PORTA=%PORTA: =%
 
-rem Con un tunnel (cloudflared, ngrok...) togli "rem" dalla riga qui sotto e scrivi l'indirizzo pubblico: il QR portera' li'.
-rem set INDIRIZZO=https://nebulosa.esempio.it
-
-rem quale Python c'e': "py" (dal sito python.org) oppure "python"
+rem quale Python c'e': quello della cartella .venv, "py" (dal sito python.org) oppure "python"
 set PY=
-where py >nul 2>nul && set PY=py -3
+if exist ".venv\Scripts\python.exe" set PY=".venv\Scripts\python.exe"
+if not defined PY where py >nul 2>nul && set PY=py -3
 if not defined PY where python >nul 2>nul && set PY=python
 if not defined PY (
   echo.
@@ -37,7 +39,7 @@ rem la prima volta installa le librerie che servono (Pillow, numpy)
 
 rem la pagina si apre tra 3 secondi, quando il server e' acceso
 start "" /min cmd /c ""%~f0" :apri"
-%PY% programma\server.py
+%PY% avvia.py
 pause
 exit /b 0
 

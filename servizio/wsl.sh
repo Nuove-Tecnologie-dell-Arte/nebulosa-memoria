@@ -1,6 +1,9 @@
 # Preparazione comune a installa.sh e rimuovi.sh: funziona anche in una sessione ssh dentro WSL,
 # dove WSL_DISTRO_NAME e WSL_INTEROP non sono impostati. Da includere con: source wsl.sh
 grep -qi microsoft /proc/version 2>/dev/null || { echo "Questo script va lanciato da dentro WSL."; exit 1; }
+# la porta: quella di .env (nella cartella nebulosa-memoria), altrimenti 8002
+PORTA="${PORTA:-$(sed -n 's/^[[:space:]]*PORTA[[:space:]]*=[[:space:]]*//p' ../.env 2>/dev/null | tr -d '\r"'"'"' ' | tail -1)}"
+PORTA="${PORTA:-8002}"
 if [ -z "$WSL_DISTRO_NAME" ]; then   # il nome della distribuzione, dal percorso di Windows della radice (\\wsl.localhost\NOME\)
   WSL_DISTRO_NAME="$(wslpath -w / 2>/dev/null | sed -E 's#^\\\\[^\\]+\\([^\\]+).*#\1#')"
 fi

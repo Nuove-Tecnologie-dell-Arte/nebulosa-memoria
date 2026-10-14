@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# Accende il server della nebulosa (porta 8002) e la apre nel browser, come «Apri la nebulosa.command» e «.bat».
+# Accende il server della nebulosa e la apre nel browser, come «Apri la nebulosa.command» (Mac) e «.bat» (Windows).
 # Per Linux, WSL (Windows) e Mac, anche dietro un tunnel. Se la nebulosa e' gia' accesa, apre solo la pagina.
 # Uso, dalla cartella nebulosa-memoria:
 #   bash avvia-server.sh            la nebulosa per l'installazione
-#   INDIRIZZO=https://indirizzo-del-tunnel bash avvia-server.sh     (cosi' il QR porta i telefoni al tunnel)
-# La porta e' 8002 (si cambia con PORTA=...). Su un server senza schermo scrive solo l'indirizzo. Per spegnere: Ctrl+C.
+# Le impostazioni (porta, indirizzo del tunnel, cartella dei dati) sono in .env: vedi .env.example.
+# Su un server senza schermo scrive solo l'indirizzo. Per spegnere: Ctrl+C.
+# Per tenerla accesa sempre, anche dopo un riavvio di Windows, in WSL c'e' invece: bash servizio/installa.sh
 
 cd "$(dirname "$0")" || exit 1
+PORTA="${PORTA:-$(sed -n 's/^[[:space:]]*PORTA[[:space:]]*=[[:space:]]*//p' .env 2>/dev/null | tr -d '\r"'"'"' ' | tail -1)}"
 export PORTA="${PORTA:-8002}"
 PAGINA="${PAGINA:-}"
 URL="http://localhost:$PORTA/$PAGINA"
@@ -61,4 +63,4 @@ elif ! "$PY" -c "import PIL, numpy" 2>/dev/null; then
 fi
 
 (sleep 3; apri) &                                                              # la pagina si apre quando il server e' acceso
-exec "$PY" -u programma/server.py   # -u: le righe degli arrivi si vedono subito anche nei log
+exec "$PY" -u avvia.py   # -u: le righe degli arrivi si vedono subito anche nei log
