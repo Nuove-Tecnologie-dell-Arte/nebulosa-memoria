@@ -8,7 +8,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 // IL MICELIO: tutte le foto hanno qualcosa in comune con almeno un'altra. Ogni foto cresce subito accanto a quella con cui
 // ha piu' tag in comune, quasi a toccarla: sono le foto stesse, una dopo l'altra, a fare i filamenti e le diramazioni
 // (come le cellule di un micelio, le perle di un'alga, le venature di una foglia). La foto che porta piu' foto prosegue
-// dritta, le altre si aprono di lato; le foto che ne portano tante sono piu' grandi, quelle in punta piccole.
+// dritta, le altre si aprono di lato.
 // Passando su una foto si accende la catena di foto che la lega fino alla radice.
 
 const D = window.NEBULOSA;
@@ -164,8 +164,8 @@ function costruisciAlbero() {
 let radice = null, ordine = [];
 const BASE = new THREE.Vector3(0, 0, 0);
 const dx = new THREE.Vector3(), dy = new THREE.Vector3();
-// quanto e' grande una foto: piu' foto porta, piu' e' grande (la radice e' la piu' grande, le punte le piu' piccole)
-const grandezza = p => .5 + .17 * Math.log2(p.porta || 1);
+// quanto e' grande una foto: la grandezza normale, come nella nebulosa
+const grandezza = p => .62 * (p.f.s || .9);
 const raggio = p => p.base * .5;
 // la griglia: per sapere in fretta se un posto e' gia' occupato
 const CELLA = 2.4, griglia = new Map();
@@ -192,7 +192,7 @@ function cresciAccanto(p, c, i) {
   for (let tent = 0; tent < 48; tent++) {
     const ang = Math.min(2.4, apre + Math.floor(tent / 8) * .28), az = az0 + (tent % 8) * TAU / 8;
     const d = piega(p.dir, ang, az); d.y += .15; d.normalize();
-    const v = p.fine.clone().addScaledVector(d, (raggio(p) + raggio(c)) * (1.04 + Math.floor(tent / 24) * .35));
+    const v = p.fine.clone().addScaledVector(d, (raggio(p) + raggio(c)) * (1.04 + Math.floor(tent / 24) * .35) + .3);   // quasi a toccarsi, con un filo di spazio
     ultimo = [v, d];
     if (v.y < raggio(c)) continue;                        // non sotto la radice
     if (libero(v, raggio(c), p)) break;
@@ -213,7 +213,7 @@ const CENTRO = new THREE.Vector3(0, 12, 0);
 function inquadra() {
   const b = new THREE.Box3(); photos.forEach(p => { if (!p.hold) b.expandByPoint(p.fine); });
   const dim = b.getSize(new THREE.Vector3()), lato = Math.max(dim.x, dim.y, dim.z, 10);
-  b.getCenter(CENTRO); CASA.copy(CENTRO).add(new THREE.Vector3(0, lato * .18, lato * 1.25));
+  b.getCenter(CENTRO); CASA.copy(CENTRO).add(new THREE.Vector3(0, lato * .2, lato * 1.5));
 }
 // una foto nuova: cresce accanto alla foto con cui ha piu' in comune (la rete intera si rifa' solo dopo una lettura)
 function posizionaUna(p) {
@@ -732,7 +732,7 @@ const PAUSA = 1200;
 function counts() {
   const n = photos.length, prov = photos.filter(p => p.f.provv).length;
   $('st').textContent = n + ' foto';
-  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Ogni foto ha qualcosa in comune con almeno un'altra, e cresce accanto a quella con cui ne ha di più: sono le foto stesse, una dopo l'altra, a formare i filamenti e le diramazioni, come un micelio. Le foto che ne portano tante sono più grandi. Passa su una foto: si accende la catena di foto che la lega alla radice.` +
+  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute. Ogni foto ha qualcosa in comune con almeno un'altra, e cresce accanto a quella con cui ne ha di più: sono le foto stesse, una dopo l'altra, a formare i filamenti e le diramazioni, come un micelio. Passa su una foto: si accende la catena di foto che la lega alla radice.` +
     (prov ? ` ${prov === 1 ? '1 foto, quasi grigia, ha' : prov + ' foto, quasi grigie, hanno'} ancora un posto provvisorio, vicino alle foto che le somigliano: aspetta${prov === 1 ? '' : 'no'} di essere lett${prov === 1 ? 'a' : 'e'}.` : '');
   $('qrmeta').textContent = arrivate + ' foto arrivate dai telefoni';
 }
