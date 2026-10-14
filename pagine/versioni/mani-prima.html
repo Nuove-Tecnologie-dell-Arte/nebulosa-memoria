@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nebulosa · prima del fix delle mani</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/nebulosa.css?v=2">
+</head>
+<body>
+<canvas id="c"></canvas>
+<header class="top">
+  <div class="brand"><small>Memoria collettiva</small><b>NEBULOSA</b></div>
+  <div class="status"><span id="luogo"></span><span id="st"></span><button id="sndbtn">Suono</button><button id="palbtn">Colori</button><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
+</header>
+<div class="intro" id="intro">
+  <h1>Una memoria<br><em>che esplode.</em></h1>
+  <p id="introp"></p>
+</div>
+<div class="hintbar" id="hintbar">Trascina per girarle intorno · rotella per entrare<br>Passa sopra una sfera: si accendono le sorelle<br>Clicca una sfera per volarci dentro</div>
+<button id="home">↺ Vista iniziale</button>
+<div id="pv"></div>
+<div id="qr"><button id="qrx" aria-label="Chiudi">×</button><h3>Carica dal telefono</h3><p>Inquadra il codice con la fotocamera del telefono, oppure scrivi l'indirizzo nel browser. Il telefono deve essere sulla stessa rete Wi-Fi di questo computer.</p><div class="code" id="qrcode"></div><div class="url" id="qrurl">…</div><div class="meta" id="qrmeta"></div></div>
+<div id="cron"><div class="hd"><button id="cronx" aria-label="Chiudi">×</button><h3>Cronologia</h3><div class="meta" id="cronC"></div></div><div id="cronL"></div></div>
+<div id="toasts"></div>
+<div id="inarr"></div>
+<div id="qrfisso"><div class="code" id="qrfc"></div><div><b>Aggiungi la tua foto<br>alla memoria</b><small>Inquadra il codice<br>con il telefono</small></div></div>
+<aside id="fuoco"><div class="k" id="fk"></div><div id="fl"></div><div id="fa"></div><div class="h">Trascina per girarle intorno · clicca una sorella per passare a lei · Esc o clic nel vuoto per tornare</div><button id="fx">← Torna alla nebulosa</button></aside>
+<div id="manoCursore"></div>
+<div id="manoDue"><b></b><i></i><i></i></div>
+<div id="mano"><canvas id="manoCanvas" width="240" height="180"></canvas><video id="manoVideo" playsinline muted></video><div id="manoStato">Avvio della mano…</div><select id="manoCamera" aria-label="Telecamera"></select>
+<details class="legenda"><summary>Come si usa</summary>✋ muovi la mano: la luce si aggancia alla foto più vicina<br>✋ tienila ferma un secondo e mezzo: entri<br>🙌 due mani: allargale per avvicinarti, stringile per allontanarti<br>↔ mano verso i bordi: la nebulosa gira<br>⬇ abbassa la mano: torni alla nebulosa<br>tasto V: nascondi questo riquadro</details></div>
+<div id="manoAiuto"></div>
+<div id="arrivo"><div class="k" id="arrK"></div><div class="w" id="arrW"></div><div class="q" id="arrQ"></div></div>
+<div id="sf" role="dialog" aria-label="Sfoglia le foto">
+  <button id="sfx" class="ui" aria-label="Chiudi">×</button>
+  <div class="sfh ui"><div class="l"><div id="sfk"></div><div id="sft"></div><div id="sfd"></div><div class="chips" id="sfp"></div></div><div id="sfc"></div></div>
+  <div id="sftrack"></div>
+  <button class="sfnav ui" id="sfprev" aria-label="Foto precedente">‹</button>
+  <button class="sfnav ui" id="sfnext" aria-label="Foto successiva">›</button>
+  <div id="sfstrip" class="ui"></div>
+</div>
+
+<script src="/dati.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module" src="/js/nebulosa-mani-prima.js"></script>
+</body>
+</html>
