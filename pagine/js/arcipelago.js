@@ -866,7 +866,7 @@ const MODELLO_MANO = 'https://storage.googleapis.com/mediapipe-models/hand_landm
 const OSSA_MANO = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]];
 const SOSTA_MANO = 1500;      // quanto tenere ferma la mano su una foto per entrarci (ms)
 const VIA_MANO = 2000;        // quanto tempo senza mano per tornare alla nebulosa (ms)
-const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, storia: [], d0: 1, r0: 34, dd: 1, pa: null, pb: null };
+const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, storia: [], storiaM: [], mx: null, my: null, px: null, py: null, d0: 1, r0: 34, dd: 1, pa: null, pb: null };
 let rilevatore = null, ultimoVideo = -1, ultimoPasso = 0;
 const video = $('manoVideo'), anteprima = $('manoCanvas'), ctxAnte = anteprima.getContext('2d');
 
@@ -942,7 +942,7 @@ function aggiornaDueMani(mani, lati, now) {
   const c = dueMani(mani, lati), due = veraCoppia(c);
   if (due) { mano.vistaDue = mano.vistaDue || now; mano.ultimaDue = now; } else mano.vistaDue = 0;
   if (!mano.due && due && now - mano.vistaDue >= ENTRA_DUE) {
-    mano.due = true; mano.storia = []; mano.dd = mano.d0 = misura(c); mano.r0 = camera.position.distanceTo(controls.target);
+    mano.due = true; mano.storia = []; mano.storiaM = []; mano.mx = mano.my = mano.px = mano.py = null; mano.dd = mano.d0 = misura(c); mano.r0 = camera.position.distanceTo(controls.target);
     mano.bersaglio = null; mano.carica = 0; setHover(null);
   } else if (mano.due && !due && now - mano.ultimaDue > ESCE_DUE) mano.due = false;   // una mano persa per un attimo: lo zoom resta fermo, non esce
   if (mano.due && due) {
@@ -952,6 +952,12 @@ function aggiornaDueMani(mani, lati, now) {
     const med = mano.storia.slice().sort((a, b) => a - b)[Math.floor(mano.storia.length / 2)];
     mano.dd += (med - mano.dd) * .5;
     mano.pa = c[0].p; mano.pb = c[1].p;
+    // il punto a meta' tra le mani, sullo schermo: anche lui senza il fotogramma sbagliato e ammorbidito (serve a trascinare)
+    const s = sulloSchermo({ x: (c[0].p.x + c[1].p.x) / 2, y: (c[0].p.y + c[1].p.y) / 2 });
+    mano.storiaM.push(s); if (mano.storiaM.length > 3) mano.storiaM.shift();
+    const mx = mano.storiaM.map(q => q.x).sort((a, b) => a - b)[Math.floor(mano.storiaM.length / 2)];
+    const my = mano.storiaM.map(q => q.y).sort((a, b) => a - b)[Math.floor(mano.storiaM.length / 2)];
+    if (mano.mx == null) { mano.mx = mx; mano.my = my; } else { mano.mx += (mx - mano.mx) * .5; mano.my += (my - mano.my) * .5; }
   }
 }
 function zoomDueMani() {
@@ -961,6 +967,19 @@ function zoomDueMani() {
   const vicino = fuoco ? 2.2 : 4, lontano = fuoco ? 14 : 110;
   const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.dd, .05), 2), vicino, lontano);
   const R = camera.position.distanceTo(controls.target), k = (R + (voluto - R) * .2) / R;
+  // muovere le due mani insieme trascina la nebulosa: quello che sta sotto le mani le segue, come trascinando con due dita
+  if (!fuoco && mano.mx != null) {
+    if (mano.px != null) {
+      const ddx = mano.mx - mano.px, ddy = mano.my - mano.py;
+      if (Math.hypot(ddx, ddy) > 1.5) {   // sotto un pixel e mezzo e' solo il tremolio della webcam
+        const perPixel = 2 * R * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) / innerHeight;
+        camera.updateMatrixWorld(); camera.matrixWorld.extractBasis(zDir, zAvanti, zP);   // destra e su della camera
+        zP.copy(zDir).multiplyScalar(-ddx * perPixel).addScaledVector(zAvanti, ddy * perPixel);
+        camera.position.add(zP); controls.target.add(zP);
+      }
+    }
+    mano.px = mano.mx; mano.py = mano.my;
+  }
   // ci si avvicina al punto che le mani indicano (a meta' tra i due palmi), come allargando due dita su una foto:
   // quel punto resta fermo sullo schermo e tutto il resto si allarga intorno. Dentro una foto aperta resta lei al centro
   zP.copy(controls.target);
@@ -1059,7 +1078,7 @@ function aggiornaCursore(now) {
   c.style.transform = `translate(${x}px, ${y}px)`;
   c.style.setProperty('--p', (mano.carica * 100).toFixed(1) + '%');
   // la frase di aiuto: cambia secondo quello che si puo' fare adesso
-  const aiuto = !mano.vista || arrivo ? '' : mano.due ? 'Due mani: allargale per avvicinarti, stringile per allontanarti' : fuoco && !fuoco.uscita ? (mano.bersaglio ? 'Tieni ferma la mano per passare a questa foto' : 'Porta la mano su una sorella · abbassala per tornare')
+  const aiuto = !mano.vista || arrivo ? '' : mano.due ? 'Due mani: muovile insieme per trascinare · allargale per avvicinarti, stringile per allontanarti' : fuoco && !fuoco.uscita ? (mano.bersaglio ? 'Tieni ferma la mano per passare a questa foto' : 'Porta la mano su una sorella · abbassala per tornare')
     : mano.bersaglio ? 'Tieni ferma la mano: stai entrando in questa foto' : 'Muovi la mano: la luce si aggancia alle foto · verso i bordi la nebulosa gira';
   if ($('manoAiuto').textContent !== aiuto) $('manoAiuto').textContent = aiuto;
   $('manoAiuto').classList.toggle('on', !!aiuto);
