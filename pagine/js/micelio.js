@@ -307,7 +307,6 @@ function costruisciVene() {
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(pos.length), 3));
   giunti.geometry.dispose(); giunti.geometry = g;
   PROF_MAX = Math.max(1, ...photos.map(p => p.prof || 0));
-  bordi = null;
   coloraVene();
 }
 function coloraVene() {
@@ -596,47 +595,6 @@ function passoViaggio(now) {
 }
 controls.addEventListener('start', () => { viaggioCam = null; });
 
-// ---------------- la mappa: il ventaglio visto di fronte, e dove stai guardando ----------------
-// ogni foto e' un puntino del suo colore; il cerchio e' il punto che guardi. Toccando la mappa ci si vola davanti
-const mappa = $('mappa'), cm = mappa.getContext('2d');
-// la mappa si adatta alla rete: quanto e' larga e alta (si ricalcola quando la rete cambia)
-let bordi = null;
-function misuraRete() {
-  let x0 = 0, x1 = 0, y0 = 0, y1 = 1; photos.forEach(p => { x0 = Math.min(x0, p.fine.x); x1 = Math.max(x1, p.fine.x); y1 = Math.max(y1, p.fine.y); });
-  bordi = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, lato: Math.max(x1 - x0, y1 - y0) * 1.12 };
-}
-function suMappa(v) { if (!bordi) misuraRete(); const W = mappa.width, k = W * .78 / bordi.lato; return { x: W / 2 + (v.x - bordi.cx) * k, y: W / 2 - (v.y - bordi.cy) * k }; }
-let ultimaMappa = 0;
-function disegnaMappa(now) {
-  if (now - ultimaMappa < 120) return; ultimaMappa = now;
-  const dpr = Math.min(devicePixelRatio || 1, 2), L = Math.round(mappa.clientWidth * dpr);
-  if (!L) return;
-  if (mappa.width !== L) mappa.width = mappa.height = L;
-  const W = L, k = dpr, inchiostro = chiaro() ? '42,36,30' : '236,230,225';
-  cm.clearRect(0, 0, W, W);
-  cm.fillStyle = chiaro() ? 'rgba(239,232,220,.86)' : 'rgba(8,7,12,.72)'; cm.beginPath(); cm.arc(W / 2, W / 2, W / 2 - k, 0, TAU); cm.fill();
-  cm.strokeStyle = `rgba(${inchiostro},.22)`; cm.lineWidth = k; cm.stroke();
-  cm.save(); cm.beginPath(); cm.arc(W / 2, W / 2, W / 2 - 2 * k, 0, TAU); cm.clip();
-  for (const p of photos) {   // il micelio in piccolo: un tratto per ogni foto, dalla foto da cui e' cresciuta
-    if (p.hold || !p.padre) continue;
-    const a = suMappa(p.padre.fine), b = suMappa(p.fine);
-    cm.strokeStyle = `rgba(${p.col.toArray().map(v => Math.round(v * 255)).join(',')},${opaco() ? .7 : .55})`; cm.lineWidth = Math.max(.6, Math.sqrt(p.porta) * .35) * k;
-    cm.beginPath(); cm.moveTo(a.x, a.y); cm.lineTo(b.x, b.y); cm.stroke();
-  }
-  const b0 = suMappa(BASE), r = radice ? suMappa(radice.fine) : b0;
-  cm.strokeStyle = `rgba(${inchiostro},.5)`; cm.lineWidth = 2 * k; cm.beginPath(); cm.moveTo(b0.x, b0.y); cm.lineTo(r.x, r.y); cm.stroke();
-  const t = suMappa(fuoco ? fuoco.p.fine : controls.target);
-  cm.strokeStyle = chiaro() ? '#2a2420' : '#fff4e6'; cm.lineWidth = 1.6 * k; cm.beginPath(); cm.arc(t.x, t.y, 6 * k, 0, TAU); cm.stroke();
-  cm.restore();
-}
-mappa.addEventListener('click', e => {
-  const rr = mappa.getBoundingClientRect(), dpr = mappa.width / rr.width, x = (e.clientX - rr.left) * dpr, y = (e.clientY - rr.top) * dpr;
-  let best = null, bd = 1e9;
-  photos.forEach(p => { if (p.hold) return; const q = suMappa(p.fine), d = Math.hypot(q.x - x, q.y - y); if (d < bd) { bd = d; best = p; } });
-  const vai = () => { if (best) verso(best.fine.clone(), best.fine.clone().add(new THREE.Vector3(0, 2, 15))); };
-  if (fuoco) { torna(); setTimeout(vai, DUR_VOLO + 50); } else vai();
-});
-
 // ---------------- ogni fotogramma ----------------
 const orb = new THREE.Vector3();
 let ultimoDrone = 0;
@@ -701,7 +659,6 @@ function frame(now) {
   passoArrivo(now);
   passoRegia(now);
   composer.render();
-  disegnaMappa(now);
   $('intro').classList.toggle('hide', camera.position.distanceTo(controls.target) < 35 || !!fuoco);
   updatePreview();
 }

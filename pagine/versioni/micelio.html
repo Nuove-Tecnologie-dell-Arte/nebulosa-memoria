@@ -7,11 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/nebulosa.css?v=2">
 <style>
-/* l'arcipelago: la mappa in basso a sinistra, sopra il QR */
-#mappa{position:fixed;inset:auto auto 170px 28px;z-index:6;width:150px;height:150px;cursor:pointer;transition:opacity 1.2s}
-body.calma #mappa{opacity:.55}
-body.ov #mappa{opacity:0;pointer-events:none}
-@media(max-width:900px){#mappa{inset:auto auto 12px 12px;width:110px;height:110px}}
 /* colori «carta»: fondo chiaro; le scritte sul fondo diventano scure, i pannelli restano come sono */
 body.tema-carta{background:#efe8dc}
 body.tema-carta .top,body.tema-carta .intro,body.tema-carta .hintbar{--ink:#2a2622;--dim:#6f665c;--line:rgba(42,38,34,.16);color:#2a2622}
@@ -25,7 +20,6 @@ body.tema-carta #qrbtn:hover,body.tema-carta #palbtn:hover,body.tema-carta #cron
 </head>
 <body>
 <canvas id="c"></canvas>
-<canvas id="mappa" title="La mappa: la rete vista di fronte; toccala per andare in quel punto"></canvas>
 <header class="top">
   <div class="brand"><small>Memoria collettiva</small><b>NEBULOSA</b></div>
   <div class="status"><span id="luogo"></span><span id="st"></span><button id="sndbtn">Suono</button><button id="palbtn">Colori</button><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
@@ -34,7 +28,7 @@ body.tema-carta #qrbtn:hover,body.tema-carta #palbtn:hover,body.tema-carta #cron
   <h1>Una memoria<br><em>che esplode.</em></h1>
   <p id="introp"></p>
 </div>
-<div class="hintbar" id="hintbar">Trascina per girare · rotella per avvicinarti<br>Passa su una foto: si accende la sua catena fino alla radice<br>Clicca una foto per entrarci · la mappa porta in ogni punto</div>
+<div class="hintbar" id="hintbar">Trascina per girare · rotella per avvicinarti<br>Passa su una foto: si accende la sua catena fino alla radice<br>Clicca una foto per entrarci</div>
 <button id="home">↺ Vista iniziale</button>
 <div id="pv"></div>
 <div id="qr"><button id="qrx" aria-label="Chiudi">×</button><h3>Carica dal telefono</h3><p>Inquadra il codice con la fotocamera del telefono, oppure scrivi l'indirizzo nel browser. Il telefono deve essere sulla stessa rete Wi-Fi di questo computer.</p><div class="code" id="qrcode"></div><div class="url" id="qrurl">…</div><div class="meta" id="qrmeta"></div></div>
