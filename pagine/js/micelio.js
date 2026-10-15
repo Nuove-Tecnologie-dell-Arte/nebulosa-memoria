@@ -980,10 +980,21 @@ function zoomDueMani() {
   // cosi' basta aprire le mani poco piu' delle spalle e restano dentro l'inquadratura
   const vicino = fuoco ? 2.2 : 4, lontano = fuoco ? 14 : 110;
   const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.dd, .05), 2), vicino, lontano);
-  scarto.copy(camera.position).sub(controls.target); sferica.setFromVector3(scarto);
-  sferica.radius += (voluto - sferica.radius) * .2;
-  scarto.setFromSpherical(sferica); camera.position.copy(controls.target).add(scarto);
+  const R = camera.position.distanceTo(controls.target), k = (R + (voluto - R) * .2) / R;
+  // ci si avvicina al punto che le mani indicano (a meta' tra i due palmi), come allargando due dita su una foto:
+  // quel punto resta fermo sullo schermo e tutto il resto si allarga intorno. Dentro una foto aperta resta lei al centro
+  zP.copy(controls.target);
+  if (!fuoco && mano.pa) {
+    const s = sulloSchermo({ x: (mano.pa.x + mano.pb.x) / 2, y: (mano.pa.y + mano.pb.y) / 2 });
+    camera.updateMatrixWorld();   // la camera com'e' adesso, non com'era all'ultimo disegno
+    zDir.set(s.x / innerWidth * 2 - 1, 1 - s.y / innerHeight * 2, .5).unproject(camera).sub(camera.position).normalize();
+    camera.getWorldDirection(zAvanti);
+    zP.copy(camera.position).addScaledVector(zDir, R / Math.max(.2, zDir.dot(zAvanti)));   // il punto indicato, alla profondita' del centro della vista
+  }
+  controls.target.sub(zP).multiplyScalar(k).add(zP);
+  camera.position.sub(zP).multiplyScalar(k).add(zP);
 }
+const zP = new THREE.Vector3(), zDir = new THREE.Vector3(), zAvanti = new THREE.Vector3();
 const sulloSchermo = q => ({ x: clamp((1 - q.x - .18) / .64, 0, 1) * innerWidth, y: clamp((q.y - .15) / .6, 0, 1) * innerHeight });
 
 // la calamita: la foto (visibile) piu' vicina al punto della mano, sullo schermo
@@ -1015,6 +1026,23 @@ function giraVersoLaMano(dt) {
   scarto.setFromSpherical(sferica); camera.position.copy(controls.target).add(scarto);
 }
 
+// il filtro 1€ (Casiez, Roussel, Vogel, 2012): ammorbidisce la posizione della mano tanto piu' quanto piu' e' ferma.
+// Con la mano ferma toglie il tremolio della webcam; quando la mano si muove in fretta la segue quasi senza ritardo
+function filtro1e(minimo = .5, beta = 7, taglioVelocita = .5) {   // valori scelti provando: rispetto a prima, tremolio -30/40%, ritardo dimezzato
+  let x = null, v = 0, tPrima = 0;
+  const alfa = (taglio, dt) => 1 / (1 + 1 / (2 * Math.PI * taglio * dt));
+  return {
+    azzera() { x = null; },
+    passo(valore, t) {                                   // t in secondi
+      if (x === null) { x = valore; v = 0; tPrima = t; return x; }
+      const dt = Math.max(1e-3, t - tPrima); tPrima = t;
+      v += alfa(taglioVelocita, dt) * ((valore - x) / dt - v);
+      x += alfa(minimo + beta * Math.abs(v), dt) * (valore - x);
+      return x;
+    },
+  };
+}
+const filtroManoX = filtro1e(), filtroManoY = filtro1e();
 function passoMano(now) {
   const dt = Math.min(.1, (now - (ultimoPasso || now)) / 1000); ultimoPasso = now;
   const r = leggiMano(now);
@@ -1023,8 +1051,8 @@ function passoMano(now) {
       const pt = palmo(r.L);
       // la webcam e' a specchio; la zona centrale dell'inquadratura copre tutto lo schermo
       const tx = clamp((1 - pt.x - .18) / .64, 0, 1), ty = clamp((pt.y - .15) / .6, 0, 1);
-      if (!mano.vista) { mano.x = tx; mano.y = ty; }
-      mano.x += (tx - mano.x) * .3; mano.y += (ty - mano.y) * .3;
+      if (!mano.vista) { filtroManoX.azzera(); filtroManoY.azzera(); }   // una mano appena arrivata parte da dov'e'
+      mano.x = filtroManoX.passo(tx, now / 1000); mano.y = filtroManoY.passo(ty, now / 1000);
       mano.vista = true; mano.ultima = now; ultimoTocco = now;
       controls.autoRotate = false; clearTimeout(fermo);
     } else if (mano.vista && now - mano.ultima > 350) {
