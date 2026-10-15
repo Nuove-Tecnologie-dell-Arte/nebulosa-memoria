@@ -7,19 +7,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/nebulosa.css?v=2">
 <style>
+#solebtn{background:none;border:0;border-left:1px solid var(--line);color:#ffd9a0;font:300 10px 'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#solebtn:hover{color:var(--ink)}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <header class="top">
   <div class="brand"><small>Memoria collettiva</small><b>NEBULOSA</b></div>
-  <div class="status"><span id="luogo"></span><span id="st"></span><button id="sndbtn">Suono</button><button id="palbtn">Colori</button><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
+  <div class="status"><span id="luogo"></span><span id="st"></span><button id="sndbtn">Suono</button><button id="palbtn">Colori</button><button id="solebtn">☉ Dal Sole</button><button id="qrbtn">📱 Carica dal telefono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
 </header>
 <div class="intro" id="intro">
   <h1>Una memoria<br><em>che esplode.</em></h1>
   <p id="introp"></p>
 </div>
-<div class="hintbar" id="hintbar">Trascina per girare · rotella per avvicinarti<br>Al centro c'è Sagittarius A*, il buco nero · trascina e usa la rotella per viaggiare<br>Passa su una stella: i fili portano alle foto con tag in comune<br>Clicca una stella per entrarci</div>
+<div class="hintbar" id="hintbar">Trascina per guardarti intorno · rotella o frecce per volare avanti e indietro<br>Passa su una stella: i fili portano alle foto con tag in comune<br>Clicca una stella per entrarci · «Dal Sole» ti porta dove siamo noi</div>
 <button id="home">↺ Vista iniziale</button>
 <div id="pv"></div>
 <div id="qr"><button id="qrx" aria-label="Chiudi">×</button><h3>Carica dal telefono</h3><p>Inquadra il codice con la fotocamera del telefono, oppure scrivi l'indirizzo nel browser. Il telefono deve essere sulla stessa rete Wi-Fi di questo computer.</p><div class="code" id="qrcode"></div><div class="url" id="qrurl">…</div><div class="meta" id="qrmeta"></div></div>
@@ -31,7 +33,7 @@
 <div id="manoCursore"></div>
 <div id="manoDue"><b></b><i></i><i></i></div>
 <div id="mano"><canvas id="manoCanvas" width="240" height="180"></canvas><video id="manoVideo" playsinline muted></video><div id="manoStato">Avvio della mano…</div><select id="manoCamera" aria-label="Telecamera"></select>
-<details class="legenda"><summary>Come si usa</summary>✋ muovi la mano: la luce si aggancia alla foto più vicina<br>✋ tienila ferma un secondo e mezzo: entri<br>🙌 due mani: allargale per avvicinarti, stringile per allontanarti<br>↔ mano verso i bordi: la nebulosa gira<br>⬇ abbassa la mano: torni alla nebulosa<br>tasto V: nascondi questo riquadro</details></div>
+<details class="legenda"><summary>Come si usa</summary>✋ muovi la mano: la luce si aggancia alla foto più vicina<br>✋ tienila ferma un secondo e mezzo: entri<br>🙌 due mani: allargale per volare avanti, stringile per tornare indietro<br>↔ mano verso i bordi: ti guardi intorno<br>⬇ abbassa la mano: torni alla nebulosa<br>tasto V: nascondi questo riquadro</details></div>
 <div id="manoAiuto"></div>
 <div id="arrivo"><div class="k" id="arrK"></div><div class="w" id="arrW"></div><div class="q" id="arrQ"></div></div>
 <div id="sf" role="dialog" aria-label="Sfoglia le foto">
