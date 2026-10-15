@@ -41,10 +41,13 @@ const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06050a);
 const camera = new THREE.PerspectiveCamera(60, 1, .1, 2500);   // un po' piu' larga: si sta dentro la galassia
-const CASA = new THREE.Vector3(0, 72, 70);   // dall'alto e di lato: si vede tutta la galassia
+// la galassia e' disegnata in grande: le misure restano quelle vere (in migliaia di anni luce), ma sullo schermo ogni unita' vale GRANDE,
+// cosi' c'e' spazio tra le foto e la galassia e' ampia da attraversare
+const GRANDE = 2.2;
+const CASA = new THREE.Vector3(0, 72, 70).multiplyScalar(GRANDE);   // dall'alto e di lato: si vede tutta la galassia
 camera.position.copy(CASA);
 const controls = new OrbitControls(camera, cv);
-Object.assign(controls, { zoomToCursor: true, screenSpacePanning: true, enableDamping: true, dampingFactor: .06, autoRotate: !reduced, autoRotateSpeed: .35, minDistance: 1.2, maxDistance: 260, rotateSpeed: .6, zoomSpeed: 1.4 });   // la rotella un po' piu' rapida: la galassia e' grande
+Object.assign(controls, { zoomToCursor: true, screenSpacePanning: true, enableDamping: true, dampingFactor: .06, autoRotate: !reduced, autoRotateSpeed: .35, minDistance: 1.2, maxDistance: 260 * GRANDE, rotateSpeed: .6, zoomSpeed: 1.4 });   // la rotella un po' piu' rapida: la galassia e' grande
 let fermo = 0;
 const riprendiGiro = () => { clearTimeout(fermo); fermo = setTimeout(() => { if (!fuoco) controls.autoRotate = !reduced; }, 9000); };
 controls.addEventListener('start', () => { controls.autoRotate = false; clearTimeout(fermo); });
@@ -109,7 +112,7 @@ const R_MIN = 5;                                         // piu' vicino al buco 
 const BARRA = { meta: 13.5, angolo: THREE.MathUtils.degToRad(-27), larga: .4 };   // la barra: circa 27.000 anni luce, inclinata di circa 27 gradi
 const PASSO_SPIRALE = THREE.MathUtils.degToRad(12.5);    // quanto si aprono i bracci (circa 12 gradi, misurato)
 const R_INIZIO = 12.5;                                   // i bracci partono dalle estremita' della barra
-const SOLE = new THREE.Vector3(0, .07, 26.6);            // il Sole: a circa 26.600 anni luce dal centro, appena sopra il piano
+const SOLE = new THREE.Vector3(0, .07, 26.6).multiplyScalar(GRANDE);   // il Sole: a circa 26.600 anni luce dal centro, appena sopra il piano
 // i quattro bracci: Scudo-Centauro e Perseo partono dalle punte della barra, Sagittario-Carena e Norma in mezzo
 const BRACCI = [0, Math.PI / 2, Math.PI, 3 * Math.PI / 2];
 const angoloBraccio = (fase, R) => BARRA.angolo + fase + Math.log(Math.max(R, R_INIZIO) / R_INIZIO) / Math.tan(PASSO_SPIRALE);
@@ -148,14 +151,14 @@ function postoNellaGalassia(p, v) {
   }
   // l'altezza: nel disco sottile fino a circa 1000 anni luce, nel disco spesso da 1500 a 8000, sempre piu' svasata ai bordi
   const h = q < .65 ? (q / .65) * 1.2 * spessore(R) / svasatura(R) : 1.5 + (q - .65) / .35 * 6.5;
-  v.set(x, segno * h * svasatura(R) + piega(x, z), z);
+  v.set(x, segno * h * svasatura(R) + piega(x, z), z).multiplyScalar(GRANDE);
   return lontanoDalBuco(v);
 }
 function lontanoDalBuco(v) {                             // nessuna foto dentro il disco di gas del buco nero
-  const r = Math.hypot(v.x, v.z); if (r < R_MIN && Math.abs(v.y) < 3) { const k = R_MIN / Math.max(r, .01); v.x *= k; v.z *= k; if (r < .01) v.x = R_MIN; }
+  const rm = R_MIN * GRANDE, r = Math.hypot(v.x, v.z); if (r < rm && Math.abs(v.y) < 3 * GRANDE) { const k = rm / Math.max(r, .01); v.x *= k; v.z *= k; if (r < .01) v.x = rm; }
   return v;
 }
-const DMIN = 2.4;                                        // la distanza minima tra due foto: nessuna copre l'altra
+const DMIN = 4.5;                                        // la distanza minima tra due foto: ampia, cosi' con la mano se ne aggancia una sola
 const dx = new THREE.Vector3(), dy = new THREE.Vector3();
 function spingi(ps, giri, mobili) {
   for (let g = 0; g < giri; g++) {
@@ -174,7 +177,7 @@ function disponiTutte() {
   raggiMappa = ps.map(p => raggioMappa(p.f)).sort((a, b) => a - b);
   altezzeMappa = ps.map(p => altezzaMappa(p.f)).sort((a, b) => a - b);
   ps.forEach(p => postoNellaGalassia(p, p.fine));
-  for (let i = 0; i < 4; i++) { spingi(ps, 20); ps.forEach(p => lontanoDalBuco(p.fine)); }
+  for (let i = 0; i < 10; i++) { spingi(ps, 20); ps.forEach(p => lontanoDalBuco(p.fine)); }
 }
 function posizionaUna(p) {                               // una foto nuova (o appena letta): il suo posto, senza spostare le altre
   postoNellaGalassia(p, p.fine);
@@ -189,7 +192,7 @@ const TEX_STELLA = texLuce([[0, 'rgba(255,255,255,1)'], [.2, 'rgba(255,255,255,.
 const GIALLO = new THREE.Color(1, .82, .55), AZZURRO = new THREE.Color(.62, .74, 1), ROSA = new THREE.Color(1, .42, .62), BIANCO = new THREE.Color(1, .95, .85), VIOLA = new THREE.Color(.62, .48, 1);
 function puntiGalassia(n, crea, grandezza, opacita, puntini = true) {   // puntini: grandezza fissa in pixel (le stelle restano puntini anche da vicino)
   const pos = new Float32Array(n * 3), col = new Float32Array(n * 3), v = new THREE.Vector3(), c = new THREE.Color();
-  for (let i = 0; i < n; i++) { crea(v, c, i); pos.set([v.x, v.y, v.z], i * 3); col.set([c.r, c.g, c.b], i * 3); }
+  for (let i = 0; i < n; i++) { crea(v, c, i); v.multiplyScalar(GRANDE); pos.set([v.x, v.y, v.z], i * 3); col.set([c.r, c.g, c.b], i * 3); }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
   const m = new THREE.Points(g, new THREE.PointsMaterial({ size: grandezza * (puntini ? Math.min(devicePixelRatio || 1, 2) : 1), sizeAttenuation: !puntini, map: TEX_STELLA, vertexColors: true, transparent: true, opacity: opacita, blending: THREE.AdditiveBlending, depthWrite: false }));
   scene.add(m); if (puntini) stellePuntini.push(m); return m;
@@ -240,7 +243,7 @@ const stellePuntini = [];   // da lontano tante stelle si sovrappongono: si abba
   }, 2, 1);
   // la luce del rigonfiamento centrale
   const bagliore = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLuce([[0, 'rgba(255,236,200,.9)'], [.25, 'rgba(255,200,140,.35)'], [1, 'rgba(255,150,90,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
-  bagliore.scale.setScalar(26); scene.add(bagliore);
+  bagliore.scale.setScalar(26 * GRANDE); scene.add(bagliore);
   baglioreCentro = bagliore;
 }
 
@@ -248,7 +251,7 @@ const stellePuntini = [];   // da lontano tante stelle si sovrappongono: si abba
 // In scala vera sarebbe un miliardesimo della galassia (circa 24 milioni di km): qui e' ingrandito, ma fatto come quelli veri:
 // un disco nero (l'orizzonte degli eventi e la sua ombra), un anello sottile di luce che gli gira intorno, e il disco di gas
 // caldo che ruota (piu' veloce vicino al buco), piu' luminoso dalla parte che viene verso di noi
-const ORIZZONTE = .9;
+const ORIZZONTE = .9 * GRANDE;
 const orizzonte = new THREE.Mesh(new THREE.SphereGeometry(ORIZZONTE, 48, 32), new THREE.MeshBasicMaterial({ color: 0x000000 }));
 scene.add(orizzonte);
 const TEX_FOTONI = (() => { const S = 256, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d');
@@ -472,7 +475,7 @@ scritteSuono();
 // ---------------- nascita: all'apertura le stelle-foto si accendono dal centro verso i bordi ----------------
 let nascita = reduced ? -1e9 : performance.now();
 const DUR_NASCITA = 4200;
-photos.forEach(p => { p.da.copy(p.fine); p.t0 = nascita + 200 + Math.hypot(p.fine.x, p.fine.z) * 70; p.dur = 1400; });
+photos.forEach(p => { p.da.copy(p.fine); p.t0 = nascita + 200 + Math.hypot(p.fine.x, p.fine.z) / GRANDE * 70; p.dur = 1400; });
 
 // ---------------- il volo: cliccando una sfera ci si entra dentro, e le sue sorelle le girano intorno ----------------
 let fuoco = null;
@@ -653,9 +656,9 @@ function frame(now) {
   passoViaggio(now);
   passoBuco(Math.min(.05, (now - (ultimoFotogramma || now)) / 1000)); ultimoFotogramma = now;
   const dalCentro = camera.position.length();
-  baglioreCentro.material.opacity = sstep(8, 45, dalCentro);
-  bloom.strength = .25 + .3 * sstep(6, 40, dalCentro);
-  const luceStelle = clamp(Math.pow(20 / Math.max(1, dalCentro), 1.5), .14, 1);   // da fuori la galassia e' piu' tenue, da dentro piu' viva
+  baglioreCentro.material.opacity = sstep(8 * GRANDE, 45 * GRANDE, dalCentro);
+  bloom.strength = .25 + .3 * sstep(6 * GRANDE, 40 * GRANDE, dalCentro);
+  const luceStelle = clamp(Math.pow(20 * GRANDE / Math.max(1, dalCentro), 1.5), .14, 1);   // da fuori la galassia e' piu' tenue, da dentro piu' viva
   stellePuntini.forEach(m => { m.material.opacity = luceStelle; });
   passoMano(now);
   controls.update();
@@ -713,7 +716,7 @@ function frame(now) {
   passoArrivo(now);
   passoRegia(now);
   composer.render();
-  $('intro').classList.toggle('hide', camera.position.length() < 60 || !!fuoco);
+  $('intro').classList.toggle('hide', camera.position.length() < 60 * GRANDE || !!fuoco);
   updatePreview();
 }
 
@@ -743,7 +746,7 @@ const PAUSA = 1200;
 function counts() {
   const n = photos.length, prov = photos.filter(p => p.f.provv).length;
   $('st').textContent = n + ' foto';
-  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute, sparse come le stelle della nostra galassia: più fitte verso il centro e lungo i bracci, e le foto che si somigliano vicine tra loro. Al centro c'è Sagittarius A*, il buco nero. È in tre dimensioni come la galassia vera: il disco sottile e quello spesso, l'alone, le bolle di Fermi (che si vedono solo nei raggi gamma). Trascina per girarle intorno; la rotella ti avvicina al punto che indichi col mouse, così ci entri; «Dal Sole» ti porta dove siamo noi.` +
+  $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute, sparse come le stelle della nostra galassia: più fitte verso il centro e lungo i bracci, e le foto che si somigliano vicine tra loro. Al centro c'è Sagittarius A*, il buco nero. È in tre dimensioni come la galassia vera: il disco sottile e quello spesso, l'alone, le bolle di Fermi (che si vedono solo nei raggi gamma). Con la mano verso i bordi la galassia gira; allargando le due mani entri dove indichi; tenendo ferma la mano su una stella ci entri.` +
     (prov ? ` ${prov === 1 ? '1 foto, quasi grigia, ha' : prov + ' foto, quasi grigie, hanno'} ancora un posto provvisorio, vicino alle foto che le somigliano: aspetta${prov === 1 ? '' : 'no'} di essere lett${prov === 1 ? 'a' : 'e'}.` : '');
   $('qrmeta').textContent = arrivate + ' foto arrivate dai telefoni';
 }
@@ -1029,7 +1032,7 @@ function zoomDueMani() {
   if (fuoco && (!fuoco.arrivato || fuoco.uscita)) return;   // durante un volo la camera e' gia' in movimento
   // da quando le mani si sono alzate insieme: il doppio della distanza tra i palmi = quattro volte piu' vicino,
   // cosi' basta aprire le mani poco piu' delle spalle e restano dentro l'inquadratura
-  const vicino = fuoco ? 2.2 : 3, lontano = fuoco ? 14 : 200;
+  const vicino = fuoco ? 2.2 : 3, lontano = fuoco ? 14 : 200 * GRANDE;
   const voluto = clamp(mano.r0 * Math.pow(mano.d0 / Math.max(mano.dd, .05), 2), vicino, lontano);
   const R = camera.position.distanceTo(controls.target), k = (R + (voluto - R) * .2) / R;
   // ci si avvicina al punto che le mani indicano (a meta' tra i due palmi), come allargando due dita su una foto:
