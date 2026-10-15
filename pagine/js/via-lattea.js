@@ -199,29 +199,31 @@ function puntiGalassia(n, crea, grandezza, opacita, puntini = true) {   // punti
 const stellePuntini = [];   // da lontano tante stelle si sovrappongono: si abbassa la loro luce, se no il centro diventa una macchia bianca
 {
   const r0 = seme('via lattea'), g = casuale(r0);
+  // vicino al centro le stelle sono tantissime e, sommate, abbagliano: li' ognuna fa meno luce (dai 15.000 anni luce in fuori, come prima)
+  const centroTenue = R => .4 + .6 * sstep(3, 15, R);
   puntiGalassia(42000, (v, c) => {                       // il disco sottile
     const R = raggioPer(r0(), 2.5), nelBraccio = r0() < .62;
     const th = nelBraccio && R > R_INIZIO * .8 ? angoloBraccio(BRACCI[Math.floor(r0() * 4)], R) + g() * (.1 + 1.2 / R) : r0() * TAU;
     const x = R * Math.cos(th), z = R * Math.sin(th);
     v.set(x, g() * spessore(R) * .5 + piega(x, z), z);
-    c.copy(GIALLO).lerp(AZZURRO, sstep(6, 26, R) * (nelBraccio ? 1 : .6)).multiplyScalar((.35 + .45 * r0()) * (nelBraccio ? 1 : .55));
+    c.copy(GIALLO).lerp(AZZURRO, sstep(6, 26, R) * (nelBraccio ? 1 : .6)).multiplyScalar((.35 + .45 * r0()) * (nelBraccio ? 1 : .55) * centroTenue(R));
   }, 2.6, 1);
   puntiGalassia(12000, (v, c) => {                       // il disco spesso: stelle piu' vecchie, fino a qualche migliaio di anni luce sopra e sotto
     const R = raggioPer(r0(), 3, 7), th = r0() * TAU, x = R * Math.cos(th), z = R * Math.sin(th);
     v.set(x, g() * 3 * svasatura(R) + piega(x, z), z);
-    c.copy(GIALLO).lerp(BIANCO, .3).multiplyScalar(.18 + .2 * r0());
+    c.copy(GIALLO).lerp(BIANCO, .3).multiplyScalar((.18 + .2 * r0()) * centroTenue(R));
   }, 2.2, 1);
   puntiGalassia(16000, (v, c) => {                       // la barra e il rigonfiamento: stelle vecchie, gialle
     const a = g() * BARRA.meta * .42, b = g() * BARRA.meta * .42 * BARRA.larga;
     v.set(a * Math.cos(BARRA.angolo) - b * Math.sin(BARRA.angolo), g() * 1.3, a * Math.sin(BARRA.angolo) + b * Math.cos(BARRA.angolo));
     const r = v.length(); if (r < 4) v.multiplyScalar(4 / Math.max(r, .05) * (1 + r0() * .3));   // intorno al buco nero resta lo spazio scuro
-    c.copy(GIALLO).multiplyScalar(.35 + .4 * r0());
+    c.copy(GIALLO).multiplyScalar(.17 + .19 * r0());   // meno luminose: il centro non deve abbagliare
   }, 2.4, 1);
   puntiGalassia(7000, (v, c) => {                        // il rigonfiamento a X: visto di lato, le stelle della barra formano una X
     const a = (r0() * 2 - 1) * 6.5, h = Math.abs(a) * .65 * (r0() < .5 ? 1 : -1) + g() * .45, b = g() * 1.1;
     v.set(a * Math.cos(BARRA.angolo) - b * Math.sin(BARRA.angolo), h, a * Math.sin(BARRA.angolo) + b * Math.cos(BARRA.angolo));
     const r = v.length(); if (r < 4) v.multiplyScalar(4 / Math.max(r, .05));
-    c.copy(GIALLO).multiplyScalar(.3 + .3 * r0());
+    c.copy(GIALLO).multiplyScalar(.14 + .14 * r0());
   }, 2.2, 1);
   puntiGalassia(700, (v, c) => {                         // le nuvolette rosa: dove nascono le stelle, lungo i bracci
     const R = 11 + r0() * 36, th = angoloBraccio(BRACCI[Math.floor(r0() * 4)], R) + g() * .06;
@@ -683,7 +685,7 @@ function frame(now) {
   passoViaggio(now);
   passoBuco(Math.min(.05, (now - (ultimoFotogramma || now)) / 1000)); ultimoFotogramma = now;
   const dalCentro = camera.position.length();
-  baglioreCentro.material.opacity = sstep(8 * GRANDE, 45 * GRANDE, dalCentro);
+  baglioreCentro.material.opacity = .4 * sstep(8 * GRANDE, 45 * GRANDE, dalCentro);   // la luce diffusa del centro, tenue
   bloom.strength = .25 + .3 * sstep(6 * GRANDE, 40 * GRANDE, dalCentro);
   const luceStelle = clamp(Math.pow(20 * GRANDE / Math.max(1, dalCentro), 1.5), .14, 1);   // da fuori la galassia e' piu' tenue, da dentro piu' viva
   stellePuntini.forEach(m => { m.material.opacity = luceStelle; });
