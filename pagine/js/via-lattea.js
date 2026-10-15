@@ -44,7 +44,7 @@ const camera = new THREE.PerspectiveCamera(60, 1, .1, 2500);   // un po' piu' la
 // la galassia e' disegnata in grande: le misure restano quelle vere (in migliaia di anni luce), ma sullo schermo ogni unita' vale GRANDE,
 // cosi' c'e' spazio tra le foto e la galassia e' ampia da attraversare
 const GRANDE = 2.2;
-const CASA = new THREE.Vector3(0, 72, 70).multiplyScalar(GRANDE);   // dall'alto e di lato: si vede tutta la galassia
+const CASA = new THREE.Vector3(0, 72, 70).multiplyScalar(GRANDE);   // la vista d'apertura (la ricalcola inquadraGalassia, appena la galassia c'e')
 camera.position.copy(CASA);
 const controls = new OrbitControls(camera, cv);
 Object.assign(controls, { zoomToCursor: true, screenSpacePanning: true, enableDamping: true, dampingFactor: .06, autoRotate: !reduced, autoRotateSpeed: .35, minDistance: 1.2, maxDistance: 260 * GRANDE, rotateSpeed: .6, zoomSpeed: 1.4 });   // la rotella un po' piu' rapida: la galassia e' grande
@@ -112,7 +112,6 @@ const R_MIN = 5;                                         // piu' vicino al buco 
 const BARRA = { meta: 13.5, angolo: THREE.MathUtils.degToRad(-27), larga: .4 };   // la barra: circa 27.000 anni luce, inclinata di circa 27 gradi
 const PASSO_SPIRALE = THREE.MathUtils.degToRad(12.5);    // quanto si aprono i bracci (circa 12 gradi, misurato)
 const R_INIZIO = 12.5;                                   // i bracci partono dalle estremita' della barra
-const SOLE = new THREE.Vector3(0, .07, 26.6).multiplyScalar(GRANDE);   // il Sole: a circa 26.600 anni luce dal centro, appena sopra il piano
 // i quattro bracci: Scudo-Centauro e Perseo partono dalle punte della barra, Sagittario-Carena e Norma in mezzo
 const BRACCI = [0, Math.PI / 2, Math.PI, 3 * Math.PI / 2];
 const angoloBraccio = (fase, R) => BARRA.angolo + fase + Math.log(Math.max(R, R_INIZIO) / R_INIZIO) / Math.tan(PASSO_SPIRALE);
@@ -247,6 +246,37 @@ const stellePuntini = [];   // da lontano tante stelle si sovrappongono: si abba
   baglioreCentro = bagliore;
 }
 
+// ---------------- la vista d'apertura: la galassia occupa piu' schermo possibile ----------------
+// si prova da che inclinazione guardarla (da quasi di taglio a dall'alto) e, per ognuna, la distanza minima a cui il bordo del disco
+// entra tutto nello schermo; si tiene quella in cui la galassia riempie di piu' lo schermo. Dipende dalla forma dello schermo
+// (orizzontale, verticale, proiettore), quindi si rifa' quando la finestra cambia
+function raggioVisibile() {                              // dove sta davvero quasi tutta la galassia: il 96% delle foto (il bordo teorico e' quasi vuoto)
+  const r = photos.filter(p => !p.hold).map(p => Math.hypot(p.fine.x, p.fine.z)).sort((a, b) => a - b);
+  return r.length ? r[Math.floor(r.length * .96)] * 1.04 : R_DISCO * GRANDE * .75;
+}
+function inquadraGalassia() {
+  const R = raggioVisibile(), cam = camera.clone(); cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix();
+  const bordo = Array.from({ length: 72 }, (_, i) => new THREE.Vector3(Math.cos(i / 72 * TAU) * R, 0, Math.sin(i / 72 * TAU) * R)), q = new THREE.Vector3();
+  const misura = (dir, d) => {                           // quanto schermo occupa il bordo del disco, in orizzontale e in verticale (1 = tutto)
+    cam.position.copy(dir).multiplyScalar(d); cam.lookAt(0, 0, 0); cam.updateMatrixWorld();
+    let mx = 0, my = 0; for (const v of bordo) { q.copy(v).project(cam); if (q.z > 1) return [9, 9]; mx = Math.max(mx, Math.abs(q.x)); my = Math.max(my, Math.abs(q.y)); }
+    return [mx, my];
+  };
+  let migliore = null;
+  for (let gradi = 30; gradi <= 90; gradi += 5) {
+    const el = THREE.MathUtils.degToRad(gradi), dir = new THREE.Vector3(0, Math.sin(el), Math.cos(el) + 1e-4).normalize();
+    let lo = R * .2, hi = R * 8;
+    for (let i = 0; i < 30; i++) { const mid = (lo + hi) / 2, [mx, my] = misura(dir, mid); if (Math.max(mx, my) > .98) lo = mid; else hi = mid; }
+    const [mx, my] = misura(dir, hi), area = mx * my;
+    if (!migliore || area > migliore.area + 1e-3) migliore = { area, d: hi, dir };
+  }
+  CASA.copy(migliore.dir).multiplyScalar(migliore.d);
+}
+addEventListener('resize', () => {
+  const aCasa = !fuoco && camera.position.distanceTo(CASA) < 1 && controls.target.lengthSq() < 1e-6;   // se nessuno si e' mosso, la vista si adatta
+  inquadraGalassia(); if (aCasa) camera.position.copy(CASA);
+});
+
 // ---------------- Sagittarius A*: il buco nero al centro ----------------
 // In scala vera sarebbe un miliardesimo della galassia (circa 24 milioni di km): qui e' ingrandito, ma fatto come quelli veri:
 // un disco nero (l'orizzonte degli eventi e la sua ombra), un anello sottile di luce che gli gira intorno, e il disco di gas
@@ -341,6 +371,7 @@ function aggiornaFoto(p, f) {   // la foto e' stata letta: va al suo posto nella
 }
 D.tutte.forEach(id => { if (D.foto[id]) makePhoto(id, D.foto[id]); });
 disponiTutte();
+inquadraGalassia(); camera.position.copy(CASA); controls.target.set(0, 0, 0);   // all'apertura la galassia occupa piu' schermo possibile
 
 // ---------------- i fili: i tag in comune ----------------
 // un solo tipo di linea, un solo significato: due foto hanno dei tag in comune. Piu' tag, linea piu' spessa.
@@ -640,10 +671,6 @@ function passoViaggio(now) {
 }
 controls.addEventListener('start', () => { viaggioCam = null; });
 
-$('solebtn').onclick = () => {                           // dal Sole: dove siamo noi, guardando verso il centro (la fascia della Via Lattea intorno)
-  const vai = () => verso(new THREE.Vector3(0, 0, 0), SOLE.clone());
-  if (fuoco) { torna(); setTimeout(vai, DUR_VOLO + 50); } else vai();
-};
 
 // ---------------- ogni fotogramma ----------------
 const orb = new THREE.Vector3();
@@ -1156,4 +1183,4 @@ function disegnaAnteprima(mani, principale) {
 avviaMano();
 
 window.__mano = { mano, piuVicina, palmo, passoMano };   // per provare dalla console
-window.__nebulosa = { photos, photoById, camera, controls, setHover, vola, torna, regia, legami, verso, SOLE, get fuoco() { return fuoco; }, get palette() { return palette; } };   // per provare dalla console
+window.__nebulosa = { photos, photoById, camera, controls, setHover, vola, torna, regia, legami, verso, CASA, get fuoco() { return fuoco; }, get palette() { return palette; } };   // per provare dalla console
