@@ -215,13 +215,13 @@ const stellePuntini = [];   // da lontano tante stelle si sovrappongono: si abba
     const a = g() * BARRA.meta * .42, b = g() * BARRA.meta * .42 * BARRA.larga;
     v.set(a * Math.cos(BARRA.angolo) - b * Math.sin(BARRA.angolo), g() * 1.3, a * Math.sin(BARRA.angolo) + b * Math.cos(BARRA.angolo));
     const r = v.length(); if (r < 4) v.multiplyScalar(4 / Math.max(r, .05) * (1 + r0() * .3));   // intorno al buco nero resta lo spazio scuro
-    c.copy(GIALLO).multiplyScalar(.35 + .4 * r0());
+    c.copy(GIALLO).multiplyScalar(.27 + .31 * r0());   // un po' meno luminose: il centro non deve abbagliare
   }, 2.4, 1);
   puntiGalassia(7000, (v, c) => {                        // il rigonfiamento a X: visto di lato, le stelle della barra formano una X
     const a = (r0() * 2 - 1) * 6.5, h = Math.abs(a) * .65 * (r0() < .5 ? 1 : -1) + g() * .45, b = g() * 1.1;
     v.set(a * Math.cos(BARRA.angolo) - b * Math.sin(BARRA.angolo), h, a * Math.sin(BARRA.angolo) + b * Math.cos(BARRA.angolo));
     const r = v.length(); if (r < 4) v.multiplyScalar(4 / Math.max(r, .05));
-    c.copy(GIALLO).multiplyScalar(.3 + .3 * r0());
+    c.copy(GIALLO).multiplyScalar(.23 + .23 * r0());
   }, 2.2, 1);
   puntiGalassia(700, (v, c) => {                         // le nuvolette rosa: dove nascono le stelle, lungo i bracci
     const R = 11 + r0() * 36, th = angoloBraccio(BRACCI[Math.floor(r0() * 4)], R) + g() * .06;
@@ -683,7 +683,7 @@ function frame(now) {
   passoViaggio(now);
   passoBuco(Math.min(.05, (now - (ultimoFotogramma || now)) / 1000)); ultimoFotogramma = now;
   const dalCentro = camera.position.length();
-  baglioreCentro.material.opacity = sstep(8 * GRANDE, 45 * GRANDE, dalCentro);
+  baglioreCentro.material.opacity = .65 * sstep(8 * GRANDE, 45 * GRANDE, dalCentro);   // la luce del centro, un po' piu' tenue
   bloom.strength = .25 + .3 * sstep(6 * GRANDE, 40 * GRANDE, dalCentro);
   const luceStelle = clamp(Math.pow(20 * GRANDE / Math.max(1, dalCentro), 1.5), .14, 1);   // da fuori la galassia e' piu' tenue, da dentro piu' viva
   stellePuntini.forEach(m => { m.material.opacity = luceStelle; });
