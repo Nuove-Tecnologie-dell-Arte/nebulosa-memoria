@@ -1006,6 +1006,23 @@ function giraVersoLaMano(dt) {
   scarto.setFromSpherical(sferica); camera.position.copy(controls.target).add(scarto);
 }
 
+// il filtro 1€ (Casiez, Roussel, Vogel, 2012): ammorbidisce la posizione della mano tanto piu' quanto piu' e' ferma.
+// Con la mano ferma toglie il tremolio della webcam; quando la mano si muove in fretta la segue quasi senza ritardo
+function filtro1e(minimo = .5, beta = 7, taglioVelocita = .5) {   // valori scelti provando: rispetto a prima, tremolio -30/40%, ritardo dimezzato
+  let x = null, v = 0, tPrima = 0;
+  const alfa = (taglio, dt) => 1 / (1 + 1 / (2 * Math.PI * taglio * dt));
+  return {
+    azzera() { x = null; },
+    passo(valore, t) {                                   // t in secondi
+      if (x === null) { x = valore; v = 0; tPrima = t; return x; }
+      const dt = Math.max(1e-3, t - tPrima); tPrima = t;
+      v += alfa(taglioVelocita, dt) * ((valore - x) / dt - v);
+      x += alfa(minimo + beta * Math.abs(v), dt) * (valore - x);
+      return x;
+    },
+  };
+}
+const filtroManoX = filtro1e(), filtroManoY = filtro1e();
 function passoMano(now) {
   const dt = Math.min(.1, (now - (ultimoPasso || now)) / 1000); ultimoPasso = now;
   const r = leggiMano(now);
@@ -1014,8 +1031,8 @@ function passoMano(now) {
       const pt = palmo(r.L);
       // la webcam e' a specchio; la zona centrale dell'inquadratura copre tutto lo schermo
       const tx = clamp((1 - pt.x - .18) / .64, 0, 1), ty = clamp((pt.y - .15) / .6, 0, 1);
-      if (!mano.vista) { mano.x = tx; mano.y = ty; }
-      mano.x += (tx - mano.x) * .3; mano.y += (ty - mano.y) * .3;
+      if (!mano.vista) { filtroManoX.azzera(); filtroManoY.azzera(); }   // una mano appena arrivata parte da dov'e'
+      mano.x = filtroManoX.passo(tx, now / 1000); mano.y = filtroManoY.passo(ty, now / 1000);
       mano.vista = true; mano.ultima = now; ultimoTocco = now;
       controls.autoRotate = false; clearTimeout(fermo);
     } else if (mano.vista && now - mano.ultima > 350) {
