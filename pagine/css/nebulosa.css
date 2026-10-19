@@ -209,7 +209,10 @@ body.installazione #manoStato,body.installazione #manoCamera,body.installazione 
 body.installazione,body.installazione canvas{cursor:none!important}
 body.installazione #arrivo{top:32px;bottom:auto}   /* chi ha mandato la foto: in alto, lontano dal QR e dalla webcam */
 body.installazione #inarr{top:32px;bottom:auto}
-body.installazione #fuoco{top:32px;right:32px;max-height:calc(100vh - 64px - var(--manoH))}
+/* la lettura della foto aperta: in basso a sinistra (sopra il QR, se c'e'), entra scivolando da sinistra */
+body.installazione #fuoco{top:auto;right:auto;left:32px;bottom:32px;max-height:calc(100vh - 64px);transform:translateX(-20px)}
+body.installazione #fuoco.on{transform:none}
+body.installazione:not(.senza-qr):has(#qrfisso.on) #fuoco{bottom:226px;max-height:calc(100vh - 258px)}
 /* il QR */
 body.installazione #qrfisso{left:32px;bottom:32px;gap:18px;padding:14px 22px 14px 14px;display:flex!important}
 body.installazione:not(:has(#qrfisso.on)) #qrfisso,body.installazione.senza-qr #qrfisso{display:none!important}
