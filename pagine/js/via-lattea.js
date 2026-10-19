@@ -75,7 +75,9 @@ function texLuce(stops) {
   x.fillStyle = g; x.fillRect(0, 0, S, S);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
-const TEX_ANELLO = (() => { const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'); x.strokeStyle = '#fff'; x.lineWidth = 5; x.beginPath(); x.arc(S / 2, S / 2, S / 2 - 6, 0, TAU); x.stroke(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const TEX_PUNTO = texLuce([[0, 'rgba(255,255,255,1)'], [.35, 'rgba(255,255,255,.45)'], [1, 'rgba(255,255,255,0)']]);   // un puntino morbido: la coda delle comete
+const CODA = 48;   // quanti puntini nella coda di una foto che arriva
+const TEX_ANELLO =(() => { const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'); x.strokeStyle = '#fff'; x.lineWidth = 5; x.beginPath(); x.arc(S / 2, S / 2, S / 2 - 6, 0, TAU); x.stroke(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
 // il nucleo: il punto in cui tutti questi ricordi si toccano
 const nucleo = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLuce([[0, 'rgba(255,255,250,1)'], [.12, 'rgba(255,240,200,.95)'], [.35, 'rgba(255,170,80,.45)'], [1, 'rgba(255,90,30,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
 const alone = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLuce([[0, 'rgba(255,170,90,.5)'], [.5, 'rgba(160,60,40,.15)'], [1, 'rgba(60,20,30,0)']]), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
@@ -557,9 +559,10 @@ function vola(p) {
   mostraPannello(p);
   accordo(p);
 }
-function torna() {
+function torna(aCasa = false) {   // aCasa: invece della vista di prima, la vista d'apertura (quando chi esplorava se ne va)
   if (!fuoco || fuoco.uscita) return;
-  Object.assign(fuoco, { uscita: true, arrivato: false, t0: performance.now(), cam0: camera.position.clone(), tgt0: controls.target.clone(), camDest: fuoco.back.pos, tgtDest: fuoco.back.target });
+  Object.assign(fuoco, { uscita: true, arrivato: false, t0: performance.now(), cam0: camera.position.clone(), tgt0: controls.target.clone(),
+    camDest: aCasa ? CASA.clone() : fuoco.back.pos, tgtDest: aCasa ? new THREE.Vector3(0, 0, 0) : fuoco.back.target });
   fuoco.sorelle.forEach(q => { if (q.orbita) q.orbita.su = false; });
   controls.enabled = false;
   accese = null; filiDa = null; filiA = [];
@@ -590,7 +593,7 @@ function mostraPannello(p) {
   $('fuoco').style.setProperty('--c', css(p.col));
   $('fuoco').classList.add('on');
 }
-$('fx').onclick = torna;
+$('fx').onclick = () => torna();
 
 // ---------------- la tua foto ti porta dentro ----------------
 // l'unica cosa che muove la nebulosa da sola: quando arriva una foto dal QR, dopo il suo urto la camera vola dentro di lei
@@ -610,7 +613,7 @@ function passoRegia(now) {
   const libera = now - ultimoTocco > RIPOSO;
   if (fuoco && fuoco.arrivato && !fuoco.uscita) { controls.autoRotate = libera && !reduced; controls.autoRotateSpeed = .9; }   // gira piano intorno alla foto
   else if (!fuoco) controls.autoRotateSpeed = .35;
-  if (regia.ritorno && now > regia.ritorno && libera && fuoco && fuoco.arrivato && !fuoco.uscita) { regia.ritorno = 0; torna(); }
+  if (regia.ritorno && now > regia.ritorno && libera && fuoco && fuoco.arrivato && !fuoco.uscita) { regia.ritorno = 0; torna(true); }   // dopo la foto nuova: di nuovo la galassia intera
 }
 
 // ---------------- interazione ----------------
@@ -656,6 +659,22 @@ function sveglia() {
 }
 ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev => addEventListener(ev, sveglia, { passive: true }));
 sveglia();
+
+// ---------------- modalita' installazione: per la proiezione restano solo la galassia, il QR e la webcam con i gesti ----------------
+// si accende con /?installazione o con il tasto I (e se lo ricorda); il tasto Q toglie e rimette il QR (se c'e' quello stampato)
+function installazione(si) {
+  memo('nebulosa-installazione', si ? '1' : '0');
+  document.body.classList.toggle('installazione', si);
+  if (si) { $('qr').classList.remove('open'); $('cron').classList.remove('open'); }
+}
+installazione(new URLSearchParams(location.search).has('installazione') || memo('nebulosa-installazione') === '1');
+// /?installazione&senza-qr: la finestra che va in proiezione non mostra mai il QR (sta sullo schermo del computer, in /qr)
+document.body.classList.toggle('senza-qr', new URLSearchParams(location.search).has('senza-qr') || memo('nebulosa-qr') === 'no');
+addEventListener('keydown', e => {
+  if (e.target.closest?.('input,select,textarea')) return;
+  if (e.key === 'i' || e.key === 'I') installazione(!document.body.classList.contains('installazione'));
+  if (e.key === 'q' || e.key === 'Q') memo('nebulosa-qr', document.body.classList.toggle('senza-qr') ? 'no' : 'si');
+});
 
 // ---------------- viaggiare: la camera vola piano verso un punto ----------------
 let viaggioCam = null;
@@ -715,7 +734,7 @@ function frame(now) {
     let sc = p.base * (1 + .06 * vi * Math.sin(t * 2.4 + p.ph)) * (m < 1 ? .4 + .6 * m : 1);
     if (p.orbita) {   // sorella: si stacca dal suo posto e gira intorno alla foto scelta
       const o = p.orbita; o.k = clamp(o.k + (o.su ? .022 : -.03), 0, 1);
-      const e = easeIO(o.k), ang = o.i / o.n * TAU + t * .12, R = (fuoco && fuoco.p.hi ? 1.5 * Math.max(1, fuoco.p.hi.asp) + 1.1 : 2.35) + .25 * Math.sin(t * .7 + o.i);   // con la foto aperta l'orbita si allarga: le sorelle le girano intorno senza coprirla
+      const e = easeIO(o.k), ang = o.i / o.n * TAU + t * .06, R = (fuoco && fuoco.p.hi ? 1.5 * Math.max(1, fuoco.p.hi.asp) + 1.1 : 2.35) + .25 * Math.sin(t * .35 + o.i);   // piano: con la mano si riesce a fermarsi su una sorella   // con la foto aperta l'orbita si allarga: le sorelle le girano intorno senza coprirla
       orb.copy(o.centro).addScaledVector(dx, Math.cos(ang) * R).addScaledVector(dy, Math.sin(ang) * R * .82);
       p.sprite.position.lerp(orb, e); sc += (.62 * (p.f.s || .9) * 1.45 - sc) * e;   // in orbita tornano della grandezza della nebulosa
       if (o.k <= 0 && !o.su) p.orbita = null;
@@ -788,17 +807,36 @@ function nextArrival(now) {
   if (arrivo || !arrQueue.length || now < fineUltimo + PAUSA) return;
   if (fuoco) { torna(); return; }   // l'arrivo deve vedersi: prima si torna alla nebulosa
   const a = arrQueue.shift(), p = makePhoto(a.id, a.dato); p.hold = true; posizionaUna(p); counts();
-  // una stella nuova nasce come quelle vere: si accende in una nuvola di gas sopra il suo posto e scende piano nel disco
-  const curva = new THREE.QuadraticBezierCurve3(p.fine.clone().add(new THREE.Vector3(0, 7, 0)), p.fine.clone().add(new THREE.Vector3(1.5, 3, 0)), p.fine.clone());
-  p.pts = new Float32Array(curva.getPoints(80).flatMap(v => [v.x, v.y, v.z])); p.n = p.pts.length / 3;
+  // la foto nuova entra come una cometa da un bordo dello schermo (quello opposto al suo posto), attraversa la galassia
+  // con una coda di luce e si posa al suo posto; la camera la accompagna e si avvicina, cosi' si vede dove va a stare
+  camera.updateMatrixWorld();
+  const avanti = new THREE.Vector3(), destra = new THREE.Vector3(), su = new THREE.Vector3();
+  camera.getWorldDirection(avanti); destra.setFromMatrixColumn(camera.matrixWorld, 0); su.setFromMatrixColumn(camera.matrixWorld, 1);
+  const lato = p.fine.clone().project(camera).x > 0 ? -1 : 1;
+  const dist = camera.position.distanceTo(p.fine), d = dist * .35, mezzaH = Math.tan(camera.fov * Math.PI / 360) * d;
+  const via = camera.position.clone().addScaledVector(avanti, d).addScaledVector(destra, lato * mezzaH * camera.aspect * 1.3).addScaledVector(su, mezzaH * .25);
+  const curva = new THREE.CubicBezierCurve3(via, via.clone().addScaledVector(avanti, d * .6).addScaledVector(destra, -lato * mezzaH * .4),
+    p.fine.clone().add(new THREE.Vector3(0, dist * .22, 0)), p.fine.clone());
+  p.pts = new Float32Array(curva.getPoints(160).flatMap(v => [v.x, v.y, v.z])); p.n = p.pts.length / 3;
   setHover(null);
   const coda = arrQueue.length, f = coda === 0 ? 1 : coda <= 2 ? .72 : .5;
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p.pts, 3)); g.setDrawRange(0, 0);
   const fusione = chiaro() ? THREE.NormalBlending : THREE.AdditiveBlending;
-  const linea = new THREE.Line(g, new THREE.LineBasicMaterial({ color: p.col, transparent: true, blending: fusione, depthWrite: false }));
+  const linea = new THREE.Line(g, new THREE.LineBasicMaterial({ color: p.col, transparent: true, opacity: .5, blending: fusione, depthWrite: false }));
   const onda = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX_ANELLO, color: p.col, transparent: true, blending: fusione, depthWrite: false, opacity: 0 }));
-  scene.add(linea, onda);
-  arrivo = { a, p, linea, onda, t0: now, T1: 1700 * f + 300, T2: 1700 * f + 300 + 4800 * f, T3: 1700 * f + 300 + 4800 * f + 1300 };
+  // la coda della cometa: le ultime posizioni della testa, sempre piu' tenui
+  const pc = new Float32Array(CODA * 3), cc = new Float32Array(CODA * 3);
+  for (let i = 0; i < CODA; i++) pc.set([via.x, via.y, via.z], i * 3);
+  const gc = new THREE.BufferGeometry(); gc.setAttribute('position', new THREE.BufferAttribute(pc, 3)); gc.setAttribute('color', new THREE.BufferAttribute(cc, 3));
+  const scia = new THREE.Points(gc, new THREE.PointsMaterial({ map: TEX_PUNTO, size: 18, sizeAttenuation: false, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  scia.frustumCulled = false;
+  scene.add(linea, onda, scia);
+  // la camera: da dove si trova a un punto vicino al posto della foto, dal lato da cui si guarda
+  const out = p.fine.clone().sub(camera.position).negate().setY(0); if (out.lengthSq() < 1e-6) out.set(0, 0, 1); out.normalize();
+  const camDest = p.fine.clone().addScaledVector(out, 26).add(new THREE.Vector3(0, 14, 0));
+  viaggioCam = null; controls.enabled = false; controls.autoRotate = false; clearTimeout(fermo);
+  const TV = 5200 * f, TP = 2600 * f;
+  arrivo = { a, p, linea, onda, scia, t0: now, TV, TP, cam0: camera.position.clone(), tgt0: controls.target.clone(), camDest };
   $('arrK').textContent = 'Nuova foto' + (a.nome ? ' · da ' + a.nome : ' · dal telefono');
   $('arrW').textContent = a.frase ? '«' + a.frase + '»' : '';
   $('arrQ').textContent = arrQueue.length ? '+ ' + arrQueue.length + ' in arrivo' : '';
@@ -809,24 +847,37 @@ function nextArrival(now) {
 function passoArrivo(now) {
   nextArrival(now);
   if (!arrivo) return;
-  const { p, linea, onda, T1, T2, T3 } = arrivo, el = now - arrivo.t0, s = p.sprite;
-  s.material.opacity = 1;
-  if (el < T1) {                                            // 1. nasce nel nucleo, grande
-    s.position.set(p.pts[0], p.pts[1], p.pts[2]); s.scale.setScalar(p.base * 4 * sstep(0, T1 * .7, el));
-  } else if (el < T2) {                                     // 2. scende piano al suo posto nel disco, lasciando una scia
-    if (!arrivo.partita) { arrivo.partita = true; $('arrivo').classList.remove('on'); }
-    const u = easeIO((el - T1) / (T2 - T1)), j = Math.floor(u * (p.n - 1));
+  const { p, linea, onda, scia, TV, TP } = arrivo, el = now - arrivo.t0, s = p.sprite;
+  s.material.opacity = 1; s.renderOrder = 6;
+  // la camera parte un attimo dopo la cometa (prima la si vede entrare) e arriva poco dopo che si e' posata
+  if (!reduced) {
+    const uc = easeIO(clamp((el - TV * .2) / (TV * .8 + TP * .35), 0, 1));
+    camera.position.lerpVectors(arrivo.cam0, arrivo.camDest, uc); controls.target.lerpVectors(arrivo.tgt0, p.fine, uc);
+  }
+  const pc = scia.geometry.attributes.position.array, cc = scia.geometry.attributes.color.array;
+  if (el < TV) {                                            // 1. la cometa: entra dal bordo e vola al suo posto
+    const u = easeIO(el / TV), j = Math.floor(u * (p.n - 1));
     s.position.set(p.pts[j * 3], p.pts[j * 3 + 1], p.pts[j * 3 + 2]);
-    s.scale.setScalar(p.base * (5.5 + (1.4 - 5.5) * sstep(0, .6, u)));
+    s.scale.setScalar(p.base * (4 - 2.2 * sstep(.55, 1, u)));
     linea.geometry.setDrawRange(0, j + 1);
-  } else {                                                  // 3. si posa: un'onda
-    const v = clamp((el - T2) / (T3 - T2), 0, 1);
-    if (!arrivo.posata) { arrivo.posata = true; accordo(p, .8); }
-    s.position.copy(p.fine); s.scale.setScalar(p.base * (1.4 - .4 * v));
-    onda.position.copy(p.fine); onda.scale.setScalar(p.base * (1 + 5 * v)); onda.material.opacity = .9 * (1 - v);
-    linea.material.opacity = 1 - v;                         // la scia sparisce: resta la stella nuova
-    if (el >= T3) {
-      p.hold = false; p.da.copy(p.fine); p.t0 = -1e9; scene.remove(linea, onda); linea.geometry.dispose();
+    pc.copyWithin(3, 0, (CODA - 1) * 3); pc[0] = s.position.x; pc[1] = s.position.y; pc[2] = s.position.z;
+    for (let i = 0; i < CODA; i++) { const k = Math.pow(1 - i / CODA, 1.6); cc[i * 3] = p.col.r * k; cc[i * 3 + 1] = p.col.g * k; cc[i * 3 + 2] = p.col.b * k; }
+    scia.geometry.attributes.position.needsUpdate = scia.geometry.attributes.color.needsUpdate = true;
+  } else {                                                  // 2. si posa: un lampo, un'onda e i fili verso le foto che le somigliano
+    const v = clamp((el - TV) / TP, 0, 1);
+    if (!arrivo.posata) {
+      arrivo.posata = true; accordo(p, .8); $('arrivo').classList.remove('on');
+      filiDa = p; filiA = legami(p).slice(0, 10); accese = new Set([p.id, ...filiA.map(x => x[0].id)]);
+    }
+    s.position.copy(p.fine); s.scale.setScalar(p.base * (1 + 1.8 * Math.exp(-v * 5)));
+    const R = camera.position.distanceTo(p.fine);           // l'onda e' grande quanto serve per vederla da qui
+    onda.position.copy(p.fine); onda.scale.setScalar(R * (.04 + .3 * v)); onda.material.opacity = .9 * (1 - v);
+    linea.material.opacity = .5 * (1 - v);                  // la scia sparisce: resta la stella nuova
+    for (let i = 0; i < CODA * 3; i++) cc[i] *= .93;
+    scia.geometry.attributes.color.needsUpdate = true;
+    if (v >= 1) {
+      p.hold = false; p.da.copy(p.fine); p.t0 = -1e9; s.renderOrder = 0;
+      scene.remove(linea, onda, scia); linea.geometry.dispose(); scia.geometry.dispose(); controls.enabled = true;
       p.lampo = now + 2200; toast(arrivo.a); arrivo = null; fineUltimo = now; renderCron(); regia.nuova = p; return;
     }
   }
@@ -840,7 +891,10 @@ function removePhoto(id) {
 }
 function removeArrival(id) {
   cron.delete(id); const qi = arrQueue.findIndex(x => x.id === id); if (qi >= 0) arrQueue.splice(qi, 1);
-  if (arrivo && arrivo.a.id === id) { scene.remove(arrivo.linea, arrivo.onda); arrivo = null; $('arrivo').classList.remove('on'); }
+  if (arrivo && arrivo.a.id === id) {
+    scene.remove(arrivo.linea, arrivo.onda, arrivo.scia); arrivo = null; controls.enabled = true; $('arrivo').classList.remove('on');
+    filiDa = null; filiA = []; accese = null;
+  }
   if (photoById[id]) { removePhoto(id); arrivate--; }
   renderCron(); counts();
 }
@@ -948,7 +1002,7 @@ $('qrx').onclick = () => $('qr').classList.remove('open');
 
 // il QR fisso nell'angolo
 if (LIVE) fetch('/api/info').then(r => r.json()).then(inf => {
-  const disegna = () => { $('qrfc').innerHTML = ''; new QRCode($('qrfc'), { text: inf.carica, width: 92, height: 92, colorDark: '#06050a', colorLight: '#ffffff' }); $('qrfisso').classList.add('on'); };
+  const disegna = () => { $('qrfc').innerHTML = ''; new QRCode($('qrfc'), { text: inf.carica, width: 240, height: 240, colorDark: '#06050a', colorLight: '#ffffff' }); $('qrfisso').classList.add('on'); };
   if (window.QRCode) disegna();
   else { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload = disegna; document.head.appendChild(sc); }
 }).catch(() => {});
@@ -969,7 +1023,8 @@ const MODELLO_MANO = 'https://storage.googleapis.com/mediapipe-models/hand_landm
 const OSSA_MANO = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]];
 const SOSTA_MANO = 1500;      // quanto tenere ferma la mano su una foto per entrarci (ms)
 const VIA_MANO = 2000;        // quanto tempo senza mano per tornare alla nebulosa (ms)
-const mano = { vista: false, ultima: -1e9, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, storia: [], d0: 1, r0: 34, dd: 1, pa: null, pb: null };
+const CONFERMA_MANO = 250;    // per quanto una mano nuova deve vedersi di fila prima di contare (ms)
+const mano = { vista: false, ultima: -1e9, aCasa: true, daQuando: 0, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, storia: [], d0: 1, r0: 34, dd: 1, pa: null, pb: null };
 let rilevatore = null, ultimoVideo = -1, ultimoPasso = 0;
 const video = $('manoVideo'), anteprima = $('manoCanvas'), ctxAnte = anteprima.getContext('2d');
 
@@ -982,7 +1037,9 @@ async function avviaMano() {
     const files = await FilesetResolver.forVisionTasks(MP + '/wasm');
     rilevatore = await HandLandmarker.createFromOptions(files, {
       baseOptions: { modelAssetPath: MODELLO_MANO, delegate: 'GPU' },
-      runningMode: 'VIDEO', numHands: 2, minHandDetectionConfidence: .4, minHandPresenceConfidence: .4, minTrackingConfidence: .4,   // soglie basse: una mano di lato o in ombra non sparisce per un attimo
+      // per trovare una mano nuova serve piu' sicurezza (facce, braccia e sfondo non diventano mani); una mano gia' agganciata
+      // si segue con soglie piu' basse, cosi' di lato o in ombra non sparisce per un attimo
+      runningMode: 'VIDEO', numHands: 2, minHandDetectionConfidence: .65, minHandPresenceConfidence: .55, minTrackingConfidence: .4,
     });
     await apriCamera(memo('nebulosa-camera'));
   } catch (e) {
@@ -1004,7 +1061,14 @@ async function apriCamera(id) {
   $('manoStato').textContent = 'Alza una mano davanti allo schermo';
 }
 $('manoCamera').onchange = e => { memo('nebulosa-camera', e.target.value); apriCamera(e.target.value); };
-addEventListener('keydown', e => { if (e.key === 'v' || e.key === 'V') $('mano').classList.toggle('nascosta'); });
+// il tasto V nasconde e rimette il riquadro della webcam (la mano continua a funzionare); se lo ricorda anche ricaricando
+$('mano').classList.toggle('nascosta', memo('nebulosa-webcam') === 'no');
+// il tasto W toglie solo l'immagine della webcam: il riquadro resta, con le istruzioni dei gesti
+$('mano').classList.toggle('senza-video', memo('nebulosa-video') === 'no');
+addEventListener('keydown', e => {
+  if (e.key === 'v' || e.key === 'V') memo('nebulosa-webcam', $('mano').classList.toggle('nascosta') ? 'no' : 'si');
+  if (e.key === 'w' || e.key === 'W') memo('nebulosa-video', $('mano').classList.toggle('senza-video') ? 'no' : 'si');
+});
 
 // dove sta la mano: il centro del palmo (polso e nocche), che non cambia se le dita si muovono
 function palmo(L) {
@@ -1019,12 +1083,22 @@ function leggiMano(now) {
   if (!rilevatore || video.readyState < 2 || video.currentTime === ultimoVideo) return null;
   ultimoVideo = video.currentTime;
   const r = rilevatore.detectForVideo(video, now);
+  // via le mani di cui il modello stesso e' poco sicuro o con proporzioni impossibili (di solito sono facce o pezzi di braccio)
+  const classi = r.handedness || r.handednesses || [], vere = (r.landmarks || []).map((m, i) => i).filter(i => manoVera(r.landmarks[i], classi[i]));
+  const mani = vere.map(i => r.landmarks[i]), lati = vere.map(i => classi[i] && classi[i][0] ? classi[i][0].categoryName : null);   // «Left» o «Right»
   // la mano che comanda: la piu' grande, cioe' la piu' vicina
   let L = null, best = 0;
-  (r.landmarks || []).forEach(m => { const s = Math.hypot(m[0].x - m[9].x, m[0].y - m[9].y); if (s > best) { best = s; L = m; } });
-  disegnaAnteprima(r.landmarks || [], L);
-  const lati = (r.handedness || r.handednesses || []).map(h => h && h[0] ? h[0].categoryName : null);   // «Left» o «Right»
-  return { L, mani: r.landmarks || [], lati };
+  mani.forEach(m => { const s = taglia(m); if (s > best) { best = s; L = m; } });
+  disegnaAnteprima(mani, L);
+  return { L, mani, lati };
+}
+const SICUREZZA_LATO = .6;   // quanto il modello deve essere sicuro che sia una mano destra o sinistra: sotto, di solito non e' una mano
+function manoVera(m, classe) {
+  if (classe && classe[0] && classe[0].score < SICUREZZA_LATO) return false;
+  const A = video.videoWidth / (video.videoHeight || 1) || 16 / 9, d = (a, b) => Math.hypot((m[a].x - m[b].x) * A, m[a].y - m[b].y);   // in proporzioni vere
+  const lungo = d(0, 9), largo = d(5, 17), dito = d(9, 12);   // palmo (polso-nocca del medio), larghezza delle nocche, dito medio
+  // limiti larghi: una mano inclinata verso la webcam sembra piu' corta; scartano solo le forme che una mano non puo' avere
+  return lungo > .02 && largo < lungo * 2.2 && dito < lungo * 3.5;
 }
 const taglia = m => Math.hypot(m[0].x - m[9].x, m[0].y - m[9].y);   // quanto e' grande una mano nell'inquadratura
 
@@ -1130,21 +1204,27 @@ function passoMano(now) {
   const dt = Math.min(.1, (now - (ultimoPasso || now)) / 1000); ultimoPasso = now;
   const r = leggiMano(now);
   if (r) {
-    if (r.L) {
+    // una mano nuova conta solo se si vede per un attimo di fila: un'ombra o una faccia scambiata per un fotogramma non muove niente
+    if (!r.L) mano.daQuando = 0; else if (!mano.daQuando) mano.daQuando = now;
+    if (r.L && (mano.vista || now - mano.daQuando >= CONFERMA_MANO)) {
       const pt = palmo(r.L);
       // la webcam e' a specchio; la zona centrale dell'inquadratura copre tutto lo schermo
       const tx = clamp((1 - pt.x - .18) / .64, 0, 1), ty = clamp((pt.y - .15) / .6, 0, 1);
       if (!mano.vista) { filtroManoX.azzera(); filtroManoY.azzera(); }   // una mano appena arrivata parte da dov'e'
       mano.x = filtroManoX.passo(tx, now / 1000); mano.y = filtroManoY.passo(ty, now / 1000);
-      mano.vista = true; mano.ultima = now; ultimoTocco = now;
+      mano.vista = true; mano.ultima = now; ultimoTocco = now; mano.aCasa = false;
       controls.autoRotate = false; clearTimeout(fermo);
     } else if (mano.vista && now - mano.ultima > 350) {
       mano.vista = false; mano.due = false; mano.vistaDue = 0; mano.bersaglio = null; mano.carica = 0; setHover(null); riprendiGiro();
     }
   }
-  // senza mano per un po': si torna alla nebulosa (solo se ci si era entrati con la mano)
-  // vale anche per la foto appena arrivata dal QR, se mentre si e' dentro una mano e' stata vista (se nessuno c'e', la foto nuova resta i suoi 20 secondi)
-  if (!mano.vista && fuoco && !fuoco.uscita && fuoco.arrivato && mano.ultima >= fuoco.t0 - 500 && now - mano.ultima > VIA_MANO) { torna(); }
+  // senza mano per un po': si torna alla vista d'apertura, cosi' chi arriva dopo trova la galassia intera
+  // da dentro una foto solo se ci si era entrati con la mano; vale anche per la foto appena arrivata dal QR, se mentre si e' dentro
+  // una mano e' stata vista (se nessuno c'e', la foto nuova resta i suoi 20 secondi)
+  if (!mano.vista && !mano.aCasa && now - mano.ultima > VIA_MANO) {
+    if (fuoco && !fuoco.uscita && fuoco.arrivato && mano.ultima >= fuoco.t0 - 500) { torna(true); mano.aCasa = true; }
+    else if (!fuoco && !arrivo) { verso(new THREE.Vector3(0, 0, 0), CASA.clone()); mano.aCasa = true; }   // per esempio dopo uno zoom con due mani
+  }
   if (r) aggiornaDueMani(r.mani || [], r.lati, now);   // anche quando una mano sparisce: serve a capire quanto e' stata via
   if (mano.vista && !arrivo && mano.due) zoomDueMani();
   else if (mano.vista && !arrivo) {
@@ -1182,8 +1262,7 @@ function aggiornaCursore(now) {
   const aiuto = !mano.vista || arrivo ? '' : mano.due ? 'Due mani: allargale per avvicinarti, stringile per allontanarti' : fuoco && !fuoco.uscita ? (mano.bersaglio ? 'Tieni ferma la mano per passare a questa foto' : 'Porta la mano su una sorella · abbassala per tornare')
     : mano.bersaglio ? 'Tieni ferma la mano: stai entrando in questa foto' : 'Muovi la mano: la luce si aggancia alle foto · verso i bordi la galassia gira';
   if ($('manoAiuto').textContent !== aiuto) $('manoAiuto').textContent = aiuto;
-  $('manoAiuto').classList.toggle('on', !!aiuto);
-  $('manoStato').textContent = !rilevatore ? $('manoStato').textContent : mano.vista ? (mano.due ? 'due mani: zoom' : mano.bersaglio ? 'mano agganciata a una foto' : 'mano vista') : 'nessuna mano';
+  $('manoAiuto').classList.toggle('on', !!aiuto);  $('manoStato').textContent = !rilevatore ? $('manoStato').textContent : mano.vista ? (mano.due ? 'due mani: zoom' : mano.bersaglio ? 'mano agganciata a una foto' : 'mano vista') : 'nessuna mano';
 }
 function disegnaAnteprima(mani, principale) {
   const W2 = anteprima.width, H2 = anteprima.height;

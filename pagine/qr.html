@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nebulosa · QR</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* solo il QR per caricare le foto: si tiene aperta sullo schermo del computer (o su un secondo schermo rivolto alle persone),
+   mentre la finestra che va in proiezione resta senza QR (/?installazione&senza-qr) */
+:root{--bg:#06050a;--ink:#ece6e1;--dim:#8c8590;--lilla:#d8d2f7;--verde:#a9e6b1;--line:rgba(170,161,242,.4)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);cursor:none}
+body{display:grid;place-items:center;padding:16px;font:300 14px/1.6 'JetBrains Mono',ui-monospace,monospace}
+main{display:flex;flex-direction:column;align-items:center;gap:min(4vh,32px);text-align:center}
+.code{background:#fff;padding:min(2.4vh,18px);width:min(52vh,82vw);aspect-ratio:1}
+html,body{overflow:hidden}
+.code img,.code canvas{width:100%!important;height:100%!important;image-rendering:pixelated}
+h1{font:italic 400 clamp(26px,5.5vh,52px)/1.15 'Playfair Display',Georgia,serif;color:var(--lilla)}
+.k{font-size:clamp(11px,1.7vh,15px);letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+#url{font-size:clamp(11px,1.6vh,14px);color:var(--dim);word-break:break-all}
+#arrivo{color:var(--verde);min-height:1.6em;letter-spacing:.14em;text-transform:uppercase;font-size:clamp(11px,1.7vh,15px)}
+#arrivo.on{animation:pulsa 1.4s ease-in-out infinite}
+@keyframes pulsa{50%{opacity:.45}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Aggiungi la tua foto<br>alla memoria</h1>
+  <div class="code" id="qr"></div>
+  <div class="k">Inquadra il codice con il telefono</div>
+  <div id="url">…</div>
+  <div id="arrivo"></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let indirizzo = '';
+// lo stesso indirizzo del QR della nebulosa (quello del tunnel, se c'e'); ricontrollato ogni minuto, se la rete cambia
+async function aggiorna() {
+  try {
+    const inf = await fetch('/api/info', { cache: 'no-store' }).then(r => r.json());
+    if (inf.carica === indirizzo) return;
+    indirizzo = inf.carica; $('url').textContent = indirizzo; $('qr').innerHTML = '';
+    if (window.QRCode) new QRCode($('qr'), { text: indirizzo, width: 512, height: 512, colorDark: '#06050a', colorLight: '#ffffff' });
+    else $('qr').textContent = 'QR non disponibile senza internet: usa l’indirizzo qui sotto.';
+  } catch (e) { $('url').textContent = 'Il server non risponde: accendi la nebulosa.'; }
+}
+aggiorna(); setInterval(aggiorna, 60000);
+// chi sta mandando una foto la vede partire anche qui
+let viaggio = 0;
+function stato(testo, on) { $('arrivo').textContent = testo; $('arrivo').classList.toggle('on', on); }
+(function ascolta() {
+  const es = new EventSource('/api/eventi');
+  es.addEventListener('inarrivo', e => { viaggio++; const n = JSON.parse(e.data).nome; stato('● Una foto sta arrivando' + (n ? ' da ' + n : '') + '…', true); setTimeout(() => { viaggio = Math.max(0, viaggio - 1); if (!viaggio) stato('', false); }, 30000); });
+  es.addEventListener('annullata', () => { viaggio = Math.max(0, viaggio - 1); if (!viaggio) stato('', false); });
+  es.addEventListener('foto', () => { viaggio = Math.max(0, viaggio - 1); stato('✓ Foto arrivata: guardala entrare nella nebulosa', false); setTimeout(() => { if (!viaggio) stato('', false); }, 8000); });
+  es.onerror = () => { es.close(); setTimeout(ascolta, 2000); };
+})();
+</script>
+</body>
+</html>

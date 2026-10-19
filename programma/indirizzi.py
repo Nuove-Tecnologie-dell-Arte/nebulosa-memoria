@@ -6,6 +6,7 @@ from config import PROGETTO, VIVI
 INDIRIZZI = [
     (r'/(index\.html)?', 'pagine/index.html'),
     (r'/carica/?', 'pagine/carica.html'),
+    (r'/qr/?', 'pagine/qr.html'),   # solo il QR, per lo schermo del computer (cosi' non finisce nella proiezione)
     (r'/versioni/([\w-]+?)(\.html)?', 'pagine/versioni/{0}.html'),
     (r'/(css|js)/([\w-]+\.(?:css|js))', 'pagine/{0}/{1}'),   # il CSS e il JS della pagina principale
     (r'/dati\.js', 'dati/dati.js'),
