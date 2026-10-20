@@ -94,9 +94,7 @@ function temperatura(t) {
     return new THREE.Color().setRGB(...ca.map((v, i) => (v + (cb[i] - v) * u) / 255), THREE.SRGBColorSpace);
   }
 }
-const PALETTE = ['fuoco', 'spettro'];
-const NOME_PALETTE = { fuoco: 'temperatura', spettro: 'spettro' };
-let palette = PALETTE.includes(memo('nebulosa-colori')) ? memo('nebulosa-colori') : 'fuoco';
+const palette = 'fuoco';   // i colori sono sempre la temperatura ('spettro' resta in colore(), ma non si sceglie piu')
 const chiaro = () => false, opaco = () => false;   // nella galassia il fondo e' sempre lo spazio
 function colore(p) {
   const f = p.f, [vi, qu, , sc] = f.mv;
@@ -643,19 +641,13 @@ function pick() {
   setHover(hit ? hit.object.userData.p : null);
 }
 $('home').onclick = () => { if (fuoco) { torna(); return; } verso(new THREE.Vector3(0, 0, 0), CASA.clone()); };
-$('palbtn').onclick = () => {
-  palette = PALETTE[(PALETTE.indexOf(palette) + 1) % PALETTE.length]; memo('nebulosa-colori', palette); scritteColori();
-  applicaTema();
-};
-const scritteColori = () => { $('palbtn').textContent = 'Colori: ' + NOME_PALETTE[palette]; };
-scritteColori();
 addEventListener('keydown', e => { if (e.key === 'Escape') { if (fuoco) torna(); else $('home').click(); } });
 
 // ---------------- l'interfaccia si nasconde da sola, e torna appena ti muovi ----------------
 let calmaT = 0;
 function sveglia() {
   document.body.classList.remove('calma'); clearTimeout(calmaT);
-  calmaT = setTimeout(() => { if (!$('cron').classList.contains('open') && !$('qr').classList.contains('open')) document.body.classList.add('calma'); }, 4000);
+  calmaT = setTimeout(() => { if (!$('cron').classList.contains('open')) document.body.classList.add('calma'); }, 4000);
 }
 ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev => addEventListener(ev, sveglia, { passive: true }));
 sveglia();
@@ -665,7 +657,7 @@ sveglia();
 function installazione(si) {
   memo('nebulosa-installazione', si ? '1' : '0');
   document.body.classList.toggle('installazione', si);
-  if (si) { $('qr').classList.remove('open'); $('cron').classList.remove('open'); }
+  if (si) $('cron').classList.remove('open');
 }
 installazione(new URLSearchParams(location.search).has('installazione') || memo('nebulosa-installazione') === '1');
 // /?installazione&senza-qr: la finestra che va in proiezione non mostra mai il QR (sta sullo schermo del computer, in /qr)
@@ -796,7 +788,6 @@ function counts() {
   $('st').textContent = n + ' foto';
   $('introp').textContent = `${n} foto${D.luogo ? ' di ' + D.luogo : ''}, raccolte da chi le ha vissute, sparse come le stelle della nostra galassia: più fitte verso il centro e lungo i bracci, e le foto che si somigliano vicine tra loro. Al centro c'è Sagittarius A*, il buco nero. È in tre dimensioni come la galassia vera: il disco sottile e quello spesso, l'alone, le bolle di Fermi (che si vedono solo nei raggi gamma). Con la mano verso i bordi la galassia gira; allargando le due mani entri dove indichi; tenendo ferma la mano su una stella ci entri.` +
     (prov ? ` ${prov === 1 ? '1 foto, quasi grigia, ha' : prov + ' foto, quasi grigie, hanno'} ancora un posto provvisorio, vicino alle foto che le somigliano: aspetta${prov === 1 ? '' : 'no'} di essere lett${prov === 1 ? 'a' : 'e'}.` : '');
-  $('qrmeta').textContent = arrivate + ' foto arrivate dai telefoni';
 }
 function addArrival(a, animate) {
   if (!a.dato || photoById[a.id] || arrQueue.some(x => x.id === a.id) || (arrivo && arrivo.a.id === a.id)) return;
@@ -939,7 +930,7 @@ function renderCron() {
       `<div class="w">${p && p.f.lettura ? esc(p.f.lettura) : a.frase ? '«' + esc(a.frase) + '»' : ''}</div>${QUI ? `<button data-elimina="${a.id}">Rimuovi</button>` : ''}</div></div>`;
   }).join('') : '<div class="vuota">Ancora nessuna foto. Inquadra il QR code con un telefono: ogni foto che arriva comparirà qui, con chi l\'ha mandata e quando.</div>';
 }
-$('cronbtn').onclick = () => { $('qr').classList.remove('open'); $('cron').classList.toggle('open'); renderCron(); };
+$('cronbtn').onclick = () => { $('cron').classList.toggle('open'); renderCron(); };
 $('cronx').onclick = () => $('cron').classList.remove('open');
 $('cronL').addEventListener('click', e => { if (e.target.closest('button')) return; const it = e.target.closest('[data-apri]'); if (!it) return; const p = photoById[it.dataset.apri]; if (p && !p.hold) { $('cron').classList.remove('open'); vola(p); } });
 $('cron').addEventListener('click', async e => {
@@ -985,20 +976,6 @@ if (LIVE) {
   }).catch(() => setOnline(false)), 5000);
 }
 function setOnline(v) { online = v; $('liveDot').classList.toggle('on', v); $('liveDot').title = v ? 'in diretta' : 'non collegata'; renderCron(); }
-$('qrbtn').onclick = async () => {
-  $('cron').classList.remove('open');
-  $('qr').classList.toggle('open');
-  if (!$('qr').classList.contains('open')) return;
-  if (!LIVE) { $('qrurl').textContent = 'Apri la nebulosa con «Apri la nebulosa.command» per ricevere foto dai telefoni.'; return; }
-  try {
-    const inf = await (await fetch('/api/info')).json();
-    $('qrurl').textContent = inf.carica; counts();
-    const drawQR = () => { $('qrcode').innerHTML = ''; new QRCode($('qrcode'), { text: inf.carica, width: 180, height: 180, colorDark: '#06050a', colorLight: '#ffffff' }); };
-    if (window.QRCode) drawQR();
-    else { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload = drawQR; sc.onerror = () => { $('qrcode').textContent = 'QR non disponibile senza internet: usa l’indirizzo qui sotto.'; $('qrcode').style.cssText += ';color:#06050a;font-size:12px;text-align:center'; }; document.head.appendChild(sc); }
-  } catch (e) { $('qrurl').textContent = 'Il server non risponde.'; }
-};
-$('qrx').onclick = () => $('qr').classList.remove('open');
 
 // il QR fisso nell'angolo
 if (LIVE) fetch('/api/info').then(r => r.json()).then(inf => {
