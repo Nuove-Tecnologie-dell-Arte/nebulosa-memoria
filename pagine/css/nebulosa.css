@@ -167,6 +167,7 @@ body.calma #fuoco .h,body.calma #fx{display:none}
 body:has(#mano:not(.nascosta):not(.assente)){--manoH:316px}
 body:has(#mano:not(.nascosta):not(.assente)) #home{right:calc(var(--lato) + 240px + 16px);bottom:20px}
 
+#caricaTel{display:none}
 @media(max-width:900px){
   :root{--lato:12px}
   header.top{padding:0 14px}
@@ -183,12 +184,15 @@ body:has(#mano:not(.nascosta):not(.assente)) #home{right:calc(var(--lato) + 240p
   #toasts,body.infuoco #toasts,#cron.open ~ #toasts{top:120px;right:12px;left:12px;width:auto}
   #cron.open ~ #toasts{display:none}
   #fuoco{max-height:50vh}
+  /* sul telefono il QR non serve: al suo posto il link per caricare una foto */
+  #caricaTel{display:block;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:6;white-space:nowrap;padding:13px 22px;background:rgba(8,7,12,.82);border:1px solid rgba(170,161,242,.5);border-radius:999px;color:#d8d2f7;font:italic 400 17px 'Playfair Display',serif;text-decoration:none;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  body.infuoco #caricaTel,body:has(#cron.open) #caricaTel,body:has(#arrivo.on) #caricaTel{display:none}
 }
 @media(max-width:600px){#sndbtn{display:none}.brand small{display:none}}
 
 /* modalita' installazione (/?installazione o tasto I): per la proiezione restano la galassia, il QR in basso a sinistra,
    la webcam con le istruzioni dei gesti in basso a destra e la lettura della foto in cui si entra */
-body.installazione header.top,body.installazione .intro,body.installazione .hintbar,body.installazione #home,body.installazione #toasts,body.installazione #cron,
+body.installazione #caricaTel,body.installazione header.top,body.installazione .intro,body.installazione .hintbar,body.installazione #home,body.installazione #toasts,body.installazione #cron,
 body.installazione #pv,body.installazione #fuoco .h,body.installazione #fx,body.installazione #fuoco [data-elimina],
 body.installazione #manoStato,body.installazione #manoCamera,body.installazione #mano .legenda{display:none!important}
 body.installazione,body.installazione canvas{cursor:none!important}

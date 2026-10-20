@@ -30,6 +30,8 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const TAU = Math.PI * 2;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// un telefono o un tablet: si usa con le dita (niente webcam per le mani), e si disegna un po' meno fitto
+const TELEFONO = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 900;
 const easeIO = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
 const sstep = (a, b, x) => { const u = clamp((x - a) / (b - a), 0, 1); return u * u * (3 - 2 * u); };
 const seme = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)) >>> 0) / 4294967296; };
@@ -38,7 +40,7 @@ const memo = (k, v) => { try { if (v === undefined) return localStorage.getItem(
 // ---------------- la scena ----------------
 const cv = $('c');
 const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, TELEFONO ? 1.5 : 2));
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06050a);
 const camera = new THREE.PerspectiveCamera(60, 1, .1, 2500);   // un po' piu' larga: si sta dentro la galassia
 // la galassia e' disegnata in grande: le misure restano quelle vere (in migliaia di anni luce), ma sullo schermo ogni unita' vale GRANDE,
@@ -621,9 +623,34 @@ cv.addEventListener('pointermove', e => { mpx.x = e.clientX; mpx.y = e.clientY; 
 cv.addEventListener('pointerleave', () => { mpx.x = -1; setHover(null); });
 cv.addEventListener('pointerdown', e => { giu = { x: e.clientX, y: e.clientY }; });
 cv.addEventListener('pointerup', e => {
-  if (giu && Math.hypot(e.clientX - giu.x, e.clientY - giu.y) < 5) { if (hover) vola(hover); else if (fuoco) torna(); }
+  const dito = e.pointerType === 'touch';
+  if (giu && Math.hypot(e.clientX - giu.x, e.clientY - giu.y) < (dito ? 12 : 5)) {
+    const p = dito ? toccata(e.clientX, e.clientY) : hover;   // col dito non c'e' il passaggio sopra: si guarda dove ha toccato
+    if (p && dito && !fuoco && affollate(e.clientX, e.clientY) > 3) avvicinati(p);   // sotto il dito troppe stelle: prima ci si avvicina
+    else if (p) vola(p); else if (fuoco) torna();
+  }
   giu = null;
 });
+function toccata(x, y) {   // la foto sotto il dito, o (le stelle sono piccole) la piu' vicina, come la calamita della mano
+  if (arrivo) return null;
+  mouse.set(x / innerWidth * 2 - 1, -y / innerHeight * 2 + 1); ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObjects(sprites, false).find(h => !h.object.userData.p.hold && h.object.material.opacity > .5);
+  return hit ? hit.object.userData.p : piuVicina(x, y);
+}
+const DITO = 22;   // il raggio di un dito sullo schermo (px)
+function affollate(x, y) {   // quante stelle stanno sotto il dito
+  let n = 0;
+  for (const p of photos) {
+    if (p.hold) continue;
+    proiezione.copy(p.sprite.position).project(camera);
+    if (proiezione.z < 1 && Math.hypot((proiezione.x + 1) / 2 * innerWidth - x, (1 - proiezione.y) / 2 * innerHeight - y) < DITO) n++;
+  }
+  return n;
+}
+function avvicinati(p) {   // la vista si avvicina alla stella toccata, a un quarto della distanza: le stelle si allargano sotto il dito
+  const dir = camera.position.clone().sub(controls.target).normalize(), d = camera.position.distanceTo(p.fine);
+  verso(p.fine.clone(), p.fine.clone().addScaledVector(dir, Math.max(8, d * .25)));
+}
 function setHover(p) {
   if (p === hover) return;
   hover = p;
@@ -1009,6 +1036,7 @@ const video = $('manoVideo'), anteprima = $('manoCanvas'), ctxAnte = anteprima.g
 function senzaMano() { rilevatore = null; $('mano').classList.add('assente'); }
 async function avviaMano() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return senzaMano();   // succede su http fuori da localhost
+  if (TELEFONO) return senzaMano();   // sul telefono si usano le dita: niente fotocamera accesa, niente permesso da chiedere
   try {
     const { FilesetResolver, HandLandmarker } = await import(MP + '/vision_bundle.mjs');
     const files = await FilesetResolver.forVisionTasks(MP + '/wasm');
