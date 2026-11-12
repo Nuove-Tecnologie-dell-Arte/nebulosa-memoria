@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nebulosa · Accademia</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/nebulosa.css?v=2">
+<style>
+  /* il caricamento del piano dell'Accademia: il file e' grande, si vede quanto manca */
+  #carico { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    background: #06050a; color: #ece6e1; font: 300 14px/1.6 Jost, sans-serif; transition: opacity 1.2s; }
+  #carico.via { opacity: 0; pointer-events: none; }
+  #carico b { font: 400 italic 26px/1.2 'Playfair Display', serif; }
+  #carico .barra { width: min(320px, 70vw); height: 2px; background: rgba(255,255,255,.12); }
+  #carico .barra i { display: block; height: 100%; width: 0; background: #f0c88c; transition: width .3s; }
+  #carico small { font: 300 11px/1.4 'JetBrains Mono', monospace; letter-spacing: .08em; opacity: .6; }
+  /* la distanza di disegno: un cursore nella barra in alto */
+  #distanzaBox { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; background: rgba(6,5,10,.55); border: 1px solid rgba(255,255,255,.15);
+    font: 400 10px/1 'JetBrains Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: #ece6e1; }
+  #distanzaBox input { width: 90px; accent-color: #f0c88c; }
+  #distanzaBox b { min-width: 2ch; text-align: right; font-weight: 400; color: #f0c88c; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="carico"><b>L'Accademia si sta costruendo</b><div class="barra"><i id="caricoBarra"></i></div><small id="caricoTesto">carico il piano 3D…</small></div>
+<header class="top">
+  <div class="brand"><small>Memoria collettiva</small><b>NEBULOSA</b></div>
+  <div class="status"><span id="luogo"></span><span id="st"></span><button id="quibtn" style="display:none">Mostra tutte le foto</button><label id="distanzaBox" title="Fin dove si disegna il chiostro: piu' bassa, piu' leggera (tasti - e +)">Distanza <input id="distanza" type="range" min="3" max="40" step="1"><b id="distanzaV"></b></label><button id="sndbtn">Suono</button><button id="cronbtn"><span id="liveDot"></span>Cronologia<i id="cronN"></i></button></div>
+</header>
+<div class="intro" id="intro">
+  <h1>Una memoria<br><em>che abita i corridoi.</em></h1>
+  <p id="introp"></p>
+</div>
+<div class="hintbar" id="hintbar">✋ Mano verso i bordi: ti giri<br>🙌 Due mani: allargale per camminare avanti, stringile per tornare indietro<br>✋ Tieni ferma la mano su una bolla: ci entri · abbassala per tornare</div>
+<button id="home">↺ Riprendi il giro</button>
+<div id="pv"></div>
+<div id="cron"><div class="hd"><button id="cronx" aria-label="Chiudi">×</button><h3>Cronologia</h3><div class="meta" id="cronC"></div></div><div id="cronL"></div></div>
+<div id="toasts"></div>
+<div id="inarr"></div>
+<a id="caricaTel" href="/carica">📷 Aggiungi una tua foto</a>
+<div id="qrfisso"><div class="code" id="qrfc"></div><div><b>Aggiungi la tua foto<br>alla memoria</b><small>Inquadra il codice<br>con il telefono</small></div></div>
+<aside id="fuoco"><div class="k" id="fk"></div><div id="fl"></div><div id="fa"></div><div class="h">Clicca una sorella per passare a lei · Esc o clic nel vuoto per tornare nel corridoio</div><button id="fx">← Torna nel corridoio</button></aside>
+<div id="manoCursore"></div>
+<div id="manoDue"><b></b><i></i><i></i></div>
+<div id="mano"><canvas id="manoCanvas" width="240" height="180"></canvas><video id="manoVideo" playsinline muted></video><div id="manoGesti"><b>Esplora con le mani</b>✋ Muovi la mano: la luce cerca le bolle<br>✋ Tienila ferma su una bolla per entrarci<br>⬇ Abbassala per tornare<br>🙌 Due mani: allargale per camminare</div><div id="manoStato">Avvio della mano…</div><select id="manoCamera" aria-label="Telecamera"></select>
+<details class="legenda"><summary>Come si usa</summary>✋ muovi la mano: la luce si aggancia alla bolla più vicina<br>✋ tienila ferma un secondo e mezzo: entri<br>🙌 due mani: allargale per camminare avanti, stringile per tornare indietro<br>↔ mano verso i bordi: ti giri<br>⬇ abbassa la mano: torni nel corridoio<br>senza mani: frecce o WASD per camminare, trascina per guardarti intorno<br>tasto T: solo le foto scattate qui, oppure tutte<br>tasto P: il misuratore (quanto lavora il computer)<br>tasti - e + (oppure [ e ]): distanza di disegno piu' corta o piu' lunga<br>tasto V: nascondi questo riquadro · tasto B: togli il video</details></div>
+<div id="manoAiuto"></div>
+<div id="arrivo"><div class="k" id="arrK"></div><div class="w" id="arrW"></div><div class="q" id="arrQ"></div></div>
+
+<script src="/dati.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/","@sparkjsdev/spark":"https://cdn.jsdelivr.net/npm/@sparkjsdev/spark@2.3.1/dist/spark.module.js"}}</script>
+<script type="module" src="/js/accademia.js?v=7"></script>
+</body>
+</html>

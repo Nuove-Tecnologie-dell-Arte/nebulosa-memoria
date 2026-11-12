@@ -10,6 +10,8 @@ INDIRIZZI = [
     (r'/versioni/([\w-]+?)(\.html)?', 'pagine/versioni/{0}.html'),
     (r'/(css|js)/([\w-]+\.(?:css|js))', 'pagine/{0}/{1}'),   # il CSS e il JS della pagina principale
     (r'/dati\.js', 'dati/dati.js'),
+    (r'/modello/(accademia\.splat|accademia-leggero\.splat|corridoi\.json|foto-nel-corridoio\.json)', 'modello/{0}'),
+    (r'/modello/pezzi/([\w-]+\.(?:splat|json))', 'modello/pezzi/{0}'),   # il modello a pezzi (strumenti/pezzi_modello.py)   # il piano dell'Accademia in 3D, per la nebulosa nei corridoi
     (r'/foto/(full|thumb)/([\w-]+\.jpg)', 'foto/{0}/{1}'),
 ]
 DAI_DATI = ('dati/', 'foto/')   # questi stanno nella cartella dei dati vivi (VIVI), il resto nel progetto

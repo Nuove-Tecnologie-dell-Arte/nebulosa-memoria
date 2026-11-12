@@ -11,3 +11,11 @@ package.json
 package-lock.json
 .claude/
 .impeccable/
+
+# il modello 3D alleggerito: si rifa con strumenti/prepara_modello.py
+modello/accademia.splat
+.venv/
+modello/accademia-classi.ply
+modello/accademia-pavimento-pareti.ply
+modello/accademia-leggero.splat
+modello/pezzi/

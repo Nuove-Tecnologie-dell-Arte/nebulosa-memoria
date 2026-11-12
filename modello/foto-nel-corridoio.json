@@ -1,0 +1,396 @@
+{
+ "descrizione": "Le foto scattate nel corridoio del chiostro (primo piano) ricostruito in 3D. t: punto lungo l'anello (0-1); lato: -1 muro esterno, +1 arcate; h: altezza (1 = occhi); guarda: avanti/indietro/muro/cortile; preciso: punto riconosciuto o solo stimato.",
+ "foto": {
+  "378": {
+   "gruppo": "corridoio",
+   "t": 0.236,
+   "lato": 0,
+   "h": 1.05,
+   "guarda": "indietro",
+   "preciso": true,
+   "nota": "dalla porta verde in fondo al lato 1, guardando indietro: le arcate a sinistra, il muro con le bacheche a destra, lo striscione «25 manifesti per Napoli» appeso a qualche campata (nel modello a t 0,20)"
+  },
+  "353": {
+   "gruppo": "corridoio",
+   "t": 0.238,
+   "lato": 0,
+   "h": 2.15,
+   "guarda": "indietro",
+   "preciso": false,
+   "nota": "dall'alto, da un'apertura sopra la porta in fondo al lato 1: si vede lo striscione nero «25 manifesti per Napoli»"
+  },
+  "314": {
+   "gruppo": "corridoio",
+   "t": 0.255,
+   "lato": 0,
+   "h": 1.05,
+   "guarda": "avanti",
+   "preciso": true,
+   "nota": "all'inizio del lato 2, guardando avanti: a sinistra la parete con le due file di finestre in pietra (solo il lato 2 e' cosi'), a destra i finestroni ad arco"
+  },
+  "456": {
+   "gruppo": "corridoio",
+   "t": 0.555,
+   "lato": -0.2,
+   "h": 1.05,
+   "guarda": "avanti",
+   "preciso": true,
+   "nota": "all'inizio del lato 3, guardando avanti: a sinistra le bacheche con i manifesti, in fondo la porta illuminata"
+  },
+  "468": {
+   "gruppo": "corridoio",
+   "t": 0.045,
+   "lato": -0.2,
+   "h": 1.05,
+   "guarda": "avanti",
+   "preciso": false,
+   "nota": "all'inizio del lato 1, guardando avanti: a sinistra le bacheche, in fondo la porta verde con la statua"
+  },
+  "213": {
+   "gruppo": "corridoio",
+   "t": 0.497,
+   "lato": 0,
+   "h": 2.15,
+   "guarda": "indietro",
+   "preciso": false,
+   "nota": "il corridoio visto dall'alto, da un'apertura in fondo a un lato (quale non si riconosce)"
+  },
+  "288": {
+   "gruppo": "corridoio",
+   "t": 0.48,
+   "lato": 0.7,
+   "h": 1.05,
+   "guarda": null,
+   "preciso": false,
+   "nota": "un angolo del corridoio: il cubo rosso, il marmo con la fascia grigia, il finestrone"
+  },
+  "458": {
+   "gruppo": "corridoio",
+   "t": 0.14,
+   "lato": -0.7,
+   "h": 0.8,
+   "guarda": null,
+   "preciso": false,
+   "nota": "le ruote colorate sul pavimento a fasce grigie"
+  },
+  "459": {
+   "gruppo": "corridoio",
+   "t": 0.33,
+   "lato": -0.7,
+   "h": 0.8,
+   "guarda": null,
+   "preciso": false,
+   "nota": "gli scatoloni sul pavimento a fasce grigie, lo zoccolo di pietra"
+  },
+  "476": {
+   "gruppo": "corridoio",
+   "t": 0.39,
+   "lato": 0,
+   "h": 0.6,
+   "guarda": null,
+   "preciso": false,
+   "nota": "il pavimento: marmo bianco e fascia grigia"
+  },
+  "457": {
+   "gruppo": "corridoio",
+   "t": 0.66,
+   "lato": 0,
+   "h": 0.6,
+   "guarda": null,
+   "preciso": false,
+   "nota": "il pavimento di marmo del corridoio"
+  },
+  "461": {
+   "gruppo": "corridoio",
+   "t": 0.43,
+   "lato": -0.85,
+   "h": 1.05,
+   "guarda": "muro",
+   "preciso": false,
+   "nota": "una porta sul corridoio, pavimento di marmo"
+  },
+  "465": {
+   "gruppo": "corridoio",
+   "t": 0.68,
+   "lato": -0.85,
+   "h": 1.05,
+   "guarda": "muro",
+   "preciso": false,
+   "nota": "una porta tagliafuoco aperta sul corridoio"
+  },
+  "454": {
+   "gruppo": "corridoio",
+   "t": 0.2,
+   "lato": 0.9,
+   "h": 1.1,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "un finestrone a griglia con lo stipite di pietra"
+  },
+  "471": {
+   "gruppo": "corridoio",
+   "t": 0.115,
+   "lato": -0.95,
+   "h": 1.1,
+   "guarda": "muro",
+   "preciso": false,
+   "nota": "il portone verde aperto sul corridoio (dietro, gli armadietti bianchi)"
+  },
+  "472": {
+   "gruppo": "corridoio",
+   "t": 0.118,
+   "lato": -0.95,
+   "h": 1.5,
+   "guarda": "muro",
+   "preciso": false,
+   "nota": "l'ascensore dietro il portone verde, accanto agli armadietti bianchi"
+  },
+  "289": {
+   "gruppo": "corridoio",
+   "t": 0.122,
+   "lato": -0.95,
+   "h": 0.8,
+   "guarda": "muro",
+   "preciso": false,
+   "nota": "il disimpegno con l'ascensore e il finestrone, oltre una porta del corridoio"
+  },
+  "381": {
+   "gruppo": "corridoio",
+   "t": 0.998,
+   "lato": 0,
+   "h": 1.05,
+   "guarda": "avanti",
+   "preciso": false,
+   "nota": "le statue davanti alla porta verde (forse oltre la porta in fondo al lato 4)"
+  },
+  "380": {
+   "gruppo": "scalone",
+   "t": 0.862,
+   "lato": 0.9,
+   "h": 1.4,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "lo scalone visto dall'alto, con lo striscione rosso"
+  },
+  "382": {
+   "gruppo": "scalone",
+   "t": 0.868,
+   "lato": 0.9,
+   "h": 1.2,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "lo scalone con il David, visto dall'alto"
+  },
+  "469": {
+   "gruppo": "scalone",
+   "t": 0.874,
+   "lato": 0.9,
+   "h": 1.6,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "lo scalone dall'alto con il David"
+  },
+  "470": {
+   "gruppo": "scalone",
+   "t": 0.88,
+   "lato": 0.7,
+   "h": 0.8,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "lo scalone con le statue"
+  },
+  "408": {
+   "gruppo": "scalone",
+   "t": 0.886,
+   "lato": 0.7,
+   "h": 1.1,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "la rampa dello scalone"
+  },
+  "477": {
+   "gruppo": "scalone",
+   "t": 0.878,
+   "lato": 0.5,
+   "h": 0.6,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "i gradini di marmo dello scalone"
+  },
+  "212": {
+   "gruppo": "scalone",
+   "t": 0.892,
+   "lato": 0.9,
+   "h": 1.5,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile dalla finestra dello scalone"
+  },
+  "350": {
+   "gruppo": "scalone",
+   "t": 0.856,
+   "lato": 0.9,
+   "h": 1.5,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile dalla finestra ad arco dello scalone"
+  },
+  "446": {
+   "gruppo": "scalone",
+   "t": 0.85,
+   "lato": 0.6,
+   "h": 1.05,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "i gradini sotto le volte, verso una porta"
+  },
+  "447": {
+   "gruppo": "scalone",
+   "t": 0.896,
+   "lato": 0.6,
+   "h": 1.05,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "le volte a crociera e lo zoccolo di pietra, vicino alle scale"
+  },
+  "182": {
+   "gruppo": "scalone",
+   "t": 0.9,
+   "lato": 0.5,
+   "h": 1.3,
+   "guarda": null,
+   "preciso": false,
+   "nota": "una porta sotto la volta a crociera, con il bassorilievo"
+  },
+  "383": {
+   "gruppo": "scalone",
+   "t": 0.846,
+   "lato": 0.6,
+   "h": 1.2,
+   "guarda": null,
+   "preciso": false,
+   "nota": "il portale ad arco a vetri e i gradini di marmo"
+  },
+  "463": {
+   "gruppo": "cortile",
+   "t": 0.03,
+   "lato": 0.95,
+   "h": 1.3,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile e i finestroni ad arco del corridoio, affacciati"
+  },
+  "462": {
+   "gruppo": "cortile",
+   "t": 0.09,
+   "lato": 0.95,
+   "h": 1.4,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile con il giardino e le arcate, dall'alto"
+  },
+  "439": {
+   "gruppo": "cortile",
+   "t": 0.16,
+   "lato": 0.95,
+   "h": 1.3,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile con la palma, dall'alto"
+  },
+  "440": {
+   "gruppo": "cortile",
+   "t": 0.21,
+   "lato": 0.95,
+   "h": 1.4,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile al buio, dall'alto"
+  },
+  "411": {
+   "gruppo": "cortile",
+   "t": 0.28,
+   "lato": 0.95,
+   "h": 1.3,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile dall'alto, alberi e facciata"
+  },
+  "364": {
+   "gruppo": "cortile",
+   "t": 0.34,
+   "lato": 0.95,
+   "h": 1.4,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile dall'alto con la palma"
+  },
+  "365": {
+   "gruppo": "cortile",
+   "t": 0.4,
+   "lato": 0.95,
+   "h": 1.3,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il giardino del cortile dall'alto"
+  },
+  "379": {
+   "gruppo": "cortile",
+   "t": 0.46,
+   "lato": 0.95,
+   "h": 1.4,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "gli alberi del cortile dalla finestra"
+  },
+  "322": {
+   "gruppo": "cortile",
+   "t": 0.53,
+   "lato": 0.95,
+   "h": 1.3,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "la palma e la facciata"
+  },
+  "318": {
+   "gruppo": "cortile",
+   "t": 0.59,
+   "lato": 0.95,
+   "h": 1.4,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile e la facciata"
+  },
+  "316": {
+   "gruppo": "cortile",
+   "t": 0.64,
+   "lato": 0.95,
+   "h": 1.3,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile sotto la pioggia, dall'alto"
+  },
+  "319": {
+   "gruppo": "cortile",
+   "t": 0.7,
+   "lato": 0.95,
+   "h": 1.4,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "la facciata sul cortile vista dall'alto"
+  },
+  "177": {
+   "gruppo": "cortile",
+   "t": 0.78,
+   "lato": 0.95,
+   "h": 1.3,
+   "guarda": "cortile",
+   "preciso": false,
+   "nota": "il cortile e gli alberi dalla ringhiera"
+  }
+ },
+ "fuori": {
+  "384": "la facciata vista dal cortile, a terra",
+  "317": "le radici di un albero, nel cortile a terra"
+ }
+}
