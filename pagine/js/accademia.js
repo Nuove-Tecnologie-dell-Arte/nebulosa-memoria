@@ -1179,6 +1179,20 @@ const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
 const MODELLO_MANO = 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
 const OSSA_MANO = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]];
 const SOSTA_MANO = 1500, VIA_MANO = 2000, CONFERMA_MANO = 250;
+// ---------------- la zona attiva della webcam (il rettangolo tratteggiato nel riquadro della webcam) ----------------
+// Dove la mano si muove dentro questo rettangolo, la luce si muove su tutto lo schermo. Piu' e' grande, piu' ampi e calmi
+// sono i movimenti (e meno trema la luce); piu' e' piccolo, meno serve muovere il braccio.
+// ZONA_PREDEFINITA e' quanta parte dell'inquadratura occupa, da 0,5 a 0,95 (prima era 0,62: troppo piccola).
+// Si cambia qui, oppure nell'indirizzo: /versioni/accademia?zona=0.9
+const ZONA_PREDEFINITA = .82;
+const ZONA = (() => {
+  const a = clamp(Number(new URLSearchParams(location.search).get('zona')) || ZONA_PREDEFINITA, .5, .95);
+  const x0 = (1 - a) / 2, y0 = Math.max(.04, (1 - a) / 2 - .03);   // un po' piu' in alto: in basso la mano esce dall'inquadratura
+  return { x0, x1: 1 - x0, y0, y1: Math.min(.96, y0 + a * .95) };
+})();
+// la webcam e' a specchio: la x dell'inquadratura va rovesciata
+const zonaX = x => clamp((1 - x - ZONA.x0) / (ZONA.x1 - ZONA.x0), 0, 1);
+const zonaY = y => clamp((y - ZONA.y0) / (ZONA.y1 - ZONA.y0), 0, 1);
 const mano = { vista: false, ultima: -1e9, aCasa: true, daQuando: 0, x: .5, y: .5, vx: .5, vy: .5, bersaglio: null, da: 0, carica: 0, due: false, vistaDue: 0, ultimaDue: 0, storia: [], d0: 1, dd: 1, pa: null, pb: null, cammina: 0 };
 let rilevatore = null, ultimoVideo = -1, ultimaLettura = -1e9;
 const video = $('manoVideo'), anteprima = $('manoCanvas'), ctxAnte = anteprima.getContext('2d');
@@ -1240,8 +1254,9 @@ async function avviaMano() {
 }
 async function apriCamera(id) {
   if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-  // 640x360 bastano: il modello delle mani riduce comunque l'immagine a meno di 256 pixel, e la webcam lavora molto meno
-  const vincoli = { width: { ideal: 640 }, height: { ideal: 360 }, frameRate: { ideal: 30, max: 30 }, ...(id ? { deviceId: { exact: id } } : { facingMode: 'user' }) };
+  // 1280x720: il modello delle mani, dopo aver trovato il palmo, ritaglia la mano dall'immagine; con pochi pixel (640x360)
+  // una mano lontana diventava sgranata e il riconoscimento peggiorava. Al worker poi arriva ridotta a 960 di larghezza
+  const vincoli = { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30, max: 30 }, ...(id ? { deviceId: { exact: id } } : { facingMode: 'user' }) };
   let flusso;
   try { flusso = await navigator.mediaDevices.getUserMedia({ video: vincoli, audio: false }); }
   catch (e) { if (id) return apriCamera(null); return senzaMano(); }
@@ -1274,8 +1289,8 @@ function leggiMano(now) {
     if (inVolo && now - ultimaLettura > 1000) inVolo = false;
     if (!inVolo && video.readyState >= 2 && video.currentTime !== ultimoVideo && now - ultimaLettura >= 50 && video.videoWidth) {
       ultimoVideo = video.currentTime; ultimaLettura = now; inVolo = true;
-      const w = Math.min(640, video.videoWidth), h = Math.round(w * video.videoHeight / video.videoWidth);
-      createImageBitmap(video, { resizeWidth: w, resizeHeight: h, resizeQuality: 'low' })
+      const w = Math.min(960, video.videoWidth), h = Math.round(w * video.videoHeight / video.videoWidth);
+      createImageBitmap(video, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' })
         .then(img => { inviataA = performance.now(); manoWorker.postMessage({ tipo: 'immagine', immagine: img, t: performance.now() }, [img]); })
         .catch(() => { inVolo = false; });
     }
@@ -1332,7 +1347,7 @@ function camminaConDueMani() {
   if (fuoco) { mano.cammina = 0; if (fuoco.arrivato && !fuoco.uscita && r < -.22) torna(); return; }   // dentro una foto: stringerle per uscire
   mano.cammina = v;
 }
-const sulloSchermo = q => ({ x: clamp((1 - q.x - .18) / .64, 0, 1) * innerWidth, y: clamp((q.y - .15) / .6, 0, 1) * innerHeight });
+const sulloSchermo = q => ({ x: zonaX(q.x) * innerWidth, y: zonaY(q.y) * innerHeight });
 const proiezione = new THREE.Vector3();
 function piuVicina(x, y) {
   const R = Math.max(70, innerWidth * .06);
@@ -1379,7 +1394,7 @@ function passoMano(now, dt) {
     if (!r.L) mano.daQuando = 0; else if (!mano.daQuando) mano.daQuando = now;
     if (r.L && (mano.vista || now - mano.daQuando >= CONFERMA_MANO)) {
       const pt = palmo(r.L);
-      const tx = clamp((1 - pt.x - .18) / .64, 0, 1), ty = clamp((pt.y - .15) / .6, 0, 1);
+      const tx = zonaX(pt.x), ty = zonaY(pt.y);
       if (!mano.vista) { filtroManoX.azzera(); filtroManoY.azzera(); }
       mano.x = filtroManoX.passo(tx, now / 1000); mano.y = filtroManoY.passo(ty, now / 1000);
       mano.vista = true; mano.ultima = now; ultimoTocco = now; mano.aCasa = false; cam.giro = false;
@@ -1435,7 +1450,7 @@ function disegnaAnteprima(mani, principale) {
   const W2 = anteprima.width, H2 = anteprima.height;
   ctxAnte.save(); ctxAnte.translate(W2, 0); ctxAnte.scale(-1, 1);
   ctxAnte.drawImage(video, 0, 0, W2, H2);
-  ctxAnte.strokeStyle = 'rgba(255,255,255,.25)'; ctxAnte.setLineDash([4, 4]); ctxAnte.strokeRect(.18 * W2, .15 * H2, .64 * W2, .6 * H2); ctxAnte.setLineDash([]);
+  ctxAnte.strokeStyle = 'rgba(255,255,255,.25)'; ctxAnte.setLineDash([4, 4]); ctxAnte.strokeRect(ZONA.x0 * W2, ZONA.y0 * H2, (ZONA.x1 - ZONA.x0) * W2, (ZONA.y1 - ZONA.y0) * H2); ctxAnte.setLineDash([]);
   for (const m of mani) {
     const on = m === principale;
     ctxAnte.strokeStyle = on ? 'rgba(160,210,255,.95)' : 'rgba(255,255,255,.35)'; ctxAnte.lineWidth = 2;
