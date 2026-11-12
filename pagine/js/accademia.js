@@ -222,8 +222,32 @@ function modelloPronto() {
 // - il tuo lato: intero da vicino, ridotto in fondo; appena oltre l'angolo: intero
 // - gli altri lati e il cortile si vedono solo dalle finestre: ridotti, e solo se stanno dalla parte del cortile
 // ?intero nell'indirizzo: il modello tutto in un pezzo, come prima. ?qualita=bassa: solo i pezzi ridotti
+// Di solito (e con ?qualita=massima) i pezzi vicini (quelli interi) diventano quelli alla massima qualita' (<nome>-max.ply, il .ply originale
+// con i colori che cambiano con il punto di vista: riflessi su marmo, vetri, cornici). Pesano molto (fino a 47 MB l'uno),
+// quindi si scaricano solo quando servono, come nei videogiochi a mondo aperto: finche' non sono pronti si vede il pezzo
+// intero normale. Quelli che non servono da 30 secondi si liberano, cosi' la memoria non si riempie.
+// ?qualita=normale: senza i pezzi alla massima qualita'. Se i file -max.ply non ci sono (non sono su GitHub: si fanno con
+// strumenti/pezzi_modello.py --massima), la pagina usa da sola i pezzi normali
 const PEZZI = [];
 const INTERO = new URLSearchParams(location.search).has('intero');
+const MASSIMA = ALTA && new URLSearchParams(location.search).get('qualita') !== 'normale';
+const MAX_INSIEME = 2, MAX_RIPOSO = 30000;   // quanti pezzi massimi scaricare insieme; dopo quanto liberarne uno che non serve
+let maxInArrivo = 0;
+function chiediMassima(p) {
+  if (!p.massima || p.top || maxInArrivo >= MAX_INSIEME) return;
+  maxInArrivo++;
+  const m = new SplatMesh({ url: '/modello/pezzi/' + p.nome + '-max.ply', fileType: 'ply' });
+  m.rotation.x = -Math.PI / 2; m.scale.setScalar(SCALA); m.visible = false; scene.add(m);
+  p.top = { mesh: m, pronto: false, usato: performance.now() };
+  m.initialized.then(() => { if (p.top && p.top.mesh === m) { p.top.pronto = true; p.stato = -1; } })   // stato -1: aggiornaPezzi lo rimette a posto
+    .catch(() => { p.massima = 0; liberaMassima(p); })
+    .finally(() => { maxInArrivo--; });
+}
+function liberaMassima(p) {
+  if (!p.top) return;
+  scene.remove(p.top.mesh); try { p.top.mesh.dispose && p.top.mesh.dispose(); } catch (e) { /* gia' liberato */ }
+  p.top = null;
+}
 async function caricaPezzi() {
   if (INTERO || LOD) return false;
   let indice = null;
@@ -284,10 +308,16 @@ function aggiornaPezzi() {
         if ((centroPezzo.x - c.x) * c.nx + (centroPezzo.z - c.z) * c.nz > 4) vuole = 1;
       }
     }
+    if (MASSIMA) {
+      if (vuole === 2) { chiediMassima(p); if (p.top) p.top.usato = performance.now(); }
+      else if (p.top && !(p.top.pronto === false) && performance.now() - p.top.usato > MAX_RIPOSO) { liberaMassima(p); p.stato = -1; }
+    }
     if (vuole === p.stato) continue;
     p.stato = vuole;
-    if (p.intero) p.intero.visible = vuole === 2;
-    p.ridotto.visible = vuole === 1 || (vuole === 2 && !p.intero);
+    const usaMax = vuole === 2 && !!(p.top && p.top.pronto);
+    if (p.top) p.top.mesh.visible = usaMax;
+    if (p.intero) p.intero.visible = vuole === 2 && !usaMax;
+    p.ridotto.visible = vuole === 1 || (vuole === 2 && !p.intero && !usaMax);
   }
 }
 
@@ -855,6 +885,7 @@ function passoMisura(now, ms) {
       `${fps.toFixed(0)} fotogrammi/s · ${medio.toFixed(1)} ms (peggiore ${MISURA.peggiore.toFixed(0)})\n` +
       `macchie disegnate: ${(spark.activeSplats || 0).toLocaleString('it-IT')}\n` +
       (PEZZI.length ? `pezzi: ${interi} interi, ${ridotti} ridotti, ${PEZZI.length - interi - ridotti} spenti\n` : 'modello in un pezzo solo\n') +
+      (MASSIMA ? `qualita' massima: ${PEZZI.filter(p => p.top && p.top.pronto && p.top.mesh.visible).length} in vista, ${PEZZI.filter(p => p.top && p.top.pronto).length} in memoria, ${maxInArrivo} in arrivo\n` : '') +
       `risoluzione: ${RISOLUZIONE.ora.toFixed(2)} · ${renderer.domElement.width}×${renderer.domElement.height} · distanza ${distanzaVista}\n` +
       `mani: ${!rilevatore ? 'spente' : manoWorker ? 'worker' : 'nella pagina'}` + (MISURA.mani.length ? ` · ${mani.toFixed(0)} ms a lettura · ${(MISURA.mani.length * 1000 / (now - MISURA.da)).toFixed(0)} letture/s` : '') +
       (video.videoWidth ? `\nwebcam: ${video.videoWidth}×${video.videoHeight}` : '');

@@ -11,6 +11,10 @@ e indice.json con, per ogni pezzo, il lato, il tratto dell'anello (t0-t1) e la s
 
 Il modello originale non viene toccato. Uso, dalla cartella New Nebulosa:
     .venv\\Scripts\\python.exe strumenti\\pezzi_modello.py "C:\\percorso\\splat.ply"
+    .venv\\Scripts\\python.exe strumenti\\pezzi_modello.py "C:\\percorso\\splat.ply" --massima
+Con --massima scrive anche <nome>-max.ply: il pezzo con tutte le proprieta' del .ply originale, compresi i colori che
+cambiano con il punto di vista (riflessi su marmo e vetri). La pagina li usa con ?qualita=massima, scaricandoli solo
+quando servono.
 """
 import json, os, sys
 import numpy as np
@@ -26,6 +30,7 @@ TRATTI = 6            # pezzi per lato
 QUOTA_RIDOTTO = .25   # quante macchie tiene la versione ridotta
 CORTILE = .25         # oltre questa distanza dalla linea centrale, verso il cortile, una macchia e' «del cortile»
 SCALONE = (.83, .91)  # il tratto del lato 4 dove lo scalone entra nel cortile: le sue macchie restano al corridoio
+MASSIMA = '--massima' in sys.argv   # anche i pezzi alla massima qualita' (<nome>-max.ply, con i riflessi): circa 520 MB in tutto
 
 
 def splat_bytes(v, idx, op):
@@ -42,6 +47,21 @@ def splat_bytes(v, idx, op):
     return out[np.argsort(-peso)]
 
 
+def scrivi_ply(percorso, v, idx):
+    """Il pezzo alla massima qualita': il .ply originale (3DGS) con tutte le proprieta', compresi i colori che cambiano
+    con il punto di vista (f_rest, le armoniche sferiche). Solo le normali (nx, ny, nz) restano fuori: Spark non le usa."""
+    nomi = [k for k in v.dtype.names if k not in ('nx', 'ny', 'nz')]
+    out = np.empty(len(idx), dtype=[(k, '<f4') for k in nomi])
+    for a in range(0, len(idx), 500_000):   # a pezzi: il file originale e' grande
+        parte = np.asarray(v[idx[a:a + 500_000]])
+        for k in nomi: out[k][a:a + len(parte)] = parte[k]
+    testa = ('ply\nformat binary_little_endian 1.0\n' f'element vertex {len(idx)}\n' +
+             ''.join(f'property float {k}\n' for k in nomi) + 'end_header\n')
+    with open(percorso, 'wb') as f:
+        f.write(testa.encode()); out.tofile(f)
+    return os.path.getsize(percorso)
+
+
 def scatola(P):   # la scatola sullo schermo (x, alto, -y), senza le macchie sperdute
     lo, hi = np.percentile(P, .5, axis=0), np.percentile(P, 99.5, axis=0)
     a = np.array([lo[0], lo[2], -hi[1]]) * SCALA; b = np.array([hi[0], hi[2], -lo[1]]) * SCALA
@@ -49,7 +69,7 @@ def scatola(P):   # la scatola sullo schermo (x, alto, -y), senza le macchie spe
 
 
 def main():
-    if len(sys.argv) < 2:
+    if len([a for a in sys.argv[1:] if not a.startswith("--")]) < 1:
         print(__doc__); sys.exit(1)
     os.makedirs(USCITA, exist_ok=True)
     cor = json.load(open(os.path.join(PROGETTO, 'modello', 'corridoi.json')))
@@ -90,9 +110,12 @@ def main():
         r = max(2000, int(len(dati) * QUOTA_RIDOTTO))
         dati[:r].tofile(os.path.join(USCITA, nome + '-ridotto.splat'))
         lo, hi = scatola(P[idx])
-        indice.append({'nome': nome, 'lato': int(k), 't0': round(float(a), 5), 't1': round(float(b), 5), 'cortile': ecortile,
-                       'macchie': int(len(dati)), 'ridotte': int(r), 'min': lo, 'max': hi})
-        print(f'  {nome:12s} {len(dati):8d} macchie, ridotto {r:7d}')
+        voce = {'nome': nome, 'lato': int(k), 't0': round(float(a), 5), 't1': round(float(b), 5), 'cortile': ecortile,
+                'macchie': int(len(dati)), 'ridotte': int(r), 'min': lo, 'max': hi}
+        if MASSIMA:
+            voce['massima'] = scrivi_ply(os.path.join(USCITA, nome + '-max.ply'), v, idx)
+        indice.append(voce)
+        print(f'  {nome:12s} {len(dati):8d} macchie, ridotto {r:7d}' + (f', massima {voce["massima"] / 1e6:.0f} MB' if MASSIMA else ''))
     json.dump({'scala': SCALA, 'pezzi': indice}, open(os.path.join(USCITA, 'indice.json'), 'w'), indent=1)
     print(f'  {len(indice)} pezzi, {sum(p["macchie"] for p in indice)} macchie in tutto -> {USCITA}')
 
