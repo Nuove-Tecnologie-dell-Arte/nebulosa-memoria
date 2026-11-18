@@ -4,7 +4,8 @@ import os, re
 from config import PROGETTO, VIVI
 
 INDIRIZZI = [
-    (r'/(index\.html)?', 'pagine/index.html'),
+    (r'/(index\.html)?', 'pagine/versioni/accademia.html'),   # la pagina principale: la nebulosa nei corridoi
+    (r'/versioni/via-lattea(\.html)?', 'pagine/index.html'),   # la via lattea, la pagina principale di prima
     (r'/carica/?', 'pagine/carica.html'),
     (r'/qr/?', 'pagine/qr.html'),   # solo il QR, per lo schermo del computer (cosi' non finisce nella proiezione)
     (r'/versioni/([\w-]+?)(\.html)?', 'pagine/versioni/{0}.html'),
@@ -20,7 +21,7 @@ DAI_DATI = ('dati/', 'foto/')   # questi stanno nella cartella dei dati vivi (VI
 VECCHI = {'versione-3d-regia': '3d-regia', 'versione-3d-volo': '3d-volo', 'versione-3d': '3d-carosello',   # i link di prima del riordino
           'versione-nebulosa': '2d', 'versione-archi': 'archi'}
 
-SPOSTATE = {'via-lattea': '/'}   # versioni diventate la pagina principale: il vecchio indirizzo mostra la pagina principale
+SPOSTATE = {'accademia': '/'}   # versioni diventate la pagina principale: il vecchio indirizzo mostra la pagina principale
 
 def file_per(percorso):
     """Il file da mostrare per un indirizzo (percorso completo), oppure None se l'indirizzo non e' tra quelli permessi."""

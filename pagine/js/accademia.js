@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { SparkRenderer, SplatMesh } from '@sparkjsdev/spark';
 
 // L'ACCADEMIA: la nebulosa dentro il piano vero dell'Accademia di Belle Arti, ricostruito in 3D (un Gaussian Splat).
@@ -49,7 +51,7 @@ const PASSO_GIRO = .42;         // la velocita' del giro da solo, piu' lenta
 const RIPOSO = 15000;           // dopo quanto tempo senza nessuno riparte il giro da solo (ms)
 
 const cv = $('c');
-const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: false });
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: false, stencil: true });   // stencil: la foto si vede solo dentro la sua forma
 // la qualita': di solito il modello intero (2,3 milioni di macchie, il corridoio con tutti i dettagli);
 // con ?qualita=bassa nell'indirizzo quello leggero (le 900.000 macchie piu' importanti), per i computer che non ce la fanno
 const ALTA = new URLSearchParams(location.search).get('qualita') !== 'bassa';
@@ -412,62 +414,251 @@ function posizionaUna(p) {   // una foto nuova (o appena letta): il suo posto, s
   if (!diQui(p)) spingi(photos.filter(q => !q.hold || q === p), 40, new Set([p]));
 }
 
-// ---------------- le bolle ----------------
-function disegnaSfera(c, S, col, im) {
-  c.width = c.height = S; const x = c.getContext('2d'), k = S / 160;
-  const [r, g, b] = col.toArray().map(v => Math.round(v * 255)), rgba = a => `rgba(${r},${g},${b},${a})`, R = S / 2 - 3 * k;
-  const ok = im && im.complete && im.naturalWidth;
-  let gr = x.createRadialGradient(S * .42, S * .4, 0, S / 2, S / 2, R);
-  gr.addColorStop(0, rgba(.12)); gr.addColorStop(.7, rgba(.22)); gr.addColorStop(1, rgba(.7));
-  x.fillStyle = gr; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.fill();
-  const ri = R * .7;
-  if (ok) {
-    const m = Math.min(im.naturalWidth, im.naturalHeight);
-    x.save(); x.beginPath(); x.arc(S / 2, S / 2, ri, 0, TAU); x.clip();
-    x.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, S / 2 - ri, S / 2 - ri, ri * 2, ri * 2);
-    gr = x.createRadialGradient(S / 2, S / 2, ri * .6, S / 2, S / 2, ri); gr.addColorStop(0, rgba(0)); gr.addColorStop(1, rgba(.55));
-    x.fillStyle = gr; x.fillRect(0, 0, S, S); x.restore();
+// ---------------- le bolle: forme trasparenti (sfere, cubi, banane, triangoli) con dentro la foto, gonfia ----------------
+// Il guscio (p.guscio, con dentro la forma p.pelle) e' di polietilene: plastica gonfia, trasparente, senza un colore suo,
+// con i riflessi della plastica lucida. Dentro, la foto (p.sprite) guarda sempre chi la guarda, deformata come se fosse gonfia.
+// Tutte le misure sono per una bolla grande 1: in scena si moltiplicano per la grandezza della bolla.
+const FORME = ['banana', 'ananas', 'stella', 'sfera', 'piramide', 'cubo'];
+const FORMA_PROVA = new URLSearchParams(location.search).get('forma');   // ?forma=banana: tutte le bolle di una forma sola, per provarle
+const GEOMETRIE = (() => {
+  const sfera = new THREE.SphereGeometry(.6, 40, 28);
+  const cubo = new RoundedBoxGeometry(.95, .95, .95, 5, .2);
+  // la banana: lunga e poco curva; da una parte il picciolo sottile, dall'altra la punta tonda; la buccia ha cinque spigoli morbidi
+  const curva = new THREE.CubicBezierCurve3(new THREE.Vector3(-1.2, .44, 0), new THREE.Vector3(-.55, -.24, 0), new THREE.Vector3(.5, -.27, 0), new THREE.Vector3(1.15, .3, 0));
+  const TUB = 80, RAD = 20, banana = new THREE.TubeGeometry(curva, TUB, 1, RAD, false);
+  const raggio = u => u < .27 ? .05 + .17 * sstep(.1, .27, u)                                           // il picciolo, lungo e sottile
+    : u > .9 ? .03 + .19 * Math.sqrt(Math.max(0, 1 - Math.pow((u - .9) / .1, 2)))                      // la punta, tonda
+    : .22 + .015 * Math.sin(Math.PI * (u - .27) / .63);                                                   // il corpo
+  const pos = banana.attributes.position, c = new THREE.Vector3(), v = new THREE.Vector3();
+  for (let i = 0; i <= TUB; i++) {
+    const u = i / TUB, r = raggio(u);
+    curva.getPointAt(u, c);
+    for (let j = 0; j <= RAD; j++) {
+      const k = i * (RAD + 1) + j, spigoli = 1 + .07 * Math.cos(5 * j / RAD * TAU);
+      v.fromBufferAttribute(pos, k).sub(c).multiplyScalar(r * spigoli).add(c); pos.setXYZ(k, v.x, v.y, v.z);
+    }
   }
-  gr = x.createRadialGradient(S / 2, S * .62, R * .3, S / 2, S / 2, R); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.35)');
-  x.fillStyle = gr; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.fill();
-  gr = x.createRadialGradient(S * .36, S * .3, 0, S * .36, S * .3, R * .62); gr.addColorStop(0, 'rgba(255,255,255,.32)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
-  x.fillStyle = gr; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.fill();
-  x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.ellipse(S * .33, S * .24, 8 * k, 4.5 * k, -.6, 0, TAU); x.fill();
-  x.strokeStyle = rgba(.95); x.lineWidth = 3 * k; x.beginPath(); x.arc(S / 2, S / 2, R, 0, TAU); x.stroke();
-  x.strokeStyle = 'rgba(255,255,255,.3)'; x.lineWidth = 2 * k; x.beginPath(); x.arc(S / 2, S / 2, R - 4 * k, .2, 1.6); x.stroke();
+  banana.computeVertexNormals();
+  const nb = banana.attributes.normal;   // la cucitura del tubo: la stessa normale da tutte e due le parti
+  for (let i = 0; i <= TUB; i++) {
+    const a = i * (RAD + 1), b = a + RAD;
+    v.fromBufferAttribute(nb, a).add(c.fromBufferAttribute(nb, b)).normalize(); nb.setXYZ(a, v.x, v.y, v.z); nb.setXYZ(b, v.x, v.y, v.z);
+  }
+  const mezzo = curva.getPointAt(.5); banana.translate(-mezzo.x, -mezzo.y, -mezzo.z);   // la foto sta sull'asse della banana, non nel vuoto della curva
+  // le forme piatte diventano cuscini gonfi: estruse, con i bordi tondi
+  const cuscino = s => { const g = new THREE.ExtrudeGeometry(s, { depth: .26, bevelEnabled: true, bevelThickness: .2, bevelSize: .14, bevelSegments: 6, curveSegments: 12 }); g.center(); return g; };
+  // la stella a cinque punte
+  const st = new THREE.Shape();
+  for (let i = 0; i < 10; i++) { const a = Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? .34 : .76; i ? st.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : st.moveTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+  st.closePath();
+  // la piramide: quattro facce, una rivolta verso chi guarda; le normali morbide la fanno sembrare gonfia
+  const piramide = new THREE.ConeGeometry(.74, 1.15, 4, 6); piramide.rotateY(Math.PI / 4);
+  // l'ananas: il corpo a botte con le squame a rombi, e in cima il ciuffo di foglie
+  const corpo = new THREE.LatheGeometry(Array.from({ length: 29 }, (_, i) => { const f = Math.PI * i / 28; return new THREE.Vector2(Math.max(1e-3, .4 * Math.sin(f) * (1 + .06 * Math.cos(f))), -.52 * Math.cos(f)); }), 44);
+  const pc = corpo.attributes.position, w = new THREE.Vector3();
+  for (let i = 0; i < pc.count; i++) {
+    w.fromBufferAttribute(pc, i); const a = Math.atan2(w.z, w.x), squame = 1 + .05 * Math.sin(a * 9 + w.y * 17) * Math.sin(a * 9 - w.y * 17);
+    pc.setXYZ(i, w.x * squame, w.y, w.z * squame);
+  }
+  corpo.computeVertexNormals();
+  const foglie = Array.from({ length: 11 }, (_, k) => {
+    const alta = .36 + .2 * ((k * 7) % 5) / 4, f = new THREE.ConeGeometry(.055, alta, 5);
+    f.translate(0, alta / 2, 0); f.rotateZ((k < 4 ? .18 : .55) + .1 * (k % 3)); f.rotateY(k * TAU / 11 + (k < 4 ? .4 : 0)); f.translate(0, .47, 0);
+    return f;
+  });
+  const ananas = mergeGeometries([corpo, ...foglie]);
+  return { banana, ananas, stella: cuscino(st), sfera, piramide, cubo };
+})();
+// quanto deve essere grande la foto per riempire tutta la forma (in larghezza e altezza), anche mentre gira su se stessa
+const COPRE = {};
+for (const k of FORME) {
+  const pos = GEOMETRIE[k].attributes.position; let xz = 0, y = 0;
+  for (let i = 0; i < pos.count; i++) { xz = Math.max(xz, Math.hypot(pos.getX(i), pos.getZ(i))); y = Math.max(y, Math.abs(pos.getY(i))); }
+  const w = 2 * xz * 1.04, h = 2 * y * 1.04;
+  COPRE[k] = k === 'banana' ? { w, h: h + w * .36 } : { w: Math.max(w, h * 1.1), h: Math.max(h, w * 1.1) };   // le altre si inclinano di piu': un quadrato
 }
-// l'alone di luce intorno a ogni bolla: nel corridoio la bolla fa un po' di luce
+// il polietilene: plastica gonfiata, trasparente e un po' lattiginosa, senza colori; sui bordi diventa piu' bianca e opaca.
+// I riflessi sono netti e lunghi come sulla plastica lucida (la luce delle finestre dall'alto, il pavimento piu' scuro sotto),
+// e la superficie ha qualche piccola grinza, come un sacchetto gonfio
+const TEMPO = { value: 0 };
+const VERT_GUSCIO = `
+varying vec3 vN; varying vec3 vV; varying vec3 vL; varying vec3 vVW;
+void main() {
+  vec4 mw = modelMatrix * vec4(position, 1.0), mv = viewMatrix * mw;
+  vN = normalize(mat3(modelMatrix) * normal); vVW = normalize(cameraPosition - mw.xyz); vL = position;
+  vV = normalize(-mv.xyz);
+  gl_Position = projectionMatrix * mv;
+}`;
+const FRAG_GUSCIO = `
+uniform float uOpacita, uTempo, uFase;
+varying vec3 vN; varying vec3 vV; varying vec3 vL; varying vec3 vVW;
+void main() {
+  vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
+  vec3 g = vL * 19.0 + uFase;   // le grinze: piccole onde nella normale, ferme sulla forma
+  n = normalize(n + 0.07 * vec3(sin(g.y * 1.3 + g.z), sin(g.z * 1.1 + g.x * 0.7), sin(g.x * 1.2 - g.y * 0.6)));
+  vec3 v = normalize(vVW);
+  float nv = clamp(abs(dot(n, v)), 0.0, 1.0), fres = pow(1.0 - nv, 2.6);
+  vec3 r = reflect(-v, n);
+  vec3 amb = mix(vec3(0.70, 0.72, 0.76), vec3(1.0), smoothstep(-0.3, 0.7, r.y));   // il chiostro riflesso: chiaro sopra, grigio sotto
+  float luce = pow(max(dot(r, normalize(vec3(-0.35, 0.85, 0.4))), 0.0), 90.0) * 1.4;   // il riflesso netto della finestra
+  float luce2 = pow(max(dot(r, normalize(vec3(0.6, 0.3, -0.7))), 0.0), 26.0) * 0.4;
+  float striscia = smoothstep(0.92, 0.985, r.y) * 0.5;   // la striscia lunga della luce dall'alto
+  // il corpo appena lattiginoso; i bordi, dove la plastica si vede di taglio, piu' grigi: cosi' la forma si legge anche sui muri bianchi
+  vec3 col = mix(vec3(0.95, 0.96, 0.98) * amb, vec3(0.55, 0.59, 0.66), smoothstep(0.25, 0.9, fres) * 0.7) + vec3(luce + luce2 + striscia);
+  float a = clamp(0.16 + 0.72 * fres + luce * 0.8 + luce2 * 0.6 + striscia * 0.6, 0.0, 0.94);
+  if (!gl_FrontFacing) a *= 0.6;
+  gl_FragColor = vec4(col, a * uOpacita);
+}`;
+function materialeGuscio(fase) {
+  return new THREE.ShaderMaterial({ vertexShader: VERT_GUSCIO, fragmentShader: FRAG_GUSCIO, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    uniforms: { uOpacita: { value: 1 }, uTempo: TEMPO, uFase: { value: fase } } });
+}
+// la foto dentro la bolla riempie tutta la forma (la sagoma la ritaglia: vedi «maschera» in makePhoto) ed e' gonfia: il centro
+// si avvicina, come sotto una lente, i bordi si schiacciano. La deformazione e' la stessa per tutte le foto con la stessa
+// forma: si calcola una volta sola (per ogni pixel: da dove prende la foto)
+const LATO = 192, TELA = document.createElement('canvas'), MAPPE = {};
+function misuraTela(forma, lato = LATO) {   // la tela con le proporzioni della forma
+  const { w, h } = COPRE[forma];
+  return w >= h ? [lato, Math.max(8, Math.round(lato * h / w))] : [Math.max(8, Math.round(lato * w / h)), lato];
+}
+function mappaGonfia(W, H) {
+  const chiave = W + 'x' + H; if (MAPPE[chiave]) return MAPPE[chiave];
+  const da = new Int32Array(W * H);
+  for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
+    const u = (i + .5) / W * 2 - 1, v = (j + .5) / H * 2 - 1, r = Math.pow(Math.pow(Math.abs(u), 4) + Math.pow(Math.abs(v), 4), .25);
+    const k = r > 1e-4 ? Math.pow(Math.min(r, 1), 1.45) / r : 0;   // il gonfiore: si prende la foto piu' vicino al centro
+    const si = clamp(Math.round((u * k + 1) / 2 * W - .5), 0, W - 1), sj = clamp(Math.round((v * k + 1) / 2 * H - .5), 0, H - 1);
+    da[j * W + i] = (sj * W + si) * 4;
+  }
+  return (MAPPE[chiave] = da);
+}
+function copri(x, im, W, H) {   // la foto riempie tutto il rettangolo, tagliando quello che avanza (come «cover»)
+  const a = im.naturalWidth / im.naturalHeight, t = W / H;
+  let sw = im.naturalWidth, sh = im.naturalHeight;
+  if (a > t) sw = sh * t; else sh = sw / t;
+  x.drawImage(im, (im.naturalWidth - sw) / 2, (im.naturalHeight - sh) / 2, sw, sh, 0, 0, W, H);
+}
+function disegnaGonfia(c, im, forma) {
+  const [W, H] = misuraTela(forma); c.width = W; c.height = H; const x = c.getContext('2d');
+  if (!(im && im.complete && im.naturalWidth)) { x.fillStyle = 'rgba(255,255,255,.22)'; x.fillRect(0, 0, W, H); return; }   // la foto non c'e' ancora
+  TELA.width = W; TELA.height = H; const t = TELA.getContext('2d', { willReadFrequently: true });
+  copri(t, im, W, H);
+  const src = t.getImageData(0, 0, W, H).data, out = x.createImageData(W, H), d = out.data, da = mappaGonfia(W, H);
+  for (let q = 0; q < W * H; q++) { const o = da[q], p4 = q * 4; d[p4] = src[o]; d[p4 + 1] = src[o + 1]; d[p4 + 2] = src[o + 2]; d[p4 + 3] = 255; }
+  x.putImageData(out, 0, 0);
+}
 function texLuce(stops) {
   const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d');
   const g = x.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2); stops.forEach(([o, col]) => g.addColorStop(o, col));
   x.fillStyle = g; x.fillRect(0, 0, S, S);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
-const TEX_ALONE = texLuce([[0, 'rgba(255,255,255,.55)'], [.3, 'rgba(255,255,255,.18)'], [1, 'rgba(255,255,255,0)']]);
 const TEX_PUNTO = texLuce([[0, 'rgba(255,255,255,1)'], [.35, 'rgba(255,255,255,.45)'], [1, 'rgba(255,255,255,0)']]);
 const TEX_ANELLO = (() => { const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'); x.strokeStyle = '#fff'; x.lineWidth = 5; x.beginPath(); x.arc(S / 2, S / 2, S / 2 - 6, 0, TAU); x.stroke(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const CHIARO = new THREE.Color(.92, .95, 1);   // la luce della cometa che porta le foto nuove: bianca, come le bolle
 const CODA = 48;
-function ridisegna(p) { disegnaSfera(p.can, 160, p.col, p.img); p.tex.needsUpdate = true; p.alone.material.color.copy(p.col); if (p.hi) { p.hi.asp = disegnaIntera(p.hi.can, p.col, p.hi.img.complete && p.hi.img.naturalWidth ? p.hi.img : p.img); p.hi.tex.needsUpdate = true; } }
-const photos = [], photoById = {}, sprites = [];
+function ridisegna(p) { disegnaGonfia(p.can, p.img, p.forma); p.tex.needsUpdate = true; if (p.hi) disegnaAperta(p.hi.can, p.hi.img.complete && p.hi.img.naturalWidth ? p.hi.img : p.img, p.forma); }
+const photos = [], photoById = {}, sprites = [];   // sprites: quello che si puo' cliccare (le forme delle bolle)
 const DUR_MOSSA = 2600;
+// Ogni bolla e' fatta di tre pezzi, disegnati uno dopo l'altro (dalla bolla piu' lontana alla piu' vicina, vedi ordinaBolle):
+// 1. la maschera: la forma, invisibile, segna nello stencil (con il numero della bolla, p.ref) dove sta la bolla sullo schermo;
+// 2. la foto (p.sprite): si vede solo dove la maschera ha segnato il suo numero, quindi sempre e solo dentro la forma;
+// 3. la plastica (p.pelle): trasparente, sopra la foto.
 function makePhoto(id, f) {
   const p = { id, f, k: photos.length, ph: seme(id)() * TAU, uPrev: 0, fine: new THREE.Vector3(), da: new THREE.Vector3(), t0: -1e9, dur: DUR_MOSSA, vis: 1 };
-  p.col = colore(p);
-  p.can = document.createElement('canvas'); disegnaSfera(p.can, 160, p.col, null);
+  const r = seme(id + ' forma');
+  p.forma = FORME.includes(FORMA_PROVA) ? FORMA_PROVA : FORME[Math.floor(r() * FORME.length)];
+  p.col = colore(p);   // il colore resta solo per la cronologia: le bolle non ne hanno
+  p.ref = photos.length % 254 + 1;
+  p.can = document.createElement('canvas'); disegnaGonfia(p.can, null, p.forma);
   p.tex = new THREE.CanvasTexture(p.can); p.tex.colorSpace = THREE.SRGBColorSpace;
-  p.sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: p.tex, transparent: true, depthWrite: false, color: 0xf2f2f2 }));
-  p.sprite.renderOrder = 10;   // dopo il piano 3D: le bolle sono luci, si vedono sopra le macchie del modello
-  p.alone = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX_ALONE, color: p.col, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: .5 }));
-  p.alone.renderOrder = 9;
-  p.base = BOLLA * (f.s || .9); p.sprite.scale.setScalar(p.base); p.sprite.userData.p = p;
+  p.sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: p.tex, transparent: true, depthWrite: false, color: 0xf2f2f2,
+    stencilWrite: true, stencilRef: p.ref, stencilFunc: THREE.EqualStencilFunc, stencilFail: THREE.KeepStencilOp, stencilZFail: THREE.KeepStencilOp, stencilZPass: THREE.KeepStencilOp }));
+  p.guscio = new THREE.Group(); p.guscio.scale.setScalar(0);
+  p.forma3d = new THREE.Group();
+  p.maschera = new THREE.Mesh(GEOMETRIE[p.forma], new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false, transparent: true, side: THREE.DoubleSide,
+    stencilWrite: true, stencilRef: p.ref, stencilFunc: THREE.AlwaysStencilFunc, stencilZPass: THREE.ReplaceStencilOp, stencilZFail: THREE.ReplaceStencilOp }));
+  p.pelle = new THREE.Mesh(GEOMETRIE[p.forma], materialeGuscio(r() * TAU));
+  const storta = p.forma === 'banana' ? .35 : 1.1;   // la banana resta quasi dritta: girando si vede di profilo, curva
+  p.rx = (r() - .5) * storta; p.spin = r() * TAU; p.rz = (r() - .5) * storta;
+  p.giro = (r() < .5 ? -1 : 1) * (.1 + .12 * r());    // le forme girano piano su se stesse, per vedersi in 3D
+  p.salto = { T: 2.6 + 1.1 * r(), A: .09 + .05 * r() };   // il rimbalzo: quanto dura un salto (secondi) e quanto e' alto
+  p.forma3d.add(p.maschera, p.pelle); p.guscio.add(p.forma3d);
+  p.pelle.userData.p = p; p.sprite.userData.p = p;
+  p.base = BOLLA * (f.s || .9); p.sprite.scale.setScalar(0);
   p.img = new Image(); p.img.onload = () => ridisegna(p); p.img.src = thumbSrc(id);
-  scene.add(p.sprite, p.alone); photos.push(p); photoById[id] = p; sprites.push(p.sprite);
+  scene.add(p.sprite, p.guscio); photos.push(p); photoById[id] = p; sprites.push(p.pelle);
   return p;
 }
-function aggiornaFoto(p, f) {   // la foto e' stata letta: va al suo posto nel corridoio, con il suo colore
+// la bolla in scena: la forma (grande sc) dove sta la foto, schiacciata se rimbalza; aprendosi (k da 0 a 1) si gira verso chi guarda
+function mettiGuscio(p, sc, opacita, sx = 1, sy = 1, k = 0) {
+  p.guscio.position.copy(p.sprite.position); p.guscio.scale.set(sc * sx, sc * sy, sc * sx);
+  p.guscio.quaternion.identity(); if (k) p.guscio.quaternion.slerp(camera.quaternion, k);
+  const y = Math.atan2(Math.sin(p.spin), Math.cos(p.spin));
+  p.forma3d.rotation.set(p.rx * (1 - k), y * (1 - k), p.rz * (1 - k));
+  p.pelle.material.uniforms.uOpacita.value = opacita;
+  p.sprite.scale.set(sc * COPRE[p.forma].w * sx, sc * COPRE[p.forma].h * sy, 1);
+}
+// l'ordine in cui si disegnano le bolle: dalla piu' lontana alla piu' vicina, ognuna intera (maschera, foto, plastica);
+// la foto aperta e quella che sta arrivando dal telefono per ultime, sopra tutto
+function ordinaBolle() {
+  const qui = photos.filter(p => p.hold || p.sprite.visible);
+  qui.forEach(p => { p.ordine = p.hold ? -2 : fuoco && fuoco.p === p ? -1 : camera.position.distanceToSquared(p.sprite.position); });
+  qui.sort((a, b) => b.ordine - a.ordine);
+  qui.forEach((p, i) => { const o = 20 + i * 3; p.maschera.renderOrder = o; p.sprite.renderOrder = o + 1; p.pelle.renderOrder = o + 2; });
+}
+function aggiornaFoto(p, f) {   // la foto e' stata letta: va al suo posto nel corridoio
   p.f = f;
   p.da.copy(p.sprite.position); posizionaUna(p); p.t0 = performance.now();
   p.col = colore(p); p.base = BOLLA * (f.s || .9); ridisegna(p); p.lampo = performance.now() + 2200;
+}
+
+// ---------------- lo scoppio: la bolla scelta si rompe e lascia la foto ----------------
+// il guscio si gonfia e sparisce in un attimo, i pezzetti di plastica volano via e cadono, un anello si allarga; un piccolo «pop»
+const scoppi = [];
+const easeOut = u => 1 - Math.pow(1 - u, 3);
+const easeOutBack = u => 1 + 2.70158 * Math.pow(u - 1, 3) + 1.70158 * Math.pow(u - 1, 2);
+function scoppia(p) {
+  const sc = Math.max(p.guscio.scale.y, p.base * .5), pos = p.sprite.position.clone();
+  const pelle = new THREE.Mesh(p.pelle.geometry, materialeGuscio(p.pelle.material.uniforms.uFase.value));
+  p.pelle.getWorldQuaternion(pelle.quaternion); pelle.position.copy(pos); pelle.scale.setScalar(sc); pelle.renderOrder = 1e5;
+  const N = 44, pp = new Float32Array(N * 3), cc = new Float32Array(N * 3), vel = [], c = new THREE.Color();
+  for (let i = 0; i < N; i++) {
+    const d = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize();
+    pp.set([pos.x + d.x * sc * .5, pos.y + d.y * sc * .5, pos.z + d.z * sc * .5], i * 3);
+    vel.push(d.multiplyScalar(.4 + .7 * Math.random()).add(new THREE.Vector3(0, .25, 0)));
+    const b = .82 + .18 * Math.random(); c.setRGB(b, b, b * 1.02); cc.set([c.r, c.g, c.b], i * 3);   // pezzetti di plastica: bianchi, senza colore
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pp, 3)); g.setAttribute('color', new THREE.BufferAttribute(cc, 3));
+  const gocce = new THREE.Points(g, new THREE.PointsMaterial({ map: TEX_PUNTO, size: .045, vertexColors: true, transparent: true, depthWrite: false }));
+  gocce.frustumCulled = false; gocce.renderOrder = 1e5;
+  const anello = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX_ANELLO, transparent: true, depthWrite: false, opacity: .7 }));
+  anello.position.copy(pos); anello.renderOrder = 1e5;
+  scene.add(pelle, gocce, anello);
+  scoppi.push({ t0: performance.now(), sc, pelle, gocce, vel, anello });
+  schiocco();
+}
+function passoScoppi(now, dt) {
+  for (let i = scoppi.length - 1; i >= 0; i--) {
+    const s = scoppi[i], u = (now - s.t0) / 950;
+    if (u >= 1) {
+      scene.remove(s.pelle, s.gocce, s.anello); s.pelle.material.dispose(); s.gocce.geometry.dispose(); s.gocce.material.dispose(); s.anello.material.dispose();
+      scoppi.splice(i, 1); continue;
+    }
+    const v = clamp(u / .26, 0, 1);
+    s.pelle.visible = v < 1; s.pelle.scale.setScalar(s.sc * (1 + .5 * easeOut(v))); s.pelle.material.uniforms.uOpacita.value = 1 - v;
+    const pa = s.gocce.geometry.attributes.position.array;
+    s.vel.forEach((w, k) => { w.y -= 1.3 * dt; w.multiplyScalar(1 - 1.4 * dt); pa[k * 3] += w.x * dt; pa[k * 3 + 1] += w.y * dt; pa[k * 3 + 2] += w.z * dt; });
+    s.gocce.geometry.attributes.position.needsUpdate = true; s.gocce.material.opacity = 1 - u * u;
+    const a = clamp(u / .55, 0, 1); s.anello.scale.setScalar(s.sc * (1 + 2.4 * easeOut(a))); s.anello.material.opacity = .7 * (1 - a);
+  }
+}
+function schiocco() {
+  if (!pronto()) return;
+  const t = actx.currentTime, g = uscita(0), o = actx.createOscillator();
+  o.type = 'sine'; o.frequency.setValueAtTime(1300, t); o.frequency.exponentialRampToValueAtTime(170, t + .09);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.06, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + .15);
+  o.connect(g); o.start(t); o.stop(t + .17);
 }
 D.tutte.forEach(id => { if (D.foto[id]) makePhoto(id, D.foto[id]); });
 
@@ -586,7 +777,7 @@ let viaggio = null;
 function viaggiaVerso(meta, guarda, poi) {
   const a = vicinoAnello(cam.pos.x, cam.pos.z), b = vicinoAnello(meta.x, meta.z);
   let dt = b.t - a.t; if (dt > .5) dt -= 1; if (dt < -.5) dt += 1;
-  const pts = [cam.pos.clone()], passi = Math.max(2, Math.ceil(Math.abs(dt) * PERIMETRO / .5));
+  const pts = [camera.position.clone()], passi = Math.max(2, Math.ceil(Math.abs(dt) * PERIMETRO / .5));
   for (let i = 1; i < passi; i++) { const c = puntoAnello(a.t + dt * i / passi); pts.push(new THREE.Vector3(c.x, OCCHI, c.z)); }
   pts.push(meta.clone());
   const curva = new THREE.CatmullRomCurve3(pts, false, 'centripetal', .2), L = curva.getLength();
@@ -694,34 +885,36 @@ photos.forEach(p => { p.t0 = 1e12; });
 // ---------------- entrare in una bolla: la foto si apre, le sorelle le girano intorno ----------------
 let fuoco = null;
 const DUR_VOLO = 1600;
-function disegnaIntera(c, col, im) {
-  const ok = im && im.complete && im.naturalWidth, asp = ok ? im.naturalWidth / im.naturalHeight : 1;
-  const L = 1024, w = asp >= 1 ? L : Math.round(L * asp), h = asp >= 1 ? Math.round(L / asp) : L, b = 14;
-  c.width = w; c.height = h; const x = c.getContext('2d');
-  const [r, g, bl] = col.toArray().map(v => Math.round(v * 255));
-  const tondo = (q, R) => { x.beginPath(); x.moveTo(q + R, q); x.arcTo(w - q, q, w - q, h - q, R); x.arcTo(w - q, h - q, q, h - q, R); x.arcTo(q, h - q, q, q, R); x.arcTo(q, q, w - q, q, R); x.closePath(); };
-  x.fillStyle = `rgb(${r},${g},${bl})`; tondo(0, 26); x.fill();
-  x.save(); tondo(b, 16); x.clip();
-  if (ok) x.drawImage(im, b, b, w - 2 * b, h - 2 * b); else { x.fillStyle = '#151219'; x.fillRect(0, 0, w, h); }
-  x.restore();
-  return asp;
+function disegnaAperta(c, im, forma) {   // la foto aperta: grande e nitida, ritagliata nelle proporzioni della forma
+  const [W, H] = misuraTela(forma, 1024); c.width = W; c.height = H; const x = c.getContext('2d');
+  if (im && im.complete && im.naturalWidth) copri(x, im, W, H); else { x.fillStyle = '#d9d9de'; x.fillRect(0, 0, W, H); }
 }
 function alta(p) {
   if (p.hi) return;
   const can = document.createElement('canvas'), img = new Image(), tex = new THREE.CanvasTexture(can);
-  tex.colorSpace = THREE.SRGBColorSpace; p.hi = { can, img, tex, asp: 1 };
-  p.hi.asp = disegnaIntera(can, p.col, p.img);
-  img.onload = () => { if (p.hi) { p.hi.asp = disegnaIntera(can, p.col, img); tex.dispose(); p.hi.tex = new THREE.CanvasTexture(can); p.hi.tex.colorSpace = THREE.SRGBColorSpace; p.sprite.material.map = p.hi.tex; p.sprite.material.needsUpdate = true; } };
+  tex.colorSpace = THREE.SRGBColorSpace; p.hi = { can, img, tex };
+  disegnaAperta(can, p.img, p.forma);
+  img.onload = () => { if (p.hi) { disegnaAperta(can, img, p.forma); tex.dispose(); p.hi.tex = new THREE.CanvasTexture(can); p.hi.tex.colorSpace = THREE.SRGBColorSpace; p.sprite.material.map = p.hi.tex; p.sprite.material.needsUpdate = true; } };
   img.src = fullSrc(p.id);
-  p.sprite.material.map = tex; p.sprite.material.color.set(0xffffff); p.sprite.renderOrder = 12; p.sprite.material.needsUpdate = true;
+  p.sprite.material.map = tex; p.sprite.material.color.set(0xffffff); p.sprite.material.needsUpdate = true;
 }
-function bassa(p) { if (!p.hi) return; p.sprite.material.map = p.tex; p.sprite.material.color.set(0xf2f2f2); p.sprite.renderOrder = 10; p.sprite.material.needsUpdate = true; p.hi.tex.dispose(); p.hi = null; }
+function bassa(p) { if (!p.hi) return; p.riforma = performance.now(); p.sprite.material.map = p.tex; p.sprite.material.color.set(0xf2f2f2); p.sprite.material.needsUpdate = true; p.hi.tex.dispose(); p.hi = null; }
 const DIST_FOTO = 1.05;   // da quanto lontano si guarda la foto aperta
+// quanto e' grande la bolla aperta: mai piu' di una parte dello schermo, visto da dove si mette la camera.
+// Serve per le foto scattate qui (la camera va nel punto di scatto, molto piu' vicina) e per gli schermi di forma diversa (TV)
+const LATO_APERTA = .8, SCHERMO_ALTO = .55, SCHERMO_LARGO = .55;
+function scalaAperta(p, da) {
+  const { w, h } = COPRE[p.forma], d = Math.max(.05, da.distanceTo(p.fine)), vis = 2 * d * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+  return Math.min(LATO_APERTA / Math.max(w, h), vis * SCHERMO_ALTO / h, vis * camera.aspect * SCHERMO_LARGO / w);
+}
+const vistaDa = f => f.uscita ? f.cam0 : f.camDest;   // da dove si guarda la foto aperta
 function vola(p, arrivato = false) {
   if (!p || p.hold || arrivo || viaggio) return;
   if (fuoco && fuoco.p === p && !fuoco.uscita) return;
-  // lontana (per esempio dalla cronologia): prima si cammina lungo il corridoio fino a lei
-  if (!fuoco && !arrivato && camera.position.distanceTo(p.fine) > 4.5) {
+  // lontana (dalla cronologia, o una sorella che sta dall'altra parte del chiostro): prima si cammina lungo il corridoio
+  // fino a lei. Da dentro una foto si esce subito, senza volare dritti attraverso i muri
+  if (!arrivato && camera.position.distanceTo(p.fine) > 4.5) {
+    if (fuoco) lasciaFuoco();
     return viaggiaVerso(davantiA(p.fine, 2.2), p.fine, () => vola(p, true));   // arrivati: niente secondo viaggio
   }
   const back = fuoco ? fuoco.back : { pos: camera.position.clone(), quat: camera.quaternion.clone() };
@@ -741,11 +934,19 @@ function vola(p, arrivato = false) {
   fuoco = { p, sorelle, t0: performance.now(), cam0: camera.position.clone(), q0, camDest, q1, back, uscita: false, arrivato: false };
   cam.giro = false;
   accese = new Set([p.id, ...sorelle.map(q => q.id)]);
-  filiDa = p; filiA = legami(p).slice(0, 10);
+  filiDa = null; filiA = [];   // aperta: niente linee, solo le sorelle che le girano intorno
+  if (!p.hi) scoppia(p);   // la bolla si rompe e lascia uscire la foto
   alta(p);
   document.body.classList.add('infuoco');
   mostraPannello(p);
   accordo(p);
+}
+function lasciaFuoco() {   // esce dalla foto aperta all'istante: la camera resta dov'e', le sorelle tornano ai loro posti
+  bassa(fuoco.p); fuoco.p.fk = 0;
+  fuoco.sorelle.forEach(q => { if (q.orbita) q.orbita.su = false; });
+  fuoco = null; accese = null; filiDa = null; filiA = [];
+  $('fuoco').classList.remove('on'); document.body.classList.remove('infuoco');
+  prendiDallaCamera();
 }
 function torna() {
   if (!fuoco || fuoco.uscita) return;
@@ -806,7 +1007,9 @@ cv.addEventListener('pointerleave', () => { mpx.x = -1; setHover(null); });
 cv.addEventListener('pointerup', e => {
   const dito = e.pointerType === 'touch';
   if (trascina && trascina.mosso < (dito ? 12 : 5)) {
-    const p = dito ? toccata(e.clientX, e.clientY) : hover;
+    // la bolla che sta sotto il puntatore adesso: «hover» si aggiorna solo muovendo il mouse, e intanto la camera
+    // (il giro da solo) o le bolle possono essersi spostate
+    const p = dito ? toccata(e.clientX, e.clientY) : sottoIlPuntatore(e.clientX, e.clientY);
     if (p) vola(p); else if (fuoco) torna();
   }
   fineTrascina();
@@ -817,6 +1020,12 @@ function toccata(x, y) {
   mouse.set(x / innerWidth * 2 - 1, -y / innerHeight * 2 + 1); ray.setFromCamera(mouse, camera);
   const hit = ray.intersectObjects(sprites, false).find(h => visibile(h.object.userData.p));
   return hit ? hit.object.userData.p : piuVicina(x, y);
+}
+function sottoIlPuntatore(x, y) {
+  if (arrivo) return null;
+  mouse.set(x / innerWidth * 2 - 1, -y / innerHeight * 2 + 1); ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObjects(sprites, false).find(h => visibile(h.object.userData.p));
+  return hit ? hit.object.userData.p : null;
 }
 function setHover(p) {
   if (p === hover) return;
@@ -917,38 +1126,41 @@ function frame(now) {
       p.dietro = !(fuoco && (fuoco.p === p || p.orbita)) && dietroUnMuro(camera.position, p.sprite.position);
     const voluta = (inVista(p) || (fuoco && fuoco.p === p)) && !p.dietro ? 1 : 0;
     p.vis += (voluta - p.vis) * Math.min(1, dt * 4);
-    p.sprite.visible = p.alone.visible = p.vis > .01;
+    p.sprite.visible = p.guscio.visible = p.vis > .01;
+    p.pelle.visible = !p.hi;   // la foto aperta non ha piu' la plastica (e' scoppiata), ma resta nella sua forma
     if (!p.sprite.visible) { p.uPrev = 0; return; }
-    const [vi, qu, tr] = p.f.mv;
+    const [vi, qu] = p.f.mv;
     const m = easeIO(clamp((now - p.t0) / p.dur, 0, 1));
     p.sprite.position.lerpVectors(p.da, p.fine, m);
-    if (!reduced && m >= 1) {   // un respiro leggero
-      const a = .012 + .025 * vi;
-      p.sprite.position.x += Math.sin(t * (.4 + vi) + p.ph) * a + (tr ? Math.sin(t * 19 + p.ph * 5) * .004 * tr : 0);
-      p.sprite.position.y += Math.cos(t * (.33 + vi * .8) + p.ph * 1.3) * a;
+    let sx = 1, sy = 1;
+    if (!reduced && m >= 1 && !p.orbita && !p.fk) {
+      // il rimbalzo, lento: sale e ricade (una parabola, come una palla) e quando tocca si schiaccia un po'
+      const s = (t / p.salto.T + p.ph / TAU) % 1, tocco = Math.exp(-Math.pow(Math.min(s, 1 - s) / .045, 2));
+      p.sprite.position.y += p.salto.A * (4 * s * (1 - s) - .5);
+      sy = (1 + .06 * Math.abs(1 - 2 * s)) * (1 - .24 * tocco); sx = 1 / Math.sqrt(sy);
     }
-    let sc = p.base * (1 + .06 * vi * Math.sin(t * 2.4 + p.ph)) * (m < 1 ? .2 + .8 * m : 1);
+    let sc = p.base * (m < 1 ? .2 + .8 * m : 1);
     if (now < p.t0) sc = 0;
     if (p.orbita) {
       const o = p.orbita; o.k = clamp(o.k + (o.su ? .022 : -.03), 0, 1);
-      const e = easeIO(o.k), ang = o.i / o.n * TAU + t * .06, R = (fuoco && fuoco.p.hi ? .36 * Math.max(1, fuoco.p.hi.asp) + .3 : .5) + .04 * Math.sin(t * .35 + o.i);
+      const e = easeIO(o.k), ang = o.i / o.n * TAU + t * .06, R = (fuoco ? scalaAperta(fuoco.p, vistaDa(fuoco)) * (Math.max(COPRE[fuoco.p.forma].w, COPRE[fuoco.p.forma].h) * .5 + .35) : .5) + .04 * Math.sin(t * .35 + o.i);
       orb.copy(o.centro).addScaledVector(dx, Math.cos(ang) * R).addScaledVector(dy, Math.sin(ang) * R * .78);
       p.sprite.position.lerp(orb, e); sc += (BOLLA * .8 - sc) * e;
       if (o.k <= 0 && !o.su) p.orbita = null;
     }
-    if (p.fk) { p.sprite.position.lerp(p.fine, p.fk); sc = sc + (.62 - sc) * easeIO(p.fk); }
+    if (p.fk) { p.sprite.position.lerp(p.fine, p.fk); sc = sc + ((fuoco && fuoco.p === p ? scalaAperta(p, vistaDa(fuoco)) : sc) - sc) * easeIO(p.fk); }
     if (accese && !fuoco) sc *= p === hover ? 1.6 : accese.has(p.id) ? 1.2 : .9;
     if (fuoco && p === hover && p !== fuoco.p) sc *= 1.25;
     if (p.lampo && now < p.lampo) sc *= 1 + .8 * Math.sin((p.lampo - now) / 2200 * Math.PI);
     sc *= p.vis;
-    p.sprite.scale.setScalar(sc);
-    if (p.hi && p.fk) p.sprite.scale.x = sc * (1 + (p.hi.asp - 1) * easeIO(p.fk));
     // da lontano le bolle sfumano (il chiostro e' grande); vicinissime anche, per non coprire tutto mentre si cammina
     const d = camera.position.distanceTo(p.sprite.position);
     const lontananza = fuoco && (p === fuoco.p || p.orbita) ? 1 : (1 - sstep(distanzaVista * .7, distanzaVista, d)) * sstep(.12, .4, d);   // oltre la distanza di disegno le bolle sfumano
     p.sprite.material.opacity = (accese && !accese.has(p.id) ? .12 : 1) * lontananza * p.vis;
-    p.alone.position.copy(p.sprite.position); p.alone.scale.setScalar(sc * 3.2);
-    p.alone.material.opacity = (p.fk ? .5 * (1 - p.fk) : .5) * p.sprite.material.opacity * (.85 + .15 * Math.sin(t * 1.7 + p.ph));
+    let gs = sc;
+    if (p.riforma) { const u = clamp((now - p.riforma) / 650, 0, 1); gs *= .25 + .75 * easeOutBack(u); if (u >= 1) p.riforma = 0; }   // richiudendo la foto la plastica si riforma
+    if (!reduced && !p.fk) p.spin += p.giro * dt;
+    mettiGuscio(p, gs, p.sprite.material.opacity, sx, sy, p.fk ? easeIO(p.fk) : 0);
     if (!reduced && now > nascita + 2000) {
       const sp = Math.max(.03, .07 + .25 * vi - .04 * qu), u = (t * sp + p.ph) % 1;
       if (u < p.uPrev && pronto() && note < 2 && d < 8) {
@@ -958,6 +1170,9 @@ function frame(now) {
       p.uPrev = u;
     }
   });
+  TEMPO.value = t;
+  ordinaBolle();
+  passoScoppi(now, dt);
   aggiornaFili();
   pick();
   passoArrivo(now);
@@ -1044,13 +1259,13 @@ function cometa(p, now) {
   const curva = new THREE.CubicBezierCurve3(via, via.clone().lerp(p.fine, .4).add(new THREE.Vector3(0, .5, 0)), p.fine.clone().add(new THREE.Vector3(0, .6, 0)), p.fine.clone());
   p.pts = new Float32Array(curva.getPoints(160).flatMap(v => [v.x, v.y, v.z])); p.n = p.pts.length / 3;
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p.pts, 3)); g.setDrawRange(0, 0);
-  const linea = new THREE.Line(g, new THREE.LineBasicMaterial({ color: p.col, transparent: true, opacity: .5, blending: THREE.AdditiveBlending, depthWrite: false }));
-  const onda = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX_ANELLO, color: p.col, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 }));
+  const linea = new THREE.Line(g, new THREE.LineBasicMaterial({ color: CHIARO, transparent: true, opacity: .5, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const onda = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX_ANELLO, color: CHIARO, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 }));
   const pc = new Float32Array(CODA * 3), cc = new Float32Array(CODA * 3);
   for (let i = 0; i < CODA; i++) pc.set([via.x, via.y, via.z], i * 3);
   const gc = new THREE.BufferGeometry(); gc.setAttribute('position', new THREE.BufferAttribute(pc, 3)); gc.setAttribute('color', new THREE.BufferAttribute(cc, 3));
   const scia = new THREE.Points(gc, new THREE.PointsMaterial({ map: TEX_PUNTO, size: 16, sizeAttenuation: false, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
-  scia.frustumCulled = false; linea.renderOrder = onda.renderOrder = scia.renderOrder = 11;
+  scia.frustumCulled = false; linea.renderOrder = onda.renderOrder = scia.renderOrder = 9e4;   // sopra le bolle
   scene.add(linea, onda, scia);
   const coda = arrQueue.length, f = coda === 0 ? 1 : coda <= 2 ? .72 : .5;
   const q0 = camera.quaternion.clone(), q1 = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(camera.position, p.fine, camera.up));
@@ -1061,17 +1276,16 @@ function passoArrivo(now) {
   nextArrival(now);
   if (!arrivo || arrivo.attesa) return;
   const { p, linea, onda, scia, TV, TP } = arrivo, el = now - arrivo.t0, s = p.sprite;
-  s.material.opacity = 1; s.renderOrder = 13;
+  s.material.opacity = 1;
   camera.position.copy(arrivo.cam0); camera.quaternion.slerpQuaternions(arrivo.q0, arrivo.q1, easeIO(clamp(el / (TV * .6), 0, 1)) * .6);   // la camera si gira un po' verso dove va la foto
   const pc = scia.geometry.attributes.position.array, cc = scia.geometry.attributes.color.array;
   if (el < TV) {
     const u = easeIO(el / TV), j = Math.floor(u * (p.n - 1));
     s.position.set(p.pts[j * 3], p.pts[j * 3 + 1], p.pts[j * 3 + 2]);
-    s.scale.setScalar(p.base * (3 - 1.8 * sstep(.55, 1, u)));
-    p.alone.position.copy(s.position); p.alone.scale.setScalar(p.base * 5); p.alone.material.opacity = .7;
+    p.guscio.visible = true; p.spin += p.giro * .016; mettiGuscio(p, p.base * (3 - 1.8 * sstep(.55, 1, u)), 1);
     linea.geometry.setDrawRange(0, j + 1);
     pc.copyWithin(3, 0, (CODA - 1) * 3); pc[0] = s.position.x; pc[1] = s.position.y; pc[2] = s.position.z;
-    for (let i = 0; i < CODA; i++) { const k = Math.pow(1 - i / CODA, 1.6); cc[i * 3] = p.col.r * k; cc[i * 3 + 1] = p.col.g * k; cc[i * 3 + 2] = p.col.b * k; }
+    for (let i = 0; i < CODA; i++) { const k = Math.pow(1 - i / CODA, 1.6); cc[i * 3] = CHIARO.r * k; cc[i * 3 + 1] = CHIARO.g * k; cc[i * 3 + 2] = CHIARO.b * k; }
     scia.geometry.attributes.position.needsUpdate = scia.geometry.attributes.color.needsUpdate = true;
   } else {
     const v = clamp((el - TV) / TP, 0, 1);
@@ -1079,13 +1293,13 @@ function passoArrivo(now) {
       arrivo.posata = true; accordo(p, .8); $('arrivo').classList.remove('on');
       filiDa = p; filiA = legami(p).slice(0, 10); accese = new Set([p.id, ...filiA.map(x => x[0].id)]);
     }
-    s.position.copy(p.fine); s.scale.setScalar(p.base * (1 + 1.8 * Math.exp(-v * 5)));
+    s.position.copy(p.fine); s.scale.setScalar(p.base * (1 + 1.8 * Math.exp(-v * 5))); mettiGuscio(p, s.scale.x, 1);
     onda.position.copy(p.fine); onda.scale.setScalar(.15 + 1.4 * v); onda.material.opacity = .9 * (1 - v);
     linea.material.opacity = .5 * (1 - v);
     for (let i = 0; i < CODA * 3; i++) cc[i] *= .93;
     scia.geometry.attributes.color.needsUpdate = true;
     if (v >= 1) {
-      p.hold = false; p.da.copy(p.fine); p.t0 = -1e9; s.renderOrder = 10;
+      p.hold = false; p.da.copy(p.fine); p.t0 = -1e9;
       scene.remove(linea, onda, scia); linea.geometry.dispose(); scia.geometry.dispose();
       prendiDallaCamera(); accese = null; filiDa = null; filiA = [];
       p.lampo = now + 2200; toast(arrivo.a); arrivo = null; fineUltimo = now; renderCron(); regia.nuova = p; return;
@@ -1095,8 +1309,8 @@ function passoArrivo(now) {
 function removePhoto(id) {
   const p = photoById[id]; if (!p) return;
   if (fuoco && (fuoco.p === p || fuoco.sorelle.includes(p))) torna();
-  scene.remove(p.sprite, p.alone); p.tex.dispose(); p.sprite.material.dispose(); p.alone.material.dispose(); if (p.hi) p.hi.tex.dispose();
-  photos.splice(photos.indexOf(p), 1); sprites.splice(sprites.indexOf(p.sprite), 1); delete photoById[id];
+  scene.remove(p.sprite, p.guscio); p.tex.dispose(); p.sprite.material.dispose(); p.pelle.material.dispose(); p.maschera.material.dispose(); if (p.hi) p.hi.tex.dispose();
+  photos.splice(photos.indexOf(p), 1); sprites.splice(sprites.indexOf(p.pelle), 1); delete photoById[id];
   if (hover === p) setHover(null);
 }
 function removeArrival(id) {
