@@ -1,0 +1,13 @@
+{
+  "name": "nebulosa-memoria",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nebulosa: una memoria collettiva di foto dell'Accademia di Belle Arti di Napoli. Il server e' in Python; npm lo accende.",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "dev": "node avvia.mjs",
+    "start": "node avvia.mjs",
+    "server": "node avvia.mjs --senza-browser"
+  }
+}

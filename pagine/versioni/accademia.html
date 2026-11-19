@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nebulosa · Accademia</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/nebulosa.css?v=2">
+<link rel="stylesheet" href="/css/nebulosa.css?v=3">
 <style>
   /* il caricamento del piano dell'Accademia: il file e' grande, si vede quanto manca */
   #carico { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
@@ -41,7 +41,7 @@
 <div id="inarr"></div>
 <a id="caricaTel" href="/carica">📷 Aggiungi una tua foto</a>
 <div id="qrfisso"><div class="code" id="qrfc"></div><div><b>Aggiungi la tua foto<br>alla memoria</b><small>Inquadra il codice<br>con il telefono</small></div></div>
-<aside id="fuoco"><div class="k" id="fk"></div><div id="fl"></div><div id="fa"></div><div class="h">Clicca una sorella per passare a lei · Esc o clic nel vuoto per tornare nel corridoio</div><button id="fx">← Torna nel corridoio</button></aside>
+<aside id="fuoco"><div class="k" id="fk"></div><div id="fl"></div><div id="fa"></div><div class="h">Clicca un'altra bolla per aprirla · Esc o clic nel vuoto per tornare nel corridoio</div><button id="fx">← Torna nel corridoio</button></aside>
 <div id="manoCursore"></div>
 <div id="manoDue"><b></b><i></i><i></i></div>
 <div id="mano"><canvas id="manoCanvas" width="240" height="180"></canvas><video id="manoVideo" playsinline muted></video><div id="manoGesti"><b>Esplora con le mani</b>✋ Muovi la mano: la luce cerca le bolle<br>✋ Tienila ferma su una bolla per entrarci<br>⬇ Abbassala per tornare<br>🙌 Due mani: allargale per camminare</div><div id="manoStato">Avvio della mano…</div><select id="manoCamera" aria-label="Telecamera"></select>
@@ -51,6 +51,6 @@
 
 <script src="/dati.js"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/","@sparkjsdev/spark":"https://cdn.jsdelivr.net/npm/@sparkjsdev/spark@2.3.1/dist/spark.module.js"}}</script>
-<script type="module" src="/js/accademia.js?v=18"></script>
+<script type="module" src="/js/accademia.js?v=22"></script>
 </body>
 </html>

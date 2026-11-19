@@ -46,8 +46,8 @@ addEventListener('pointerup', () => { const a = document.activeElement; if (a &&
 // circa 2 e alto quasi 3, e le misure (occhi, bolle, passi) sono quelle di una persona.
 const SCALA = 10;
 const OCCHI = .95;              // l'altezza degli occhi dal pavimento
-const PASSO = 1.3;              // la velocita' di chi cammina (unita' al secondo)
-const PASSO_GIRO = .42;         // la velocita' del giro da solo, piu' lenta
+const PASSO = 1.05;             // la velocita' di chi cammina (unita' al secondo)
+const PASSO_GIRO = .34;         // la velocita' del giro da solo, piu' lenta
 const RIPOSO = 15000;           // dopo quanto tempo senza nessuno riparte il giro da solo (ms)
 
 const cv = $('c');
@@ -557,7 +557,7 @@ const TEX_PUNTO = texLuce([[0, 'rgba(255,255,255,1)'], [.35, 'rgba(255,255,255,.
 const TEX_ANELLO = (() => { const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'); x.strokeStyle = '#fff'; x.lineWidth = 5; x.beginPath(); x.arc(S / 2, S / 2, S / 2 - 6, 0, TAU); x.stroke(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
 const CHIARO = new THREE.Color(.92, .95, 1);   // la luce della cometa che porta le foto nuove: bianca, come le bolle
 const CODA = 48;
-function ridisegna(p) { disegnaGonfia(p.can, p.img, p.forma); p.tex.needsUpdate = true; if (p.hi) disegnaAperta(p.hi.can, p.hi.img.complete && p.hi.img.naturalWidth ? p.hi.img : p.img, p.forma); }
+function ridisegna(p) { disegnaGonfia(p.can, p.img, p.forma); p.tex.needsUpdate = true; if (p.hi) { p.hi.asp = disegnaAperta(p.hi.can, p.hi.img.complete && p.hi.img.naturalWidth ? p.hi.img : p.img); p.hi.tex.needsUpdate = true; } }
 const photos = [], photoById = {}, sprites = [];   // sprites: quello che si puo' cliccare (le forme delle bolle)
 const DUR_MOSSA = 2600;
 // Ogni bolla e' fatta di tre pezzi, disegnati uno dopo l'altro (dalla bolla piu' lontana alla piu' vicina, vedi ordinaBolle):
@@ -605,7 +605,12 @@ function ordinaBolle() {
   const qui = photos.filter(p => p.hold || p.sprite.visible);
   qui.forEach(p => { p.ordine = p.hold ? -2 : fuoco && fuoco.p === p ? -1 : camera.position.distanceToSquared(p.sprite.position); });
   qui.sort((a, b) => b.ordine - a.ordine);
-  qui.forEach((p, i) => { const o = 20 + i * 3; p.maschera.renderOrder = o; p.sprite.renderOrder = o + 1; p.pelle.renderOrder = o + 2; });
+  qui.forEach((p, i) => {
+    const o = 20 + i * 3; p.maschera.renderOrder = o; p.sprite.renderOrder = o + 1; p.pelle.renderOrder = o + 2;
+    // il numero della sagoma nello stencil: diverso per ognuna di 255 bolle di fila, cosi' la foto di una bolla non
+    // compare mai nella forma di un'altra (anche se invisibile, ma ancora li')
+    p.ref = i % 255 + 1; p.maschera.material.stencilRef = p.sprite.material.stencilRef = p.ref;
+  });
 }
 function aggiornaFoto(p, f) {   // la foto e' stata letta: va al suo posto nel corridoio
   p.f = f;
@@ -783,7 +788,7 @@ function viaggiaVerso(meta, guarda, poi) {
   const curva = new THREE.CatmullRomCurve3(pts, false, 'centripetal', .2), L = curva.getLength();
   if (L < 2.5) return poi();   // vicina: niente viaggio
   const d0 = new THREE.Vector3(); camera.getWorldDirection(d0);
-  viaggio = { curva, L, t0: performance.now(), dur: clamp(L / 3.2, 1.6, 9) * 1000, guarda: guarda.clone(), d0, poi };
+  viaggio = { curva, L, t0: performance.now(), dur: clamp(L / 2.6, 1.8, 11) * 1000, guarda: guarda.clone(), d0, poi };
   cam.giro = false;
 }
 const vTmp = new THREE.Vector3(), vTmp2 = new THREE.Vector3();
@@ -885,53 +890,74 @@ photos.forEach(p => { p.t0 = 1e12; });
 // ---------------- entrare in una bolla: la foto si apre, le sorelle le girano intorno ----------------
 let fuoco = null;
 const DUR_VOLO = 1600;
-function disegnaAperta(c, im, forma) {   // la foto aperta: grande e nitida, ritagliata nelle proporzioni della forma
-  const [W, H] = misuraTela(forma, 1024); c.width = W; c.height = H; const x = c.getContext('2d');
-  if (im && im.complete && im.naturalWidth) copri(x, im, W, H); else { x.fillStyle = '#d9d9de'; x.fillRect(0, 0, W, H); }
+// la foto aperta: intera, con le sue proporzioni, in una cornice bianca (non piu' ritagliata nella forma della bolla)
+function disegnaAperta(c, im) {
+  const ok = im && im.complete && im.naturalWidth, asp = ok ? im.naturalWidth / im.naturalHeight : 1;
+  const L = 1024, w = asp >= 1 ? L : Math.round(L * asp), h = asp >= 1 ? Math.round(L / asp) : L, b = 14;
+  c.width = w; c.height = h; const x = c.getContext('2d');
+  const tondo = (q, R) => { x.beginPath(); x.moveTo(q + R, q); x.arcTo(w - q, q, w - q, h - q, R); x.arcTo(w - q, h - q, q, h - q, R); x.arcTo(q, h - q, q, q, R); x.arcTo(q, q, w - q, q, R); x.closePath(); };
+  x.fillStyle = 'rgba(246,246,250,.95)'; tondo(0, 26); x.fill();
+  x.save(); tondo(b, 16); x.clip();
+  if (ok) x.drawImage(im, b, b, w - 2 * b, h - 2 * b); else { x.fillStyle = '#d9d9de'; x.fillRect(0, 0, w, h); }
+  x.restore();
+  return asp;
 }
 function alta(p) {
   if (p.hi) return;
   const can = document.createElement('canvas'), img = new Image(), tex = new THREE.CanvasTexture(can);
-  tex.colorSpace = THREE.SRGBColorSpace; p.hi = { can, img, tex };
-  disegnaAperta(can, p.img, p.forma);
-  img.onload = () => { if (p.hi) { disegnaAperta(can, img, p.forma); tex.dispose(); p.hi.tex = new THREE.CanvasTexture(can); p.hi.tex.colorSpace = THREE.SRGBColorSpace; p.sprite.material.map = p.hi.tex; p.sprite.material.needsUpdate = true; } };
+  tex.colorSpace = THREE.SRGBColorSpace; p.hi = { can, img, tex, asp: disegnaAperta(can, p.img) };
+  img.onload = () => { if (p.hi) { p.hi.asp = disegnaAperta(can, img); tex.dispose(); p.hi.tex = new THREE.CanvasTexture(can); p.hi.tex.colorSpace = THREE.SRGBColorSpace; p.sprite.material.map = p.hi.tex; p.sprite.material.needsUpdate = true; } };
   img.src = fullSrc(p.id);
-  p.sprite.material.map = tex; p.sprite.material.color.set(0xffffff); p.sprite.material.needsUpdate = true;
+  p.sprite.material.map = tex; p.sprite.material.color.set(0xffffff);
+  p.sprite.material.stencilWrite = false;   // aperta: la foto si vede intera, non piu' solo dentro la forma
+  p.sprite.material.needsUpdate = true;
 }
-function bassa(p) { if (!p.hi) return; p.riforma = performance.now(); p.sprite.material.map = p.tex; p.sprite.material.color.set(0xf2f2f2); p.sprite.material.needsUpdate = true; p.hi.tex.dispose(); p.hi = null; }
+function bassa(p) { if (!p.hi) return; p.riforma = performance.now(); p.sprite.material.map = p.tex; p.sprite.material.color.set(0xf2f2f2); p.sprite.material.stencilWrite = true; p.sprite.material.needsUpdate = true; p.hi.tex.dispose(); p.hi = null; }
 const DIST_FOTO = 1.05;   // da quanto lontano si guarda la foto aperta
-// quanto e' grande la bolla aperta: mai piu' di una parte dello schermo, visto da dove si mette la camera.
+// quanto e' alta la foto aperta: di solito ALTO_FOTO, ma mai piu' di una parte dello schermo, visto da dove si guarda.
 // Serve per le foto scattate qui (la camera va nel punto di scatto, molto piu' vicina) e per gli schermi di forma diversa (TV)
-const LATO_APERTA = .8, SCHERMO_ALTO = .55, SCHERMO_LARGO = .55;
-function scalaAperta(p, da) {
-  const { w, h } = COPRE[p.forma], d = Math.max(.05, da.distanceTo(p.fine)), vis = 2 * d * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
-  return Math.min(LATO_APERTA / Math.max(w, h), vis * SCHERMO_ALTO / h, vis * camera.aspect * SCHERMO_LARGO / w);
-}
+const ALTO_FOTO = .62, SCHERMO_ALTO = .55, SCHERMO_LARGO = .55;
 const vistaDa = f => f.uscita ? f.cam0 : f.camDest;   // da dove si guarda la foto aperta
+const visibileA = d => 2 * Math.max(.05, d) * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);   // quanto e' alto lo schermo a quella distanza
+function altezzaAperta(p) {
+  const asp = p.hi ? p.hi.asp : 1, vis = visibileA(vistaDa(fuoco).distanceTo(fuoco.centro));
+  return Math.min(ALTO_FOTO, vis * SCHERMO_ALTO, vis * camera.aspect * SCHERMO_LARGO / asp);
+}
+// le sorelle che girano intorno alla foto aperta: sullo schermo sempre della stessa grandezza, qualunque sia la forma e la
+// distanza (con le foto scattate qui la camera e' a pochi centimetri: una grandezza fissa le faceva diventare enormi)
+function grandezzaSorella(q) {
+  if (!fuoco) return BOLLA * 1.05;
+  return Math.min(BOLLA * 1.05, visibileA(vistaDa(fuoco).distanceTo(fuoco.centro)) * .19 / Math.max(COPRE[q.forma].w, COPRE[q.forma].h));
+}
 function vola(p, arrivato = false) {
   if (!p || p.hold || arrivo || viaggio) return;
   if (fuoco && fuoco.p === p && !fuoco.uscita) return;
-  // lontana (dalla cronologia, o una sorella che sta dall'altra parte del chiostro): prima si cammina lungo il corridoio
-  // fino a lei. Da dentro una foto si esce subito, senza volare dritti attraverso i muri
-  if (!arrivato && camera.position.distanceTo(p.fine) > 4.5) {
-    if (fuoco) lasciaFuoco();
+  // lontana (per esempio dalla cronologia): prima si cammina lungo il corridoio fino a lei.
+  // Da dentro una foto invece no: la sorella scelta si apre li', al posto di quella di prima
+  if (!fuoco && !arrivato && camera.position.distanceTo(p.fine) > 4.5) {
     return viaggiaVerso(davantiA(p.fine, 2.2), p.fine, () => vola(p, true));   // arrivati: niente secondo viaggio
   }
+  const dentroUnaFoto = !!fuoco;   // anche mentre si sta chiudendo
   const back = fuoco ? fuoco.back : { pos: camera.position.clone(), quat: camera.quaternion.clone() };
   if (fuoco) { if (fuoco.p !== p) bassa(fuoco.p); fuoco.p.fk = 0; }
   const sorelle = vicineDi(p).slice(0, 10);
   photos.forEach(q => { if (q.orbita && !sorelle.includes(q)) q.orbita.su = false; });
-  const centro = p.fine.clone();
+  // dove si apre la foto: al suo posto nel corridoio, oppure, passando da una sorella all'altra, nello stesso punto di prima
+  const centro = dentroUnaFoto ? fuoco.centro.clone() : p.fine.clone();
   sorelle.forEach((q, i) => { q.orbita = { i, n: sorelle.length, centro, k: q.orbita ? q.orbita.k : 0, su: true }; });
   p.orbita && (p.orbita.su = false);
-  // ci si mette davanti alla foto, dal lato da cui la si guarda, dentro il corridoio e piu' o meno all'altezza degli occhi
-  const out = camera.position.clone().sub(p.fine).setY(0); if (out.lengthSq() < 1e-6) out.set(0, 0, 1); out.normalize();
-  let camDest = dentro(p.fine.clone().addScaledVector(out, DIST_FOTO), MEZZA * .9); camDest.y = clamp(p.fine.y, .5, 1.9);
-  if (camDest.distanceTo(p.fine) < .6) camDest.addScaledVector(out, .6);   // contro il muro: un passo indietro lungo il corridoio
-  // una foto di qui di cui si sa da dove e' stata scattata: ci si mette proprio li', guardando dove guardava lei
-  if (p.scatto) camDest = p.scatto.pos.clone();
-  const q0 = camera.quaternion.clone(), m = new THREE.Matrix4().lookAt(camDest, centro, camera.up), q1 = new THREE.Quaternion().setFromRotationMatrix(m);
-  fuoco = { p, sorelle, t0: performance.now(), cam0: camera.position.clone(), q0, camDest, q1, back, uscita: false, arrivato: false };
+  let camDest, q1;
+  if (dentroUnaFoto) { camDest = camera.position.clone(); q1 = camera.quaternion.clone(); }   // la camera resta ferma
+  else {
+    // ci si mette davanti alla foto, dal lato da cui la si guarda, dentro il corridoio e piu' o meno all'altezza degli occhi
+    const out = camera.position.clone().sub(p.fine).setY(0); if (out.lengthSq() < 1e-6) out.set(0, 0, 1); out.normalize();
+    camDest = dentro(p.fine.clone().addScaledVector(out, DIST_FOTO), MEZZA * .9); camDest.y = clamp(p.fine.y, .5, 1.9);
+    if (camDest.distanceTo(p.fine) < .6) camDest.addScaledVector(out, .6);   // contro il muro: un passo indietro lungo il corridoio
+    // una foto di qui di cui si sa da dove e' stata scattata: ci si mette proprio li', guardando dove guardava lei
+    if (p.scatto) camDest = p.scatto.pos.clone();
+    q1 = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(camDest, centro, camera.up));
+  }
+  fuoco = { p, sorelle, centro, t0: performance.now(), cam0: camera.position.clone(), q0: camera.quaternion.clone(), camDest, q1, back, uscita: false, arrivato: false };
   cam.giro = false;
   accese = new Set([p.id, ...sorelle.map(q => q.id)]);
   filiDa = null; filiA = [];   // aperta: niente linee, solo le sorelle che le girano intorno
@@ -940,13 +966,6 @@ function vola(p, arrivato = false) {
   document.body.classList.add('infuoco');
   mostraPannello(p);
   accordo(p);
-}
-function lasciaFuoco() {   // esce dalla foto aperta all'istante: la camera resta dov'e', le sorelle tornano ai loro posti
-  bassa(fuoco.p); fuoco.p.fk = 0;
-  fuoco.sorelle.forEach(q => { if (q.orbita) q.orbita.su = false; });
-  fuoco = null; accese = null; filiDa = null; filiA = [];
-  $('fuoco').classList.remove('on'); document.body.classList.remove('infuoco');
-  prendiDallaCamera();
 }
 function torna() {
   if (!fuoco || fuoco.uscita) return;
@@ -961,7 +980,7 @@ function passoVolo(now) {
   if (!fuoco.arrivato) { camera.position.lerpVectors(fuoco.cam0, fuoco.camDest, u); camera.quaternion.slerpQuaternions(fuoco.q0, fuoco.q1, u); }
   fuoco.p.fk = fuoco.uscita ? 1 - u : u;
   if (u >= 1 && !fuoco.arrivato) {
-    fuoco.arrivato = true;
+    fuoco.arrivato = true; fuoco.aperta = now;
     if (fuoco.uscita) {
       bassa(fuoco.p); fuoco.p.fk = 0; fuoco = null; prendiDallaCamera(); ultimoTocco = now;
       const attese = photos.filter(q => q.pending);
@@ -972,7 +991,7 @@ function passoVolo(now) {
 function mostraPannello(p) {
   const a = cron.get(p.id), n = fuoco.sorelle.length, qui = ['localhost', '127.0.0.1'].includes(location.hostname);
   const q = FOTO_QUI[p.id], dove = !q ? '' : q.preciso ? 'scattata proprio qui · ' : q.gruppo === 'cortile' ? 'il cortile, da queste finestre · ' : q.gruppo === 'scalone' ? 'sullo scalone · ' : 'scattata in questo corridoio · ';
-  $('fk').innerHTML = (p === ultimaArrivata ? '<span class="nuova">appena arrivata</span> · ' : dove || 'una foto · ') + (n ? `e le ${n} foto con cui ha più tag in comune, che le girano intorno` : '');
+  $('fk').innerHTML = (p === ultimaArrivata ? '<span class="nuova">appena arrivata</span> · ' : dove || 'una foto · ') + (n ? `e intorno ${n === 1 ? 'la foto che le somiglia di più' : `le ${n} foto che le somigliano di più`}` : '');
   if (q && q.nota) $('fl').title = q.nota;
   $('fl').textContent = p.f.lettura || '';
   $('fa').innerHTML = a ? `<b>Arrivata dal telefono${a.nome ? ' · foto di ' + esc(a.nome) : ''} · ${quando(a.quando)}</b>${a.frase ? '«' + esc(a.frase) + '»' : ''}` +
@@ -1031,10 +1050,7 @@ function setHover(p) {
   if (p === hover) return;
   hover = p;
   if (!trascina) cv.style.cursor = p ? 'pointer' : 'grab';
-  if (fuoco) return;
-  filiA = p ? legami(p) : [];
-  accese = p ? new Set([p.id, ...filiA.map(x => x[0].id)]) : null;
-  filiDa = p;
+  // niente raggi verso le foto collegate: la bolla sotto il puntatore si ingrandisce e basta
 }
 function pick() {
   if (!mossoMouse || mpx.x < 0 || arrivo || trascina) return;
@@ -1127,7 +1143,7 @@ function frame(now) {
     const voluta = (inVista(p) || (fuoco && fuoco.p === p)) && !p.dietro ? 1 : 0;
     p.vis += (voluta - p.vis) * Math.min(1, dt * 4);
     p.sprite.visible = p.guscio.visible = p.vis > .01;
-    p.pelle.visible = !p.hi;   // la foto aperta non ha piu' la plastica (e' scoppiata), ma resta nella sua forma
+    p.pelle.visible = p.maschera.visible = !p.hi;   // la foto aperta non ha piu' la plastica (e' scoppiata), ma resta nella sua forma
     if (!p.sprite.visible) { p.uPrev = 0; return; }
     const [vi, qu] = p.f.mv;
     const m = easeIO(clamp((now - p.t0) / p.dur, 0, 1));
@@ -1143,13 +1159,13 @@ function frame(now) {
     if (now < p.t0) sc = 0;
     if (p.orbita) {
       const o = p.orbita; o.k = clamp(o.k + (o.su ? .022 : -.03), 0, 1);
-      const e = easeIO(o.k), ang = o.i / o.n * TAU + t * .06, R = (fuoco ? scalaAperta(fuoco.p, vistaDa(fuoco)) * (Math.max(COPRE[fuoco.p.forma].w, COPRE[fuoco.p.forma].h) * .5 + .35) : .5) + .04 * Math.sin(t * .35 + o.i);
+      const e = easeIO(o.k), ang = o.i / o.n * TAU + t * .03,   /* il giro delle sorelle: lento */ R = (fuoco && fuoco.p.hi ? (.36 * Math.max(1, fuoco.p.hi.asp) + .3) * altezzaAperta(fuoco.p) / ALTO_FOTO : .5) + .04 * Math.sin(t * .35 + o.i);
       orb.copy(o.centro).addScaledVector(dx, Math.cos(ang) * R).addScaledVector(dy, Math.sin(ang) * R * .78);
-      p.sprite.position.lerp(orb, e); sc += (BOLLA * .8 - sc) * e;
+      p.sprite.position.lerp(orb, e); sc += (grandezzaSorella(p) - sc) * e;
       if (o.k <= 0 && !o.su) p.orbita = null;
     }
-    if (p.fk) { p.sprite.position.lerp(p.fine, p.fk); sc = sc + ((fuoco && fuoco.p === p ? scalaAperta(p, vistaDa(fuoco)) : sc) - sc) * easeIO(p.fk); }
-    if (accese && !fuoco) sc *= p === hover ? 1.6 : accese.has(p.id) ? 1.2 : .9;
+    if (p.fk) { const ilFuoco = fuoco && fuoco.p === p; p.sprite.position.lerp(ilFuoco ? fuoco.centro : p.fine, p.fk); sc = sc + ((ilFuoco ? altezzaAperta(p) : sc) - sc) * easeIO(p.fk); }
+    if (!fuoco && p === hover) sc *= 1.5;
     if (fuoco && p === hover && p !== fuoco.p) sc *= 1.25;
     if (p.lampo && now < p.lampo) sc *= 1 + .8 * Math.sin((p.lampo - now) / 2200 * Math.PI);
     sc *= p.vis;
@@ -1161,6 +1177,10 @@ function frame(now) {
     if (p.riforma) { const u = clamp((now - p.riforma) / 650, 0, 1); gs *= .25 + .75 * easeOutBack(u); if (u >= 1) p.riforma = 0; }   // richiudendo la foto la plastica si riforma
     if (!reduced && !p.fk) p.spin += p.giro * dt;
     mettiGuscio(p, gs, p.sprite.material.opacity, sx, sy, p.fk ? easeIO(p.fk) : 0);
+    if (p.hi && p.fk) {   // aprendosi, dalla forma della bolla alla foto intera con le sue proporzioni
+      const e = easeIO(p.fk);
+      p.sprite.scale.set(sc * (COPRE[p.forma].w + (p.hi.asp - COPRE[p.forma].w) * e), sc * (COPRE[p.forma].h + (1 - COPRE[p.forma].h) * e), 1);
+    }
     if (!reduced && now > nascita + 2000) {
       const sp = Math.max(.03, .07 + .25 * vi - .04 * qu), u = (t * sp + p.ph) % 1;
       if (u < p.uPrev && pronto() && note < 2 && d < 8) {
@@ -1291,7 +1311,6 @@ function passoArrivo(now) {
     const v = clamp((el - TV) / TP, 0, 1);
     if (!arrivo.posata) {
       arrivo.posata = true; accordo(p, .8); $('arrivo').classList.remove('on');
-      filiDa = p; filiA = legami(p).slice(0, 10); accese = new Set([p.id, ...filiA.map(x => x[0].id)]);
     }
     s.position.copy(p.fine); s.scale.setScalar(p.base * (1 + 1.8 * Math.exp(-v * 5))); mettiGuscio(p, s.scale.x, 1);
     onda.position.copy(p.fine); onda.scale.setScalar(.15 + 1.4 * v); onda.material.opacity = .9 * (1 - v);
@@ -1424,6 +1443,7 @@ const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
 const MODELLO_MANO = 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
 const OSSA_MANO = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]];
 const SOSTA_MANO = 1500, VIA_MANO = 2000, CONFERMA_MANO = 250;
+const SOSTA_FOTO = 5000;   // con le mani, la foto aperta resta almeno 5 secondi prima di potersi chiudere
 // ---------------- la zona attiva della webcam (il rettangolo tratteggiato nel riquadro della webcam) ----------------
 // Dove la mano si muove dentro questo rettangolo, la luce si muove su tutto lo schermo. Piu' e' grande, piu' ampi e calmi
 // sono i movimenti (e meno trema la luce); piu' e' piccolo, meno serve muovere il braccio.
@@ -1589,7 +1609,7 @@ function aggiornaDueMani(mani, lati, now) {
 function camminaConDueMani() {
   const r = mano.dd / Math.max(mano.d0, .05) - 1;
   const v = Math.sign(r) * sstep(.08, .45, Math.abs(r));
-  if (fuoco) { mano.cammina = 0; if (fuoco.arrivato && !fuoco.uscita && r < -.22) torna(); return; }   // dentro una foto: stringerle per uscire
+  if (fuoco) { mano.cammina = 0; if (fuoco.arrivato && !fuoco.uscita && r < -.22 && performance.now() - fuoco.aperta >= SOSTA_FOTO) torna(); return; }   // dentro una foto: stringerle per uscire
   mano.cammina = v;
 }
 const sulloSchermo = q => ({ x: zonaX(q.x) * innerWidth, y: zonaY(q.y) * innerHeight });
@@ -1649,8 +1669,9 @@ function passoMano(now, dt) {
   }
   // senza mano per un po': si esce dalla foto in cui si era entrati con la mano
   if (!mano.vista && !mano.aCasa && now - mano.ultima > VIA_MANO) {
-    if (fuoco && !fuoco.uscita && fuoco.arrivato && mano.ultima >= fuoco.t0 - 500) torna();
-    mano.aCasa = true;
+    const daChiudere = fuoco && !fuoco.uscita && fuoco.arrivato && mano.ultima >= fuoco.t0 - 500;
+    if (!daChiudere) mano.aCasa = true;
+    else if (now - fuoco.aperta >= SOSTA_FOTO) { torna(); mano.aCasa = true; }   // prima dei 5 secondi si aspetta
   }
   if (r) aggiornaDueMani(r.mani || [], r.lati, now);
   if (mano.vista && !arrivo && mano.due) camminaConDueMani();
@@ -1685,7 +1706,7 @@ function aggiornaCursore() {
   c.style.transform = `translate(${x}px, ${y}px)`;
   c.style.setProperty('--p', (mano.carica * 100).toFixed(1) + '%');
   const aiuto = !mano.vista || arrivo ? '' : mano.due ? (fuoco ? 'Due mani: stringile per tornare nel corridoio' : mano.cammina > .05 ? 'Stai camminando avanti · stringi le mani per fermarti' : mano.cammina < -.05 ? 'Stai tornando indietro' : 'Due mani: allargale per camminare, stringile per tornare indietro')
-    : fuoco && !fuoco.uscita ? (mano.bersaglio ? 'Tieni ferma la mano per passare a questa foto' : 'Porta la mano su una sorella · abbassala per tornare')
+    : fuoco && !fuoco.uscita ? (mano.bersaglio ? 'Tieni ferma la mano per passare a questa foto' : 'Porta la mano su un\'altra bolla · abbassala per tornare')
     : mano.bersaglio ? 'Tieni ferma la mano: stai entrando in questa foto' : 'Muovi la mano: la luce si aggancia alle bolle · verso i bordi ti giri';
   if ($('manoAiuto').textContent !== aiuto) $('manoAiuto').textContent = aiuto;
   $('manoAiuto').classList.toggle('on', !!aiuto);

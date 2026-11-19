@@ -118,6 +118,7 @@ body.ov #toasts{opacity:0;pointer-events:none}
 #fuoco .k{font:300 9px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
 #fl{font:italic 400 18px/1.5 'Playfair Display',serif;color:var(--ink);margin-top:10px}
 #fl:empty{display:none}
+#fl{font-size:clamp(14px,2.6vh,18px)}   /* sugli schermi bassi il testo si fa un po' piu' piccolo, per stare nel riquadro */
 #fa{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;line-height:1.5;color:#e2dbd5}
 #fa b{display:block;font:300 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#f0c88c;text-transform:uppercase;margin-bottom:4px}
 #fa .nota{color:#8c8590;font-size:11px}
@@ -166,6 +167,13 @@ body.calma #fuoco .h,body.calma #fx{display:none}
 /* con il riquadro della mano acceso, gli altri pannelli a destra gli lasciano il posto, e il tasto vista iniziale gli sta accanto */
 body:has(#mano:not(.nascosta):not(.assente)){--manoH:316px}
 body:has(#mano:not(.nascosta):not(.assente)) #home{right:calc(var(--lato) + 240px + 16px);bottom:20px}
+/* con la webcam accesa (in basso a destra) la lettura della foto aperta va a sinistra, sopra il QR: li' ha tutta l'altezza
+   che le serve. A destra, sopra la webcam, su uno schermo basso restava alta meno di 200 pixel e il testo si tagliava */
+@media(min-width:901px){
+  body:not(.installazione):has(#mano:not(.nascosta):not(.assente)) #fuoco{right:auto;left:28px;transform:translateX(-20px);max-height:calc(100vh - 84px - 210px)}
+  body:not(.installazione):has(#mano:not(.nascosta):not(.assente)) #fuoco.on{transform:none}
+}
+@media(max-height:700px){#fuoco .h{display:none}}   /* schermo basso: senza le istruzioni, resta il testo della foto */
 
 #caricaTel{display:none}
 @media(max-width:900px){
